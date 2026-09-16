@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SceneDocument } from "../core/schema";
 import { NumberValue, ColorValue } from "./parameters";
 
@@ -26,6 +26,19 @@ export function SceneHeader({
   useEffect(() => {
     if (editing) title.current?.select();
   }, [editing]);
+  useLayoutEffect(() => {
+    if (!open) return;
+    const position = () => {
+      if (!trigger.current || !panel.current) return;
+      const anchor = trigger.current.getBoundingClientRect();
+      const width = panel.current.offsetWidth;
+      panel.current.style.left = `${Math.max(8, Math.min(anchor.right - width, window.innerWidth - width - 8))}px`;
+      panel.current.style.top = `${anchor.bottom + 6}px`;
+    };
+    position();
+    window.addEventListener("resize", position);
+    return () => window.removeEventListener("resize", position);
+  }, [open]);
   useEffect(() => {
     if (!open) return;
     panel.current?.querySelector<HTMLInputElement>("input")?.focus();
@@ -76,7 +89,7 @@ export function SceneHeader({
       {editing ? (
         <input
           ref={title}
-          className="title-input"
+          className="cx-input title-input"
           aria-label="Scene name"
           maxLength={100}
           value={draft}
@@ -96,7 +109,9 @@ export function SceneHeader({
         />
       ) : (
         <button
-          className="title-name"
+          className="cx-button title-name"
+          data-variant="ghost"
+          data-size="toolbar"
           title="Double-click to rename"
           aria-label={`Rename ${scene.name}`}
           onDoubleClick={start}
@@ -112,7 +127,9 @@ export function SceneHeader({
       )}
       <button
         ref={trigger}
-        className="icon-button"
+        className="cx-button icon-button"
+        data-variant="ghost"
+        data-size="icon"
         aria-label="Scene settings"
         title="Scene settings"
         aria-expanded={open}
@@ -122,8 +139,8 @@ export function SceneHeader({
         onClick={() => setOpen(!open)}
       >
         <svg
-          width="16"
-          height="16"
+          width="18"
+          height="18"
           viewBox="0 0 16 16"
           fill="none"
           stroke="currentColor"
@@ -140,7 +157,7 @@ export function SceneHeader({
         <div
           ref={panel}
           id="scene-settings"
-          className="settings-popover"
+          className="cx-menu settings-popover"
           role="dialog"
           aria-label="Scene settings"
           onBlur={(e) => {

@@ -8,6 +8,7 @@ import type {
 } from "../core/schema";
 import { SceneClock, LatestFrame } from "../core/motion";
 import { SceneEngine } from "./engine";
+import "./design-system/codex.css";
 import "./style.css";
 
 import { call, onChange, onRequest, savedView } from "./bridge";
@@ -15,6 +16,12 @@ import { defaultInspection } from "../core/context";
 import { bindNavigation } from "./navigation";
 import { ParameterPanel } from "./parameters";
 import { SceneHeader } from "./scene-header";
+
+// Embedding hosts can select the matching shell theme without touching scene files.
+document.documentElement.dataset.theme =
+  new URLSearchParams(location.search).get("theme") === "light"
+    ? "light"
+    : "dark";
 const timecode = (t: number, fps: number) =>
   `${Math.floor(t / 60)
     .toString()
@@ -100,14 +107,49 @@ function Button({
 }) {
   return (
     <button
-      className={`icon-button ${className}`}
+      className={`cx-button icon-button ${className}`}
+      data-variant="ghost"
+      data-size="icon"
       aria-label={label}
       title={label}
       onClick={onClick}
       disabled={disabled}
     >
-      <Icon name={icon} />
+      <Icon name={icon} size={18} />
     </button>
+  );
+}
+
+function TimelineRuler({ duration }: { duration: number }) {
+  const element = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(640);
+  useEffect(() => {
+    if (!element.current) return;
+    const observer = new ResizeObserver(([entry]) =>
+      setWidth(entry.contentRect.width),
+    );
+    observer.observe(element.current);
+    return () => observer.disconnect();
+  }, []);
+  const targetStep = duration / Math.max(1, Math.floor(width / 56));
+  const magnitude = 10 ** Math.floor(Math.log10(targetStep));
+  const step =
+    [1, 2, 5, 10].find((value) => value * magnitude >= targetStep)! * magnitude;
+  const ticks = Array.from(
+    { length: Math.ceil(duration / step) },
+    (_, i) => i * step,
+  );
+  if (ticks.length > 1 && duration - ticks[ticks.length - 1] < step * 0.75)
+    ticks.pop();
+  ticks.push(duration);
+  return (
+    <div className="ruler" ref={element}>
+      {ticks.map((tick) => (
+        <span key={tick} style={{ left: `${(tick / duration) * 100}%` }}>
+          {Number(tick.toFixed(3))}s
+        </span>
+      ))}
+    </div>
   );
 }
 
@@ -537,12 +579,17 @@ function App() {
     if (!frame || !area || !state) return;
     const s = state.scene;
     const fit = () => {
+      const padding = getComputedStyle(area);
+      const horizontal =
+        parseFloat(padding.paddingLeft) + parseFloat(padding.paddingRight);
+      const vertical =
+        parseFloat(padding.paddingTop) + parseFloat(padding.paddingBottom);
       frame.style.width =
         Math.max(
           1,
           Math.min(
-            area.clientWidth - 72,
-            ((area.clientHeight - 38) * s.size.width) / s.size.height,
+            area.clientWidth - horizontal,
+            ((area.clientHeight - vertical) * s.size.width) / s.size.height,
           ),
         ) + "px";
     };
@@ -631,7 +678,8 @@ function App() {
             onClick={() => void invoke({ type: "redo" })}
           />
           <button
-            className="render-button"
+            className="cx-button render-button"
+            data-size="composer"
             onClick={() => void render()}
             disabled={!ready || exporting}
           >
@@ -644,19 +692,31 @@ function App() {
         <div className="canvas-toolbar">
           <span className="view-controls">
             <button
-              className={mode === "source" ? "active" : ""}
+              className="cx-button"
+              data-variant="ghost"
+              data-size="toolbar"
+              aria-pressed={mode === "source"}
               onClick={() => changeMode("source")}
             >
               2D
             </button>
             <button
-              className={mode === "camera" ? "active" : ""}
+              className="cx-button"
+              data-variant="ghost"
+              data-size="toolbar"
+              aria-pressed={mode === "camera"}
               onClick={() => changeMode("camera")}
             >
               Camera
             </button>
             <span className="divider" />
-            <button onClick={() => fit()} title="Reset view (F)">
+            <button
+              className="cx-button"
+              data-variant="ghost"
+              data-size="toolbar"
+              onClick={() => fit()}
+              title="Reset view (F)"
+            >
               Fit
             </button>
             <span className="zoom-readout">{Math.round(zoom * 100)}%</span>
@@ -692,9 +752,7 @@ function App() {
               ? state.history.pendingEdit.label + " · editing"
               : playing
                 ? `${fps} fps preview`
-                : ready
-                  ? "Ready"
-                  : "Preparing"}
+                : ""}
           </span>
         </div>
       </main>
@@ -728,7 +786,11 @@ function App() {
           <div className="transport-right">
             <span>{s?.fps} fps</span>
             <button
-              className={showJobs ? "jobs-toggle active" : "jobs-toggle"}
+              className="cx-button jobs-toggle"
+              data-variant="ghost"
+              data-size="toolbar"
+              aria-expanded={showJobs}
+              aria-controls="render-jobs"
               onClick={() => setShowJobs((x) => !x)}
             >
               Renders
@@ -742,9 +804,12 @@ function App() {
           <div className="track-names">
             <div className="ruler-name" />
             {s?.tracks.map((track) => (
-              <div className="track-name" key={track.id}>
-                <span style={{ background: track.color }} />
-                {track.label}
+              <div className="track-name" key={track.id} title={track.label}>
+                <span
+                  className="track-dot"
+                  style={{ background: track.color }}
+                />
+                <span className="track-label">{track.label}</span>
               </div>
             ))}
           </div>
@@ -765,32 +830,20 @@ function App() {
               void call({ type: "activity", activity: "idle" })
             }
           >
-            <div className="ruler">
-              {Array.from(
-                { length: Math.floor(s?.duration || 8) + 1 },
-                (_, i) => (
-                  <span
-                    key={i}
-                    style={{ left: `${(i / (s?.duration || 8)) * 100}%` }}
-                  >
-                    {i}s
-                  </span>
-                ),
-              )}
-            </div>
+            <TimelineRuler duration={s?.duration || 8} />
             {s?.tracks.map((track) => (
               <div className="track-row" key={track.id}>
                 <div
                   className="track-clip"
-                  style={{
-                    left: `${(track.start / s.duration) * 100}%`,
-                    width: `${((track.end - track.start) / s.duration) * 100}%`,
-                    color: track.color,
-                    background: track.color + "20",
-                    borderColor: track.color + "50",
-                  }}
+                  title={track.label}
+                  style={
+                    {
+                      left: `${(track.start / s.duration) * 100}%`,
+                      width: `${((track.end - track.start) / s.duration) * 100}%`,
+                      "--track-color": track.color,
+                    } as React.CSSProperties
+                  }
                 >
-                  <span>{track.label}</span>
                   {track.keys.map((k, i) => (
                     <i
                       key={i}
@@ -847,7 +900,11 @@ function App() {
         </div>
       )}
       {showJobs && (
-        <div className="jobs-panel">
+        <div
+          className="cx-menu jobs-panel"
+          id="render-jobs"
+          aria-label="Renders"
+        >
           <div className="section-heading">
             Renders
             <Button
