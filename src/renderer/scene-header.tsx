@@ -1,3 +1,4 @@
+import { Icon } from "./icons";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SceneDocument } from "../core/schema";
 import { NumberValue, ColorValue } from "./parameters";
@@ -138,20 +139,7 @@ export function SceneHeader({
         disabled={disabled}
         onClick={() => setOpen(!open)}
       >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.25"
-          strokeLinecap="round"
-          aria-hidden="true"
-        >
-          <path d="M2 4h3m4 0h5M2 12h7m4 0h1" />
-          <circle cx="7" cy="4" r="2" />
-          <circle cx="11" cy="12" r="2" />
-        </svg>
+        <Icon name="settings" size={18} />
       </button>
       {open && (
         <div

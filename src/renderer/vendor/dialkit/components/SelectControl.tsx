@@ -9,7 +9,7 @@ import {
   observeDropdownPosition,
   type DropdownPosition,
 } from "../dropdown-position";
-import { ICON_CHEVRON } from "../icons";
+import { Icon } from "../../../icons";
 
 type SelectOption = string | { value: string; label: string };
 
@@ -121,19 +121,13 @@ export function SelectControl({
           <span className="dialkit-select-value">
             {selectedOption?.label ?? value}
           </span>
-          <motion.svg
+          <motion.span
             className="dialkit-select-chevron"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ type: "spring", visualDuration: 0.2, bounce: 0.15 }}
           >
-            <path d={ICON_CHEVRON} />
-          </motion.svg>
+            <Icon name="chevron" size={16} />
+          </motion.span>
         </div>
       </button>
 

@@ -1,3 +1,4 @@
+import { Icon, type IconName } from "./icons";
 import { flushControlEdits } from "./control-edits";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -34,68 +35,6 @@ const timecode = (t: number, fps: number) =>
     .padStart(2, "0")}:${Math.floor((t % 1) * fps + 0.001)
     .toString()
     .padStart(2, "0")}`;
-function Icon({ name, size = 16 }: { name: string; size?: number }) {
-  const paths: Record<string, React.ReactNode> = {
-    play: <path d="m6 3 8 5-8 5Z" />,
-    pause: (
-      <>
-        <path d="M5 3v10M11 3v10" />
-      </>
-    ),
-    back: (
-      <>
-        <path d="M3 3v10m10-10L5 8l8 5Z" />
-      </>
-    ),
-    next: (
-      <>
-        <path d="M13 3v10M3 3l8 5-8 5Z" />
-      </>
-    ),
-    plus: <path d="M8 3v10M3 8h10" />,
-    folder: <path d="M2 4h5l1-2h5a1 1 0 0 1 1 1v10H2Z" />,
-    code: <path d="m5 4-4 4 4 4m6-8 4 4-4 4M9 2 7 14" />,
-    scene: (
-      <>
-        <rect x="2" y="2" width="12" height="12" rx="2" />
-        <path d="m6 5 5 3-5 3Z" />
-      </>
-    ),
-    arrow: <path d="M8 11V1M4 5l4-4 4 4M2 10v4h12v-4" />,
-    undo: <path d="M2 7h7a4 4 0 0 1 0 8M5 3 1 7l4 4" />,
-    check: <path d="m3 8 3 3 7-7" />,
-    close: <path d="m4 4 8 8M12 4l-8 8" />,
-    chevron: <path d="m6 3 5 5-5 5" />,
-    file: (
-      <>
-        <path d="M4 1h6l3 3v11H4Z" />
-        <path d="M9 1v4h4" />
-      </>
-    ),
-    refresh: <path d="M13 6a5 5 0 1 0 0 5M13 2v4H9" />,
-    grid: (
-      <>
-        <rect x="2" y="2" width="12" height="12" rx="1" />
-        <path d="M2 7h12M7 2v12" />
-      </>
-    ),
-  };
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill={name === "play" ? "currentColor" : "none"}
-      stroke="currentColor"
-      strokeWidth="1.25"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {paths[name] || paths.file}
-    </svg>
-  );
-}
 function Button({
   label,
   icon,
@@ -104,7 +43,7 @@ function Button({
   className = "",
 }: {
   label: string;
-  icon: string;
+  icon: IconName;
   onClick: () => void;
   disabled?: boolean;
   className?: string;
@@ -647,9 +586,8 @@ function App() {
             onClick={() => void invoke({ type: "undo" })}
           />
           <Button
-            icon="undo"
+            icon="redo"
             label="Redo"
-            className="redo"
             disabled={!state?.history?.canRedo || !!state.history.pendingEdit}
             onClick={() => void invoke({ type: "redo" })}
           />
@@ -659,7 +597,6 @@ function App() {
             onClick={() => void render()}
             disabled={!ready || exporting}
           >
-            <Icon name="arrow" />
             {exporting ? "Preparing…" : "Render"}
           </button>
         </div>

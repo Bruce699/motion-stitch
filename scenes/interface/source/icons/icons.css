@@ -1,0 +1,33 @@
+/* Hugeicons free Stroke Rounded; CDN snapshot, see README.md. */
+@font-face {
+  font-family: "hugeicons-stroke-rounded";
+  src: url("./hugeicons-stroke-rounded.woff2") format("woff2");
+  font-display: block;
+}
+.hgi-stroke {
+  font-family: "hugeicons-stroke-rounded" !important;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  display: inline-block;
+  font-variant: normal;
+  font-variant-ligatures: discretionary-ligatures;
+  font-feature-settings: "liga" 1;
+  line-height: 1;
+  text-rendering: auto;
+  font-display: swap;
+}
+
+.hgi-stroke.hgi-add-01::before {
+  content: "\f150c";
+}
+.hgi-stroke.hgi-grid-view::before {
+  content: "\f1db6";
+}
+.hgi-stroke.hgi-user-group::before {
+  content: "\f2923";
+}
+.hgi-stroke.hgi-tick-02::before {
+  content: "\f282c";
+}

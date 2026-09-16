@@ -8,7 +8,7 @@ This is a local source fork, not a `dialkit` package dependency. The underlying 
 
 - `src/components/{Slider,SegmentedControl,Toggle,SelectControl,DialPad,ColorControl,TextControl}.tsx` → `components/`.
 - `numeric.ts` also includes the small `snapToDecile` helper from upstream `shortcut-utils.ts`, avoiding that module's store dependency.
-- Shared `numeric.ts`, `control-keyboard.ts`, `dropdown-keyboard.ts`, `dropdown-position.ts`, `dial-pad.ts`, `dial-pad-control.ts`, `color.ts`, `color-control.ts`, `text-autosize.ts`, `icons.ts` → this directory.
+- Shared `numeric.ts`, `control-keyboard.ts`, `dropdown-keyboard.ts`, `dropdown-position.ts`, `dial-pad.ts`, `dial-pad-control.ts`, `color.ts`, `color-control.ts`, `text-autosize.ts` → this directory.
 - `theme.css` contains the root tokens and control/timeline rules selected from `src/styles/theme.css`. The remote Google Fonts import, global floating root/panel behavior, presets, versions and shortcut styles are omitted.
 - `Timeline.tsx` adapts the geometry and interaction approach in `src/components/DialTimeline.tsx`: overview, adaptive ticks, zoom around an anchor, horizontal scroll, playhead flag and lanes. Its React state/markup was rewritten as a controlled Tilt component.
 
@@ -16,6 +16,7 @@ This is a local source fork, not a `dialkit` package dependency. The underlying 
 
 - No DialStore, TimelineStore, localStorage, preset/version system, or second playback clock. `parameters.tsx` binds controls to validated file edits. All control writes share a queue. Drags and text focus sessions close one history group; history shortcuts wait for queued writes.
 - Slider, pad, color and text expose interaction start/end hooks. React 19 refs are explicitly initialized. Slider external updates stop old fill animation; reduced-motion preferences disable spring settling. Keyboard numeric entry rejects non-finite/partial numbers.
+- Original Dial Kit icon paths were removed. Dropdown chevrons and timeline zoom buttons use Tilt's shared Hugeicons CDN component.
 - Segmented controls accept an accessible label and remeasure on resize. Existing keyboard, focus, portal positioning, pad axis locking and color parsing helpers are retained.
 - Tilt colors persist as opaque six-digit sRGB hex. The color picker retains its perceptual plane and hue control but omits alpha and output format modes. Other pasted color formats are normalized to the scene contract. Color popovers allow the editor's undo shortcut to bubble.
 - The timeline receives `time`, `duration`, `fps`, cue tracks and seek callbacks. It has no animation value store. Clip bars and diamonds are read-only cue metadata; dragging them seeks. Editable timing would need a shared authored timing contract before adding resize handles.

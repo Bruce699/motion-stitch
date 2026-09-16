@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>Projects</title>
+    <link rel="stylesheet" href="./icons/icons.css" />
     <style>
       * {
         box-sizing: border-box;
@@ -55,12 +56,18 @@
         background: #e9ede5;
         color: #303b2c;
       }
-      .nav-item svg {
+      .nav-item .hgi-stroke {
+        font-size: 15px;
         width: 15px;
         height: 15px;
-        fill: none;
-        stroke: currentColor;
-        stroke-width: 1.25;
+      }
+      .create {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .box .hgi-stroke {
+        font-size: 10px;
       }
       .nav h5 {
         color: #9a9f94;
@@ -257,19 +264,13 @@
       <nav class="nav" data-tilt-id="navigation">
         <div class="workspace-name">Workspace</div>
         <div class="nav-item">
-          <svg viewBox="0 0 16 16"><path d="M2 8h12M8 2v12" /></svg>Overview
+          <i class="hgi-stroke hgi-add-01" aria-hidden="true"></i>Overview
         </div>
         <div class="nav-item active">
-          <svg viewBox="0 0 16 16">
-            <rect x="2" y="2" width="12" height="12" rx="2" />
-            <path d="M2 7h12M7 7v7" /></svg
-          >Projects
+          <i class="hgi-stroke hgi-grid-view" aria-hidden="true"></i>Projects
         </div>
         <div class="nav-item">
-          <svg viewBox="0 0 16 16">
-            <circle cx="8" cy="5" r="3" />
-            <path d="M2 15v-2a6 6 0 0 1 12 0v2" /></svg
-          >Team
+          <i class="hgi-stroke hgi-user-group" aria-hidden="true"></i>Team
         </div>
         <h5>YOUR PROJECTS</h5>
         <div class="nav-item"><i class="project-dot"></i>Website</div>
@@ -282,7 +283,9 @@
         <div class="breadcrumb">Projects<span>/</span>Website</div>
         <div class="heading" data-tilt-id="heading">
           <h1>Website</h1>
-          <button class="create" id="create">＋ Add task</button>
+          <button class="create" id="create">
+            <i class="hgi-stroke hgi-add-01" aria-hidden="true"></i>Add task
+          </button>
         </div>
         <div class="summary" data-tilt-id="summary">
           <div class="stat"><small>Total tasks</small><strong>24</strong></div>
@@ -302,7 +305,8 @@
         <div id="rows" data-tilt-id="task-list"></div>
       </section>
       <div class="toast" data-tilt-id="toast">
-        <span>✓</span>Homepage is ready for review
+        <i class="hgi-stroke hgi-tick-02" aria-hidden="true"></i>Homepage is
+        ready for review
       </div>
     </main>
     <script>
@@ -338,7 +342,9 @@
           row.style.transform = `translateY(${(1 - a) * 12}px)`;
           row.classList.toggle("done", i === 0 && completed);
           if (i === 0) {
-            row.querySelector(".box").textContent = completed ? "✓" : "";
+            row.querySelector(".box").innerHTML = completed
+              ? '<i class="hgi-stroke hgi-tick-02" aria-hidden="true"></i>'
+              : "";
             row.querySelector(".status").textContent = completed
               ? "Done"
               : "In progress";

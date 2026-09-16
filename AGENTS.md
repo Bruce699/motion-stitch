@@ -17,6 +17,7 @@ Read the thesis in README.md. Keep the product a small, malleable container for 
 - Only claim deterministic/frozen export for dependencies you actually control. External live URLs are preview inputs, not sealed builds.
 - Keep output files out of Git. Do not commit `.tilt`, credentials, captures, videos, caches or `node_modules`.
 - New effects usually belong in the scene. Promote helpers into core only after multiple concrete scenes need them.
+- Use the shared Hugeicons component in `src/renderer/icons.tsx` for editor icons. Render is text-only. Imported production interfaces retain their own artwork; the local sample uses the same Hugeicons family.
 - UI copy must serve an action or necessary state. Do not add decorative explanatory text.
 - Editor styling: read `docs/design-system.md`. Use the local Dial Kit subset and its tokens; read `src/renderer/vendor/dialkit/UPSTREAM.md` before changing forked primitives. Preserve Tilt's file history and single clock. New scene parameters inherit the editor styles automatically.
 - Validate with typecheck, targeted behavioral tests, and rendered evidence. A successful build alone is not visual proof.

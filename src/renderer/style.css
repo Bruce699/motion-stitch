@@ -170,9 +170,6 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .render-button:hover:not(:disabled) {
   background: var(--dial-text-primary);
 }
-.redo svg {
-  transform: scaleX(-1);
-}
 .ui-popover {
   background: var(--dial-dropdown-bg);
   border: 1px solid var(--dial-border);
@@ -888,4 +885,25 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   .spinner {
     animation: none;
   }
+}
+
+.huge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  color: inherit;
+}
+.timeline-zoom button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.dialkit-select-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -8,7 +8,7 @@ Tilt uses a selective source fork of [Dial Kit](https://github.com/joshpuckett/d
 
 The editor reuses Dial Kit's filled slider, segmented control, toggle, dropdown, XY pad, color picker and autosizing text field. XYZ vectors and number-only fields use Tilt's validated draft input within the same visual treatment. Add scene controls through `scene.json.parameters`; see [parameters.md](parameters.md). Do not create a private widget for every shader.
 
-Keep keyboard navigation, visible focus, accessible names, Escape dismissal and popup collision handling. Use the existing shared icons; do not invent brand marks. Retain the MIT notice when adapting upstream code. Motion's springs are an implementation dependency; Dial Kit itself is not installed.
+Keep keyboard navigation, visible focus, accessible names, Escape dismissal and popup collision handling. Use `src/renderer/icons.tsx` for every editor icon. It uses Hugeicons from the official CDN; do not add hand-drawn glyphs or mix icon libraries. Render is text-only. Do not invent brand marks. Retain the MIT notice when adapting upstream code. Motion's springs are an implementation dependency; Dial Kit itself is not installed.
 
 All creative values flow through Tilt's file journal. Control gestures share an ordered save queue and finish one edit group. No independent preset store, browser-only values, or hidden animation loop. Reduced motion disables decorative spring settling/transitions; it does not alter authored animation or direct inspection.
 
@@ -18,4 +18,4 @@ The controlled timeline uses Dial Kit's overview, adaptive ticks, playhead, lane
 
 The default theme is dark. `?theme=light` or `?theme=dark` changes only the viewer shell. Colors, shaders and exports do not inherit the editor theme. Desktop uses a 304px parameter panel (280px below 1000px) and a 250px timeline; below 640px, parameters move beneath the timeline with their own scroll region. Canvas fitting measures the actual available space. Do not reset a user's pan, zoom, orbit or time while restyling.
 
-Geist Mono is bundled locally with its SIL license. There are no remote font requests. The original Codex archive remains a local reference, but its stylesheet is no longer imported or carried in the product.
+Geist Mono is bundled locally with its SIL license. Hugeicons icon fonts load from `https://use.hugeicons.com/font/icons.css`, permitted only for styles/fonts by the editor CSP. The public CDN provides Stroke Rounded; Solid Rounded requires a licensed Pro set URL. Do not simulate solid icons by thickening strokes. The sample source UI uses a local snapshot of the same CDN font so icon pixels are part of its frozen export. The original Codex archive remains a local reference, but its stylesheet is no longer imported or carried in the product.

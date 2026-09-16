@@ -1,3 +1,4 @@
+import { Icon } from "../../icons";
 // Adapted from Dial Kit's DialTimeline.tsx (MIT). See UPSTREAM.md.
 // Tilt supplies the only clock. This component owns inspection, never animation values.
 import {
@@ -275,7 +276,7 @@ export function Timeline({
             disabled={zoom <= 1}
             onClick={() => setZoomAt(zoom / 2)}
           >
-            −
+            <Icon name="minus" size={14} />
           </button>
           <button
             onClick={reset}
@@ -289,7 +290,7 @@ export function Timeline({
             disabled={zoom >= maxZoom}
             onClick={() => setZoomAt(zoom * 2)}
           >
-            +
+            <Icon name="plus" size={14} />
           </button>
         </div>
       </div>
