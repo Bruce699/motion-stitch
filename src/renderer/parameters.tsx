@@ -1,3 +1,6 @@
+import { CameraControls } from "./camera-controls";
+import type { CameraSettings } from "../core/camera";
+import type { SceneDocument } from "../core/schema";
 import React, { useEffect, useRef, useState } from "react";
 import {
   parameterGroups,
@@ -319,19 +322,26 @@ function ParameterControl({
 
 export function ParameterPanel({
   parameters,
+  camera,
+  sources,
   sceneId,
   reportError,
   disabled,
 }: {
   parameters: Record<string, Parameter>;
+  camera?: CameraSettings;
+  sources: SceneDocument["sources"];
   sceneId: string;
   reportError: (error: unknown) => void;
   disabled: boolean;
 }) {
+  const groups = parameterGroups(parameters);
+  if (!groups.some((group) => group.name === "Camera"))
+    groups.unshift({ name: "Camera", entries: [] });
   return (
     <aside className="inspector" aria-label="Parameters">
       <div className="inspector-heading">Parameters</div>
-      {parameterGroups(parameters).map((group) => (
+      {groups.map((group) => (
         <fieldset
           className="parameter-group"
           key={group.name}
@@ -339,6 +349,14 @@ export function ParameterPanel({
           inert={disabled}
         >
           {group.name && <legend>{group.name}</legend>}
+          {group.name === "Camera" && (
+            <CameraControls
+              camera={camera}
+              sources={sources}
+              sceneId={sceneId}
+              reportError={reportError}
+            />
+          )}
           {group.entries.map(({ key, parameter }) => (
             <ParameterControl
               key={sceneId + ":" + key + ":" + parameter.type + ":" + disabled}

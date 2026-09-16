@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CameraSettingsSchema } from "./camera";
 import { ParameterSchema } from "./parameters";
 export { ParameterSchema } from "./parameters";
 
@@ -33,6 +34,7 @@ export const SceneSchema = z
     }),
     background: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     entry: localPath.default("scene.ts"),
+    camera: CameraSettingsSchema.optional(),
     sources: z
       .array(
         z
@@ -67,6 +69,14 @@ export const SceneSchema = z
       .default([]),
   })
   .superRefine((s, ctx) => {
+    if (
+      s.camera?.sourceId &&
+      !s.sources.some((source) => source.id === s.camera!.sourceId)
+    )
+      ctx.addIssue({
+        code: "custom",
+        message: "Camera source must name a scene source",
+      });
     for (const source of s.sources)
       if (new Set(source.layers.map((l) => l.id)).size !== source.layers.length)
         ctx.addIssue({

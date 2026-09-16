@@ -1,3 +1,4 @@
+import { withCameraPatch } from "../core/camera";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -212,6 +213,14 @@ export async function startRuntime(
           );
         return result;
       }
+      case "set_camera":
+        return s.edit(
+          (doc) => {
+            doc.camera = withCameraPatch(doc.camera, c.patch);
+          },
+          undefined,
+          actor,
+        );
       case "set_parameter":
         return s.edit(
           (doc) => {

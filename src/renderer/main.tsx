@@ -1,3 +1,4 @@
+import { defaultCamera } from "../core/camera";
 import { Icon, type IconName } from "./icons";
 import { flushControlEdits } from "./control-edits";
 import React, { useEffect, useRef, useState } from "react";
@@ -127,6 +128,7 @@ function App() {
       sourceId: view.current.sourceId,
       selection: view.current.selection,
       inspection: view.current.inspection,
+      camera: s.scene.camera ?? defaultCamera(),
       sourceRoutes: engine.current?.sourceRoutes || [],
       layers: engine.current?.describeLayers() || [],
       layerWarnings:
@@ -476,7 +478,10 @@ function App() {
     if (!element) return;
     return bindNavigation(
       element,
-      () => view.current,
+      () => ({
+        ...view.current,
+        projection: current.current?.scene.camera?.projection,
+      }),
       (next) => {
         view.current.inspection = next;
         applyView();
@@ -639,7 +644,7 @@ function App() {
               className="scene-stage"
               ref={stage}
               title={
-                mode === "camera"
+                mode === "camera" && s?.camera?.projection !== "orthographic"
                   ? "Drag to orbit · Shift-drag or right-drag to pan · Scroll to zoom"
                   : "Drag to pan · Scroll to zoom"
               }
@@ -665,6 +670,8 @@ function App() {
       {s && (
         <ParameterPanel
           parameters={s.parameters}
+          camera={s.camera}
+          sources={s.sources}
           sceneId={s.id}
           reportError={(e) => setError(String(e))}
           disabled={state?.history?.pendingEdit?.kind === "agent"}

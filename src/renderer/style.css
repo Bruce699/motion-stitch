@@ -326,7 +326,8 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   font-size: 13px;
   font-weight: 500;
 }
-.parameter-group legend + .parameter-control {
+.parameter-group legend + .parameter-control,
+.parameter-group legend + .camera-controls {
   clear: both;
 }
 .parameter-group:disabled {
@@ -906,4 +907,18 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.camera-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.camera-controls .dialkit-segmented {
+  width: 100%;
+}
+
+.camera-controls .dialkit-segmented-button {
+  flex: 1;
 }

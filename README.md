@@ -19,7 +19,7 @@ npm start -- --browser
 
 Open the printed localhost URL in Codex or any browser. The local Electron runtime supplies Chromium source capture, files, history and rendering to both viewers. It reuses its previous port when available. Closing a viewer leaves the runtime running; `npm run cli -- stop` stops it. `npm run cli -- desktop` opens the desktop viewer again. `Tilt.command` remains a double-click launcher. Restart after changing editor/runtime code. No account, model key, built-in agent or MCP server is required.
 
-Drag in Camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In 2D, dragging pans the source directly. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline has a full-scene overview, scrubbing and zoom (Option/Alt-drag or wheel; Shift-drag resets). Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. The right panel contains only declared parameters. Render writes an MP4 to `exports/`.
+Drag in the Perspective camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In Isometric or 2D, dragging pans. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline has a full-scene overview, scrubbing and zoom (Option/Alt-drag or wheel; Shift-drag resets). Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. The right panel contains parameter controls and the shared camera controls. Render writes an MP4 to `exports/`.
 
 ## Scene files
 
@@ -39,6 +39,10 @@ Web sources run in isolated Chromium windows without Node or the editor bridge. 
 Declare DOM regions in `sources[].layers`, then use `createLayeredSource()` in scene code. Each region becomes a separately positioned, transparent surface, with browser layout preserved and nested regions inheriting their parent's 3D transform. The sample lifts navigation, its active item, summary cards and tasks into depth, then settles them back into the interface. Scrub around 4 seconds in Camera view; use Layer depth to adjust separation. The agent context records layers, hierarchy and local transforms.
 
 This works at the rendered DOM boundary, so it does not depend on React or another specific framework. See [the layer contract](docs/layers.md) and [the agent skill](.agents/skills/ui-layers/SKILL.md) for selectors, transforms, grouping, and capture limits.
+
+## Camera
+
+Choose **Perspective** or **Isometric** in the Camera parameter group. Isometric offers exact Front, 15°, 30° and 45° stops plus left/right orientation. The degree labels describe projected edge angles; 30° is true isometric. Alignment follows the actual UI plane through its parent transforms, so lifting layers in Z preserves parallel edges. The selection saves in `scene.json.camera`, participates in Undo/Redo, and applies to exports. Pan and zoom remain viewer inspection. Layered sources register their frame automatically; custom scenes can use the same [camera contract](docs/camera.md).
 
 ## Parameter controls
 

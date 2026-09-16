@@ -25,6 +25,8 @@ export type SceneContext = {
   THREE: typeof THREE;
   world: THREE.Scene;
   camera: THREE.PerspectiveCamera;
+  /** Register the UI plane for exact orthographic angles; layered sources register automatically. */
+  registerCameraFrame: (sourceId: string, object: THREE.Object3D) => void;
   surfaces: Record<string, THREE.Texture>;
   createLayeredSource: (
     sourceId: string,

@@ -3,7 +3,11 @@ import type { Inspection } from "../core/context";
 /** Inspection only: never mutates the authored scene camera. */
 export function bindNavigation(
   element: HTMLElement,
-  get: () => { mode: "source" | "camera"; inspection: Inspection },
+  get: () => {
+    mode: "source" | "camera";
+    inspection: Inspection;
+    projection?: "perspective" | "orthographic";
+  },
   change: (next: Inspection) => void,
 ) {
   let gesture: {
@@ -20,7 +24,11 @@ export function bindNavigation(
       x: e.clientX,
       y: e.clientY,
       initial: { ...get().inspection },
-      pan: get().mode === "source" || e.button !== 0 || e.shiftKey,
+      pan:
+        get().mode === "source" ||
+        get().projection === "orthographic" ||
+        e.button !== 0 ||
+        e.shiftKey,
       id: e.pointerId,
     };
     element.setPointerCapture(e.pointerId);

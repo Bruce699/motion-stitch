@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { applyIsometricCamera } from "./camera";
 import { clamp, lerp, ease, segment } from "../core/motion";
 import { values, type SceneDocument } from "../core/schema";
 import type { SceneFactory, SceneInstance } from "../core/runtime";
@@ -20,6 +21,9 @@ export class SceneEngine {
   sourceRoutes: { id: string; route: string }[] = [];
   layerFrames: LayerFrame[] = [];
   private layeredSources: LayeredSource[] = [];
+  private cameraFrames = new Map<string, THREE.Object3D>();
+  private isometricCamera = new THREE.OrthographicCamera();
+  private referenceFrame = new THREE.Object3D();
   private presentedLayers: ReturnType<LayeredSource["describe"]> = [];
   inspection = defaultInspection();
   private flatWorld = new THREE.Scene();
@@ -89,12 +93,18 @@ export class SceneEngine {
       THREE,
       world: this.world,
       camera: this.camera,
+      registerCameraFrame: (id, object) => {
+        if (!this.document.sources.some((source) => source.id === id))
+          throw new Error(`Unknown camera source ${id}`);
+        this.cameraFrames.set(id, object);
+      },
       surfaces: this.textures,
       createLayeredSource: (id, options) => {
         const source = this.document.sources.find((s) => s.id === id);
         if (!source) throw new Error(`Unknown source ${id}`);
         const result = new LayeredSource(source, this.textures, options);
         this.layeredSources.push(result);
+        this.cameraFrames.set(id, result.group);
         return result;
       },
       document: this.document,
@@ -185,6 +195,23 @@ export class SceneEngine {
         this.flatPlane.material.needsUpdate = true;
       }
       this.renderer.render(this.flatWorld, this.flatCamera);
+    } else if (document.camera?.projection === "orthographic") {
+      const sourceId = document.camera.sourceId;
+      const frame = sourceId
+        ? this.cameraFrames.get(sourceId)
+        : this.cameraFrames.get(document.sources[0]?.id) || this.referenceFrame;
+      if (!frame)
+        throw new Error(
+          `Register a camera frame for source ${sourceId} before using isometric projection`,
+        );
+      const camera = applyIsometricCamera(
+        this.isometricCamera,
+        this.camera,
+        document.camera,
+        frame,
+        v,
+      );
+      this.renderer.render(this.world, camera);
     } else {
       const camera = this.camera.clone();
       const distance = Math.max(0.1, camera.position.length());

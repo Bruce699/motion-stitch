@@ -7,6 +7,8 @@ description: Add consistent controls for transforms, cameras, materials and besp
 
 Read `docs/parameters.md` and `src/core/parameters.ts`. Parameters are scene data. The right panel is a fixed vocabulary of reusable controls; the creative behavior remains in the scene.
 
+The Camera group also includes Tilt's shared projection controls, stored in `scene.json.camera`. Reuse those for Perspective/Isometric, exact angle stops and source alignment (`docs/camera.md`). Do not duplicate them as scene parameters. Custom camera distance, framing or other creative inputs can still use ordinary parameters in the Camera group.
+
 1. Inspect the current scene and context. Reuse existing keys and groups where the requested behavior already has a control. Do not replace current values with a template's defaults.
 2. Choose `number`, `color`, `boolean`, `select`, `vector3`, `pad` or `text`. Every declaration needs `label` and `value`; numeric/vector controls also need useful bounds. Prefer a slider for continuous creative strength, `control: "number"` for a count, `select` for a small set of modes, `control: "segmented"` on a select for 2–5 short options, `pad` for a two-axis input, text for editable copy, and XYZ for a spatial vector. Keep labels short. Add `group` only when it identifies a meaningful subject.
 3. Follow the standard conventions in the parameter guide: scene units for position/depth, explicit degrees for rotation controls (convert to radians in code), scale one as neutral, opacity/strength 0–1, hex colors through `THREE.Color`. Existing controls may use other documented units; preserve their meaning.

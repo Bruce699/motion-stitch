@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CameraSettingsSchema } from "./camera";
 export const InspectionSchema = z.object({
   zoom: z.number().min(0.1).max(12),
   panX: z.number().finite(),
@@ -21,6 +22,7 @@ export const ViewStateSchema = z.object({
   presentedTime: z.number().finite().min(0),
   playing: z.boolean(),
   mode: z.enum(["source", "camera"]),
+  camera: CameraSettingsSchema.optional(),
   sourceId: z.string().nullable().default(null),
   selection: z.array(z.string().max(200)).max(100),
   ready: z.boolean(),

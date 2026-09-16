@@ -2,6 +2,8 @@
 
 The right panel is generated from `scene.json.parameters`. An agent edits a declaration and uses its value in scene code. It does not write React controls, register a plugin, change editor code or introduce a second persistence path. Definitions, groups and values live together in the scene file and participate in the same file history.
 
+The Camera group also contains shared Perspective/Isometric controls backed by `scene.json.camera`. Reuse these for projection, exact angle stops and source alignment; see [the camera contract](camera.md). They share file history with parameters. A declared Camera group receives them above its custom parameters; otherwise Tilt adds the group automatically.
+
 ## Control vocabulary
 
 | Type      | Value                          | Required metadata                                                  | Editor                                                        |
