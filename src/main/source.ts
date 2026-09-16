@@ -6,6 +6,7 @@ import path from "node:path";
 import http from "node:http";
 import { safePath } from "./files";
 import { randomUUID } from "node:crypto";
+import { MAX_CAPTURE_EDGE, MAX_CAPTURE_PIXELS } from "../core/quality";
 import { planDOMLayers, isolationCSS } from "./dom-layers";
 import {
   layerTextureKey,
@@ -40,7 +41,19 @@ export class WebSource {
     private origin: string,
     private prefix: string,
     private directory: string,
+    public readonly density = 1,
   ) {
+    if (
+      !Number.isInteger(density) ||
+      density < 1 ||
+      density > 8 ||
+      spec.width * density > MAX_CAPTURE_EDGE ||
+      spec.height * density > MAX_CAPTURE_EDGE ||
+      spec.width * spec.height * density * density > MAX_CAPTURE_PIXELS
+    )
+      throw new Error(
+        "Source capture density exceeds the supported pixel budget",
+      );
     this.window = new BrowserWindow({
       show: false,
       transparent: true,
@@ -49,7 +62,7 @@ export class WebSource {
       height: spec.height,
       useContentSize: true,
       webPreferences: {
-        offscreen: true,
+        offscreen: { deviceScaleFactor: density },
         nodeIntegration: false,
         contextIsolation: true,
         sandbox: true,
@@ -121,6 +134,18 @@ export class WebSource {
         throw new Error("Sources must use HTTP or HTTPS");
     }
     await deadline(this.window.loadURL(url), 30000, "Source load");
+    const debuggerAPI = this.window.webContents.debugger;
+    debuggerAPI.attach("1.3");
+    await debuggerAPI.sendCommand("Emulation.setDeviceMetricsOverride", {
+      width: this.spec.width,
+      height: this.spec.height,
+      deviceScaleFactor: this.density,
+      mobile: false,
+    });
+    await debuggerAPI.sendCommand(
+      "Emulation.setDefaultBackgroundColorOverride",
+      { color: { r: 0, g: 0, b: 0, a: 0 } },
+    );
     this.currentRoute = await this.route();
     if (this.spec.layers?.length)
       await this.window.webContents.insertCSS(
@@ -229,16 +254,38 @@ export class WebSource {
     width: number;
     height: number;
   }) {
-    const image = await deadline(
-      this.window.webContents.capturePage(rect, {
-        stayHidden: true,
-        stayAwake: true,
+    // Chromium's surface capture respects the explicit DPR. Electron 41's
+    // capturePage can still return host-display pixels despite the OSR DPR.
+    const result = await deadline(
+      this.window.webContents.debugger.sendCommand("Page.captureScreenshot", {
+        format: "png",
+        fromSurface: true,
+        captureBeyondViewport: false,
+        clip: {
+          ...(rect ?? {
+            x: 0,
+            y: 0,
+            width: this.spec.width,
+            height: this.spec.height,
+          }),
+          scale: 1,
+        },
       }),
       15000,
       "Source capture",
     );
-    if (image.isEmpty()) throw new Error("Source returned an empty frame");
-    return image.toDataURL();
+    const png = Buffer.from(result.data, "base64");
+    if (png.length < 24) throw new Error("Source returned an empty frame");
+    const expectedWidth = (rect?.width ?? this.spec.width) * this.density;
+    const expectedHeight = (rect?.height ?? this.spec.height) * this.density;
+    if (
+      png.readUInt32BE(16) !== expectedWidth ||
+      png.readUInt32BE(20) !== expectedHeight
+    )
+      throw new Error(
+        `Source ${this.spec.id} capture size mismatch: expected ${expectedWidth} × ${expectedHeight}, received ${png.readUInt32BE(16)} × ${png.readUInt32BE(20)}`,
+      );
+    return `data:image/png;base64,${result.data}`;
   }
 
   async inspect() {

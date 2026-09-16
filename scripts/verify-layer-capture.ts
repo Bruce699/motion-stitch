@@ -46,11 +46,11 @@ async function main() {
     source = new WebSource(spec, "", "", root);
     await source.ready();
     let captures = 0;
-    const capture = source.window.webContents.capturePage.bind(
-      source.window.webContents,
+    const capture = source.window.webContents.debugger.sendCommand.bind(
+      source.window.webContents.debugger,
     );
-    source.window.webContents.capturePage = (...args: any[]) => {
-      captures++;
+    source.window.webContents.debugger.sendCommand = (...args: any[]) => {
+      if (args[0] === "Page.captureScreenshot") captures++;
       return capture(...(args as Parameters<typeof capture>));
     };
     const frame = await source.sample(0, {});
@@ -162,8 +162,9 @@ async function main() {
     );
     // Fail in the middle of an isolation pass, then prove CSS and markers were restored.
     let calls = 0;
-    source.window.webContents.capturePage = (...args: any[]) => {
-      if (++calls === 2) throw new Error("Injected capture failure");
+    source.window.webContents.debugger.sendCommand = (...args: any[]) => {
+      if (args[0] === "Page.captureScreenshot" && ++calls === 2)
+        throw new Error("Injected capture failure");
       return capture(...(args as Parameters<typeof capture>));
     };
     await assert.rejects(source.sample(3, {}), /Injected/);
@@ -179,7 +180,7 @@ async function main() {
       ),
       0,
     );
-    source.window.webContents.capturePage = capture;
+    source.window.webContents.debugger.sendCommand = capture;
     await source.sample(3, {});
     await source.window.webContents.executeJavaScript(
       `const optional = document.createElement('div'); optional.className = 'missing'; optional.style.cssText = 'position:absolute;left:210px;top:180px;width:40px;height:30px;background:purple'; document.body.append(optional);`,
@@ -222,6 +223,36 @@ async function main() {
     }
     spec.layers = originalLayers;
     source.dispose();
+    for (const density of [2, 4]) {
+      source = new WebSource(spec, "", "", root, density);
+      await source.ready();
+      const dense = await source.sample(0, {});
+      const viewport = await source.window.webContents.executeJavaScript(
+        "({width:innerWidth,height:innerHeight,dpr:devicePixelRatio})",
+      );
+      assert.deepEqual(viewport, { width: 320, height: 240, dpr: density });
+      assert.deepEqual(
+        dense.layers![0].regions,
+        layout.regions,
+        "Density must not change CSS bounds or layer alignment",
+      );
+      const dimensions = (data: string) => {
+        const png = Buffer.from(data.split(",")[1], "base64");
+        return [png.readUInt32BE(16), png.readUInt32BE(20)];
+      };
+      assert.deepEqual(dimensions(dense.images.ui), [
+        320 * density,
+        240 * density,
+      ]);
+      for (const region of dense.layers![0].regions.filter((r) => r.visible))
+        assert.deepEqual(dimensions(dense.images[region.texture]), [
+          region.crop.width * density,
+          region.crop.height * density,
+        ]);
+      await source.sample(2, {});
+      assert.equal((await source.sample(0, {})).images.ui, dense.images.ui);
+      source.dispose();
+    }
     const reactDirectory = path.join(process.cwd(), ".tilt", "checks", "react");
     const reactSpec = SceneSchema.parse({
       ...seed,
@@ -240,7 +271,7 @@ async function main() {
         },
       ],
     }).sources[0];
-    source = new WebSource(reactSpec, "", "", reactDirectory);
+    source = new WebSource(reactSpec, "", "", reactDirectory, 3);
     await source.ready();
     const reactZero = await source.sample(0, {});
     const reactTwo = await source.sample(2, {});
@@ -266,6 +297,8 @@ async function main() {
         selectorErrors: true,
         cachedRoute: true,
         reactTSX: true,
+        density:
+          "1×, 2×, 4× vanilla; 3× React; CSS bounds unchanged; exact PNG sizes",
       }),
     );
   } catch (e) {

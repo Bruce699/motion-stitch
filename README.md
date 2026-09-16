@@ -34,6 +34,10 @@ scenes/interface/
 
 Web sources run in isolated Chromium windows without Node or the editor bridge. Any framework that produces a browser app can supply a source: vanilla, React, Svelte, Vue, and others. A local entry gets its own origin rooted at the entry file’s directory, including root-relative assets and SPA routes. Live URLs can be previewed. For exports, use a local production build and fixture data; Tilt refuses to pretend a mutable URL is an immutable input.
 
+## Resolution and sharpness
+
+Header settings include canvas presets/custom dimensions up to 4K and **UI density: Auto or 1–8×**. Density adds raster detail without changing the source's CSS layout. Auto follows output resolution and increases preview detail when inspecting close up; fixed density is saved for authored close-up shots and exports. Settings show effective capture dimensions and limits. See [the resolution contract](docs/resolution.md) for imports, Retina previews and memory limits.
+
 ## Layers
 
 Declare DOM regions in `sources[].layers`, then use `createLayeredSource()` in scene code. Each region becomes a separately positioned, transparent surface, with browser layout preserved and nested regions inheriting their parent's 3D transform. The sample lifts navigation, its active item, summary cards and tasks into depth, then settles them back into the interface. Scrub around 4 seconds in Camera view; use Layer depth to adjust separation. The agent context records layers, hierarchy and local transforms.

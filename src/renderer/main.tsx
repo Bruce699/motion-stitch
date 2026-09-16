@@ -1,6 +1,7 @@
 import { defaultCamera } from "../core/camera";
+import type { SourceQuality } from "../core/quality";
 import { Icon, type IconName } from "./icons";
-import { flushControlEdits } from "./control-edits";
+import { flushControlEdits, queueControlEdit } from "./control-edits";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type {
@@ -65,6 +66,10 @@ function Button({
 }
 
 function App() {
+  const [sourceQuality, setSourceQuality] = useState<SourceQuality[]>([]);
+  const densityTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const [state, setState] = useState<ProjectState>();
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -129,6 +134,12 @@ function App() {
       selection: view.current.selection,
       inspection: view.current.inspection,
       camera: s.scene.camera ?? defaultCamera(),
+      sourceQuality: engine.current?.quality || [],
+      outputSize: s.scene.size,
+      previewSize: {
+        width: engine.current?.canvas.width || 0,
+        height: engine.current?.canvas.height || 0,
+      },
       sourceRoutes: engine.current?.sourceRoutes || [],
       layers: engine.current?.describeLayers() || [],
       layerWarnings:
@@ -191,6 +202,16 @@ function App() {
     }
     setMode(view.current.mode);
     setZoom(view.current.inspection.zoom);
+    clearTimeout(densityTimer.current);
+    if (
+      !clock.current.playing &&
+      clock.current.ready &&
+      (current.current?.scene.capture?.density ?? "auto") === "auto"
+    )
+      densityTimer.current = setTimeout(
+        () => request.current?.request(clock.current.time),
+        180,
+      );
   }
   function changeMode(next: "camera" | "source", sourceId?: string) {
     view.current.mode = next;
@@ -219,6 +240,7 @@ function App() {
     await e.sample(t, s.scene, canPresent, s.revision);
     if (!canPresent()) return false;
     displayed.current = { time: t, revision: s.revision };
+    setSourceQuality(e.quality);
     setTime(t);
     return true;
   }
@@ -273,6 +295,7 @@ function App() {
     return () => {
       off();
       clearInterval(timer);
+      clearTimeout(densityTimer.current);
       window.removeEventListener("pointerdown", interaction, true);
       window.removeEventListener("keydown", interaction, true);
       window.removeEventListener("focus", interaction);
@@ -297,12 +320,13 @@ function App() {
           codeRevision: number;
         }>({ type: "prepare", sceneId: s.id });
         if (disposed || n !== generation.current) return;
-        candidate = new SceneEngine(prep.scene, (t, revision) =>
+        candidate = new SceneEngine(prep.scene, (t, revision, captureZoom) =>
           call({
             type: "frame",
             sceneId: s.id,
             time: t,
             revision,
+            captureZoom,
             includeContext: true,
           }),
         );
@@ -311,6 +335,12 @@ function App() {
         candidate.mode = view.current.mode;
         candidate.sourceId = view.current.sourceId;
         candidate.inspection = { ...view.current.inspection };
+        if (stage.current)
+          candidate.setPreviewViewport(
+            stage.current.clientWidth,
+            stage.current.clientHeight,
+            window.devicePixelRatio,
+          );
         await candidate.sample(
           t,
           prep.scene,
@@ -322,6 +352,7 @@ function App() {
           return;
         }
         const old = engine.current;
+        setSourceQuality(candidate.quality);
         engine.current = candidate;
         stage.current!.replaceChildren(candidate.canvas);
         old?.dispose();
@@ -362,6 +393,8 @@ function App() {
     state?.codeRevision,
     JSON.stringify(state?.scene.sources),
     state?.scene.entry,
+    state?.scene.size.width,
+    state?.scene.size.height,
     retry,
   ]);
   useEffect(() => {
@@ -508,6 +541,15 @@ function App() {
             ((area.clientHeight - vertical) * s.size.width) / s.size.height,
           ),
         ) + "px";
+      const e = engine.current;
+      if (e && stage.current) {
+        e.setPreviewViewport(
+          stage.current.clientWidth,
+          stage.current.clientHeight,
+          window.devicePixelRatio,
+        );
+        e.renderView();
+      }
     };
     const observer = new ResizeObserver(fit);
     observer.observe(area);
@@ -577,9 +619,12 @@ function App() {
         {s && (
           <SceneHeader
             scene={s}
+            sourceQuality={sourceQuality}
             disabled={!!state?.history?.pendingEdit}
             onSetting={(key, value) =>
-              invoke({ type: "set_setting", sceneId: s.id, key, value })
+              queueControlEdit(() =>
+                invoke({ type: "set_setting", sceneId: s.id, key, value }),
+              )
             }
           />
         )}

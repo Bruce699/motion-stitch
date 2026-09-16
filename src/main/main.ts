@@ -22,6 +22,7 @@ import type { CapturedFrame } from "../core/layers";
 import { startRuntime } from "./runtime-host";
 import { Jobs } from "./jobs";
 import { WebSource, deadline } from "./source";
+import { captureQuality } from "../core/quality";
 import { serve } from "./server";
 import {
   alive,
@@ -111,7 +112,14 @@ async function prepare() {
       ? path.join(moduleDir, jobId + ".js")
       : await compileScene(s, directory);
     const next = s.sources.map(
-      (spec) => new WebSource(spec, origin, "source", directory),
+      (spec) =>
+        new WebSource(
+          spec,
+          origin,
+          "source",
+          directory,
+          captureQuality(s.size, spec, s.capture).density,
+        ),
     );
     try {
       await Promise.all(next.map((source) => source.ready()));
@@ -133,7 +141,14 @@ async function prepare() {
 }
 async function sample(time: number) {
   await prepare();
-  const result: CapturedFrame = { images: {}, layers: [], routes: [] };
+  const result: CapturedFrame = {
+    images: {},
+    layers: [],
+    routes: [],
+    quality: scene().sources.map((spec) =>
+      captureQuality(scene().size, spec, scene().capture),
+    ),
+  };
   for (const source of sources) {
     const frame = await source.sample(time, values(scene()));
     Object.assign(result.images, frame.images);

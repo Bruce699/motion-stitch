@@ -1,5 +1,10 @@
 import { z } from "zod";
 import { CameraSettingsSchema } from "./camera";
+import {
+  CaptureSettingsSchema,
+  MAX_CANVAS_EDGE,
+  MAX_CANVAS_PIXELS,
+} from "./quality";
 import { ParameterSchema } from "./parameters";
 export { ParameterSchema } from "./parameters";
 
@@ -29,12 +34,13 @@ export const SceneSchema = z
     duration: z.number().min(0.1).max(600),
     fps: z.number().int().min(1).max(120),
     size: z.object({
-      width: z.number().int().min(64).max(7680),
-      height: z.number().int().min(64).max(4320),
+      width: z.number().int().min(64).max(MAX_CANVAS_EDGE),
+      height: z.number().int().min(64).max(MAX_CANVAS_EDGE),
     }),
     background: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     entry: localPath.default("scene.ts"),
     camera: CameraSettingsSchema.optional(),
+    capture: CaptureSettingsSchema.optional(),
     sources: z
       .array(
         z
@@ -69,6 +75,12 @@ export const SceneSchema = z
       .default([]),
   })
   .superRefine((s, ctx) => {
+    if (s.size.width * s.size.height > MAX_CANVAS_PIXELS)
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Canvas must fit within 4K (4096 px per edge and 4096 × 2160 total pixels)",
+      });
     if (
       s.camera?.sourceId &&
       !s.sources.some((source) => source.id === s.camera!.sourceId)

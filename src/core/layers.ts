@@ -1,3 +1,4 @@
+import type { SourceQuality } from "./quality";
 /** All bounds use CSS pixels in the source viewport, independent of capture density. */
 export type Bounds = { x: number; y: number; width: number; height: number };
 export type LayerLayout = {
@@ -18,6 +19,7 @@ export type LayerFrame = {
 };
 export type CapturedFrame = {
   images: Record<string, string>;
+  quality?: SourceQuality[];
   layers?: LayerFrame[];
   routes?: { id: string; route: string }[];
 };

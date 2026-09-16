@@ -2,16 +2,41 @@ import { Icon } from "./icons";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SceneDocument } from "../core/schema";
 import { NumberValue, ColorValue } from "./parameters";
+import {
+  CANVAS_PRESETS,
+  MAX_CANVAS_EDGE,
+  MAX_CANVAS_PIXELS,
+  captureQuality,
+  type SourceQuality,
+} from "../core/quality";
 
 export function SceneHeader({
   scene,
   disabled,
   onSetting,
+  sourceQuality,
 }: {
   scene: SceneDocument;
   disabled: boolean;
-  onSetting: (key: string, value: string | number) => Promise<unknown>;
+  onSetting: (
+    key: string,
+    value: string | number | { width: number; height: number },
+  ) => Promise<unknown>;
+  sourceQuality: SourceQuality[];
 }) {
+  const [sizeAttempt, setSizeAttempt] = useState(0);
+  const saveDimension = async (key: "width" | "height", value: number) => {
+    await onSetting(key, value);
+    setSizeAttempt((n) => n + 1);
+  };
+  const preset = CANVAS_PRESETS.find(
+    (p) => p.width === scene.size.width && p.height === scene.size.height,
+  );
+  const qualities = scene.sources.map(
+    (source) =>
+      sourceQuality.find((q) => q.sourceId === source.id) ??
+      captureQuality(scene.size, source, scene.capture),
+  );
   const [editing, setEditing] = useState(false),
     [draft, setDraft] = useState(scene.name),
     [open, setOpen] = useState(false);
@@ -156,6 +181,102 @@ export function SceneHeader({
               setOpen(false);
           }}
         >
+          <label className="field canvas-preset">
+            <span>Canvas</span>
+            <select
+              aria-label="Canvas resolution"
+              value={preset?.label ?? "custom"}
+              onChange={(e) => {
+                const p = CANVAS_PRESETS.find(
+                  (p) => p.label === e.target.value,
+                );
+                if (p)
+                  void onSetting("size", { width: p.width, height: p.height });
+              }}
+            >
+              {!preset && <option value="custom">Custom</option>}
+              {CANVAS_PRESETS.map((p) => (
+                <option key={p.label} value={p.label}>
+                  {p.label} · {p.width} × {p.height}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="field-pair">
+            {(["width", "height"] as const).map((key) => (
+              <label className="field" key={key}>
+                <span>{key === "width" ? "Width" : "Height"}</span>
+                <div className="input-unit">
+                  <NumberValue
+                    key={`${sizeAttempt}:${scene.size[key]}`}
+                    label={`Canvas ${key}`}
+                    value={scene.size[key]}
+                    min={64}
+                    max={Math.min(
+                      MAX_CANVAS_EDGE,
+                      2 *
+                        Math.floor(
+                          MAX_CANVAS_PIXELS /
+                            scene.size[key === "width" ? "height" : "width"] /
+                            2,
+                        ),
+                    )}
+                    step={2}
+                    onCommit={(value) => void saveDimension(key, value)}
+                  />
+                  <span>px</span>
+                </div>
+              </label>
+            ))}
+          </div>
+          <label className="field density-field">
+            <span>UI density</span>
+            <select
+              aria-label="UI density"
+              title="Raster pixels per CSS pixel. Auto follows canvas resolution; choose a higher density for authored close-ups. Layout stays unchanged."
+              value={scene.capture?.density ?? "auto"}
+              onChange={(e) =>
+                void onSetting(
+                  "density",
+                  e.target.value === "auto" ? "auto" : Number(e.target.value),
+                )
+              }
+            >
+              <option value="auto">Auto</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <option key={n} value={n}>
+                  {n}×
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="capture-sizes" aria-label="UI capture resolution">
+            {qualities.map((q, i) => {
+              const exported = captureQuality(
+                scene.size,
+                scene.sources[i],
+                scene.capture,
+              );
+              const differs = exported.density !== q.density;
+              return (
+                <div key={q.sourceId}>
+                  <output>
+                    {qualities.length > 1 ? `${q.sourceId}: ` : ""}
+                    {differs ? "Preview · " : ""}
+                    {q.width} × {q.height} · {q.density}×
+                    {q.limited ? " · limit reached" : ""}
+                  </output>
+                  {differs && (
+                    <output>
+                      Export · {exported.width} × {exported.height} ·{" "}
+                      {exported.density}×
+                      {exported.limited ? " · limit reached" : ""}
+                    </output>
+                  )}
+                </div>
+              );
+            })}
+          </div>
           <div className="field-pair">
             <label className="field">
               <span>Duration</span>

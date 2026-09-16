@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { CameraSettingsSchema } from "./camera";
+import { SourceQualitySchema } from "./quality";
 export const InspectionSchema = z.object({
   zoom: z.number().min(0.1).max(12),
   panX: z.number().finite(),
@@ -23,6 +24,9 @@ export const ViewStateSchema = z.object({
   playing: z.boolean(),
   mode: z.enum(["source", "camera"]),
   camera: CameraSettingsSchema.optional(),
+  sourceQuality: z.array(SourceQualitySchema).optional(),
+  outputSize: z.object({ width: z.number(), height: z.number() }).optional(),
+  previewSize: z.object({ width: z.number(), height: z.number() }).optional(),
   sourceId: z.string().nullable().default(null),
   selection: z.array(z.string().max(200)).max(100),
   ready: z.boolean(),

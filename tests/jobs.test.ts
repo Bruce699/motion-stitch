@@ -15,6 +15,8 @@ test("export freezes a history snapshot inside a hidden runtime directory", asyn
       ),
     );
     const dir = path.join(root, ".tilt", "history", "previews", "revision");
+    scene.size = { width: 3840, height: 2160 };
+    scene.capture = { density: 4 };
     await atomicWrite(path.join(dir, "scene.json"), JSON.stringify(scene));
     await atomicWrite(
       path.join(dir, "source", "index.html"),
@@ -30,6 +32,11 @@ test("export freezes a history snapshot inside a hidden runtime directory", asyn
     const result = await jobs.submit(scene, dir, async () => module, "one");
     assert.equal(result.phase, "queued");
     const frozen = path.join(jobs.directory, result.id, "scene");
+    const frozenScene = JSON.parse(
+      await fs.readFile(path.join(frozen, "scene.json"), "utf8"),
+    );
+    assert.deepEqual(frozenScene.capture, { density: 4 });
+    assert.deepEqual(frozenScene.size, { width: 3840, height: 2160 });
     assert.equal(
       await fs.readFile(path.join(frozen, "source", "index.html"), "utf8"),
       "<html>Fixture</html>",

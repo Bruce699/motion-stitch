@@ -7,7 +7,7 @@ description: Adapt a real web app from any framework into Tilt's browser-source 
 
 1. Find the real component or page, its styles, fonts, images, and data. Reuse them. Do not visually redraw it into canvas, SVG, or substitute React components just to get a texture.
 2. For exploration use a locally running dev-server URL in `sources`. For export make a production build with deterministic fixtures, copy the build into `source/` inside the scene, and use `entry: "source/index.html"`. Tilt serves that directory on its own origin, so root-relative asset paths work. SSR/auth/backend-only screens need a local fixture route or a static render bundle; a URL alone does not freeze them.
-3. Set a fixed logical viewport width and height. Bundle fonts and assets locally. Wait for fonts, image decoding and app data before declaring readiness. Do not bring real customer/private data into a fixture unnecessarily.
+3. Set a fixed logical viewport width and height. Read `docs/resolution.md`: layout size is separate from `scene.size` (up to 4K) and `scene.capture.density` (Auto or 1–8×). Use the shared density path; do not enlarge the viewport, CSS-scale the UI or create another capture host for sharpness. Choose an explicit density for extreme authored close-ups, and check the effective limit. Canvas/WebGL adapters must honor devicePixelRatio. Bundle fonts and assets locally. Wait for fonts, image decoding and app data before declaring readiness. Do not bring real customer/private data into a fixture unnecessarily.
 4. Use `sampling: "static"` only for a genuinely static surface. For motion, install this small adapter on the source page:
 
 ```js

@@ -8,6 +8,7 @@ Read the thesis in README.md. Keep the product a small, malleable container for 
 - Importing/adapting UI: read `.agents/skills/import-web-ui/SKILL.md`.
 - Splitting UI into layers or animating depth: read `.agents/skills/ui-layers/SKILL.md`. Use `createLayeredSource`; do not build another capture system per scene.
 - Cameras, shaders, 3D and surfaces: read `.agents/skills/custom-rendering/SKILL.md`. Use the shared `scene.json.camera` projection and exact stops in `docs/camera.md`; do not recreate them as bespoke parameters.
+- Resolution and sharpness: read `docs/resolution.md`. Keep CSS layout viewport, output canvas and raster density separate. Use `scene.capture.density`, preserve layer CSS bounds and verify PNG dimensions plus displayed detail after live density changes.
 - `scene.json` and source files are authority. Never persist creative state only in a React component, localStorage, or an agent conversation.
 - Ordinary file edits are the primary agent workflow. Use a CLI edit group for coordinated multi-file work. Editor, CLI and optional MCP operations use the same runtime. Revision/hash conflicts must fail explicitly; do not overwrite an external edit silently.
 - Viewer pan, zoom and orbit are inspection state, not authored scene transforms. Read them from context; never bake them into the scene without an explicit creative request.

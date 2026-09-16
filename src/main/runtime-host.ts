@@ -196,9 +196,12 @@ export async function startRuntime(
         const t = Number(c.time);
         if (!Number.isFinite(t) || t < 0 || t > s.scene.duration)
           throw new Error("Invalid time");
+        const zoom = c.captureZoom === undefined ? 1 : Number(c.captureZoom);
+        if (!Number.isFinite(zoom) || zoom < 0.1 || zoom > 12)
+          throw new Error("Invalid capture zoom");
         const result = await (
           await getSession(s.id)
-        ).frame(t, c.revision as string | undefined);
+        ).frame(t, c.revision as string | undefined, zoom);
         return c.includeContext ? result : result.images;
       }
       case "inspect": {
@@ -237,6 +240,11 @@ export async function startRuntime(
             if (c.key === "name") doc.name = String(c.value);
             else if (c.key === "background") doc.background = String(c.value);
             else if (c.key === "fps") doc.fps = Number(c.value);
+            else if (c.key === "size") doc.size = c.value as typeof doc.size;
+            else if (c.key === "width" || c.key === "height")
+              doc.size[c.key] = Number(c.value);
+            else if (c.key === "density")
+              doc.capture = { density: c.value as "auto" | number };
             else if (c.key === "duration") {
               doc.duration = Number(c.value);
               doc.tracks = doc.tracks.map((t) => ({

@@ -922,3 +922,20 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .camera-controls .dialkit-segmented-button {
   flex: 1;
 }
+.canvas-preset,
+.density-field {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  align-items: center;
+}
+.capture-sizes {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--dial-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.capture-sizes output {
+  display: block;
+}

@@ -18,4 +18,6 @@ Read `docs/layers.md` and the active source before editing. Use a file edit grou
 9. The default planes face +Z. With a front camera, positive Z lifts toward the camera. Camera navigation remains inspection; author camera changes in the scene only for the requested shot.
 10. Verify the flat start, maximum separation, settled frame, and a backward seek. At rest there must be no duplicate extracted region in the base. Check crop edges, rounded corners, shadows and masks at full resolution. Read fresh context for `layers` (hierarchy, bounds and local transforms), and inspect a video export before delivery. Also check the source in 2D; it remains the original complete UI for comparison.
 
+Layer bounds and padding always use CSS pixels; density changes only raster resolution. Use the shared settings in `docs/resolution.md`, and verify live density changes retain alignment. Do not multiply layer positions, geometry or crop padding by density.
+
 The canonical example is `scenes/interface`: navigation rises, its active item rises a little further, summary and task regions lift at different depths, then all settle. `parameters.depth` is scene-authored; it is not a built-in effect. Use the helper for any new scene rather than reproducing capture or alignment code.

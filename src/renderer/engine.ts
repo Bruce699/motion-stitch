@@ -11,6 +11,11 @@ import {
 } from "../core/layers";
 import { LayeredSource } from "./layered-source";
 import { parameterReader } from "../core/parameters";
+import {
+  MAX_CANVAS_EDGE,
+  MAX_CANVAS_PIXELS,
+  type SourceQuality,
+} from "../core/quality";
 
 export class SceneEngine {
   renderer: THREE.WebGLRenderer;
@@ -19,6 +24,8 @@ export class SceneEngine {
   mode: "source" | "camera" = "camera";
   sourceId: string | null = null;
   sourceRoutes: { id: string; route: string }[] = [];
+  quality: SourceQuality[] = [];
+  private previewViewport?: { width: number; height: number; dpr: number };
   layerFrames: LayerFrame[] = [];
   private layeredSources: LayeredSource[] = [];
   private cameraFrames = new Map<string, THREE.Object3D>();
@@ -39,7 +46,11 @@ export class SceneEngine {
   private serial: Promise<unknown> = Promise.resolve();
   constructor(
     public document: SceneDocument,
-    private source: (time: number, revision?: string) => Promise<CapturedFrame>,
+    private source: (
+      time: number,
+      revision?: string,
+      captureZoom?: number,
+    ) => Promise<CapturedFrame>,
   ) {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -75,15 +86,41 @@ export class SceneEngine {
       ]) {
         const t = new THREE.Texture();
         t.colorSpace = THREE.SRGBColorSpace;
-        t.minFilter = THREE.LinearFilter;
+        t.minFilter = THREE.LinearMipmapLinearFilter;
         t.magFilter = THREE.LinearFilter;
-        t.generateMipmaps = false;
+        t.generateMipmaps = true;
+        t.anisotropy = Math.min(
+          8,
+          this.renderer.capabilities.getMaxAnisotropy(),
+        );
         this.textures[key] = t;
       }
     }
   }
   get canvas() {
     return this.renderer.domElement;
+  }
+  setPreviewViewport(width: number, height: number, dpr: number) {
+    this.previewViewport = { width, height, dpr };
+    this.resize();
+  }
+  private resize() {
+    const { width, height } = this.document.size;
+    const v = this.previewViewport;
+    const requested = v
+      ? Math.max(1, (v.width * v.dpr) / width, (v.height * v.dpr) / height)
+      : 1;
+    const scale = Math.min(
+      requested,
+      MAX_CANVAS_EDGE / Math.max(width, height),
+      Math.sqrt(MAX_CANVAS_PIXELS / (width * height)),
+    );
+    const w = Math.round(width * scale),
+      h = Math.round(height * scale);
+    if (this.canvas.width !== w || this.canvas.height !== h)
+      this.renderer.setSize(w, h, false);
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
   }
   async init(url: string) {
     const module = await import(/* @vite-ignore */ url);
@@ -121,28 +158,41 @@ export class SceneEngine {
   ) {
     const task = this.serial.then(async () => {
       if (this.disposed) return;
-      const { images, routes, layers } = await this.source(time, revision);
+      const { images, routes, layers, quality } = await this.source(
+        time,
+        revision,
+        this.inspection.zoom,
+      );
       for (const [id, data] of Object.entries(images)) {
         if (this.lastImages[id] === data) continue;
         const img = new Image();
         img.src = data;
         await img.decode();
         if (this.disposed) return;
+        if (
+          Math.max(img.width, img.height) >
+          this.renderer.capabilities.maxTextureSize
+        )
+          throw new Error(
+            `Source ${id} exceeds this GPU's texture size. Reduce UI density.`,
+          );
         if (this.textures[id]) {
-          this.textures[id].image = img;
-          this.textures[id].needsUpdate = true;
+          const texture = this.textures[id];
+          const previous = texture.image as HTMLImageElement | undefined;
+          // WebGL texture storage is immutable in size. Reallocate the GPU
+          // resource while preserving the Texture object used by scene materials.
+          if (
+            previous &&
+            (previous.width !== img.width || previous.height !== img.height)
+          )
+            texture.dispose();
+          texture.image = img;
+          texture.needsUpdate = true;
           this.lastImages[id] = data;
         }
       }
       this.document = document;
-      if (
-        this.canvas.width !== document.size.width ||
-        this.canvas.height !== document.size.height
-      ) {
-        this.renderer.setSize(document.size.width, document.size.height, false);
-        this.camera.aspect = document.size.width / document.size.height;
-        this.camera.updateProjectionMatrix();
-      }
+      this.resize();
       this.renderer.setClearColor(document.background);
       for (const source of this.layeredSources) {
         const frame = layers?.find((f) => f.sourceId === source.source.id);
@@ -161,6 +211,7 @@ export class SceneEngine {
       });
       if (this.disposed || !present()) return;
       if (routes) this.sourceRoutes = routes;
+      this.quality = quality || [];
       this.layerFrames = layers || [];
       this.renderView();
       this.presentedLayers = this.layeredSources.flatMap((s) => s.describe());
