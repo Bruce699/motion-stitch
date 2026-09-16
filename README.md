@@ -34,11 +34,17 @@ scenes/interface/
 
 Web sources run in isolated Chromium windows without Node or the editor bridge. Any framework that produces a browser app can supply a source: vanilla, React, Svelte, Vue, and others. A local entry gets its own origin rooted at the entry file’s directory, including root-relative assets and SPA routes. Live URLs can be previewed. For exports, use a local production build and fixture data; Tilt refuses to pretend a mutable URL is an immutable input.
 
+## Layers
+
+Declare DOM regions in `sources[].layers`, then use `createLayeredSource()` in scene code. Each region becomes a separately positioned, transparent surface, with browser layout preserved and nested regions inheriting their parent's 3D transform. The sample lifts navigation, its active item, summary cards and tasks into depth, then settles them back into the interface. Scrub around 4 seconds in Camera view; use Layer depth to adjust separation. Sources lists the layers and their local depth.
+
+This works at the rendered DOM boundary, so it does not depend on React or another specific framework. See [the layer contract](docs/layers.md) and [the agent skill](.agents/skills/ui-layers/SKILL.md) for selectors, transforms, grouping, and capture limits.
+
 ## Bring your own agent
 
 Point Codex, Claude or another agent at this folder and [AGENTS.md](AGENTS.md). Edit ordinary scene files. The viewer watches them and keeps the last successful frame while a replacement prepares. No special tool call is needed for a normal file edit.
 
-The runtime writes `.tilt/context.json` plus `.tilt/views/<view-id>.json`: active viewer, scene, requested and presented time, source routes, 2D/camera mode, selection, pan/zoom/orbit, viewport, readiness, errors and saved/displayed revisions. These are **read-only observations**, with timestamps and connection state; editing them does not control the viewer. They contain no session credential. Read them before acting. For an acknowledged fresh observation or capture, use the CLI:
+The runtime writes `.tilt/context.json` plus `.tilt/views/<view-id>.json`: active viewer, scene, requested and presented time, source routes, layer hierarchy/bounds/transforms, paint warnings, 2D/camera mode, selection, pan/zoom/orbit, viewport, readiness, errors and saved/displayed revisions. These are **read-only observations**, with timestamps and connection state; editing them does not control the viewer. They contain no session credential. Read them before acting. For an acknowledged fresh observation or capture, use the CLI:
 
 ```sh
 npm run cli -- context --fresh
@@ -69,13 +75,14 @@ An optional MCP adapter remains at `dist/agent.cjs` for clients that want it; se
 
 The editor advances only after preparation succeeds. Browser sessions use an HTTP-only cookie and origin checks; local CLI authentication lives in a private session file. A sampled source route travels with the presented frame, not another viewer’s last sample. Rapid seeks coalesce. Unchanged source revisions reuse their last texture; camera-only animation does not recapture the browser. Scene code reload keeps the previous valid canvas until the replacement draws successfully. Workers pause capture during scrubbing and reduce throughput during playback; activity expires after three seconds. Jobs survive closing the editor and recover queued/capture work on reopening. Cancelling preserves diagnostics and prevents publication.
 
-This is a working prototype, not a finished NLE. Browser-to-GPU transfer currently uses PNG readback, not shared GPU textures. Source capture is a faithful **whole surface**, not automatic independent DOM layers. Native DOM clips, masks and blur stay baked into that surface; split surfaces explicitly when independent depth is required. Export runtime JavaScript and scene code are frozen, but the installed Electron binary and FFmpeg are still required. Media timing, external network resources, arbitrary shaders and app state need their scene adapter to be deterministic. Scene code is trusted project code: browser sources have reduced capabilities, but this is not a hostile-code sandbox. There is no integrated chat, audio timeline, Swift adapter, or packaged installer yet.
+This is a working prototype, not a finished NLE. Browser-to-GPU transfer currently uses PNG readback, not shared GPU textures. Sources can remain whole surfaces or be separated into explicitly declared DOM layers. Clips and paint dependencies stay baked into their captured surfaces; backdrop effects and group compositing need deliberate boundaries. This is not automatic decomposition of every DOM element. Export runtime JavaScript and scene code are frozen, but the installed Electron binary and FFmpeg are still required. Media timing, external network resources, arbitrary shaders and app state need their scene adapter to be deterministic. Scene code is trusted project code: browser sources have reduced capabilities, but this is not a hostile-code sandbox. There is no integrated chat, audio timeline, Swift adapter, or packaged installer yet.
 
 ## Checks
 
 ```sh
 npm run typecheck
 npm test
+npm run test:layers
 npm run build
 ```
 

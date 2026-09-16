@@ -3,6 +3,12 @@ import { clamp, lerp, ease, segment } from "../core/motion";
 import { values, type SceneDocument } from "../core/schema";
 import type { SceneFactory, SceneInstance } from "../core/runtime";
 import { defaultInspection } from "../core/context";
+import {
+  layerTextureKey,
+  type CapturedFrame,
+  type LayerFrame,
+} from "../core/layers";
+import { LayeredSource } from "./layered-source";
 
 export class SceneEngine {
   renderer: THREE.WebGLRenderer;
@@ -11,6 +17,9 @@ export class SceneEngine {
   mode: "source" | "camera" = "camera";
   sourceId: string | null = null;
   sourceRoutes: { id: string; route: string }[] = [];
+  layerFrames: LayerFrame[] = [];
+  private layeredSources: LayeredSource[] = [];
+  private presentedLayers: ReturnType<LayeredSource["describe"]> = [];
   inspection = defaultInspection();
   private flatWorld = new THREE.Scene();
   private flatCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
@@ -25,13 +34,7 @@ export class SceneEngine {
   private serial: Promise<unknown> = Promise.resolve();
   constructor(
     public document: SceneDocument,
-    private source: (
-      time: number,
-      revision?: string,
-    ) => Promise<{
-      images: Record<string, string>;
-      routes?: { id: string; route: string }[];
-    }>,
+    private source: (time: number, revision?: string) => Promise<CapturedFrame>,
   ) {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -57,12 +60,21 @@ export class SceneEngine {
     this.flatCamera.position.z = 2;
     this.flatWorld.add(this.flatPlane);
     for (const s of document.sources) {
-      const t = new THREE.Texture();
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.minFilter = THREE.LinearFilter;
-      t.magFilter = THREE.LinearFilter;
-      t.generateMipmaps = false;
-      this.textures[s.id] = t;
+      for (const key of [
+        s.id,
+        ...(s.layers?.length
+          ? ["base", ...s.layers.map((l) => l.id)].map((id) =>
+              layerTextureKey(s.id, id),
+            )
+          : []),
+      ]) {
+        const t = new THREE.Texture();
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.minFilter = THREE.LinearFilter;
+        t.magFilter = THREE.LinearFilter;
+        t.generateMipmaps = false;
+        this.textures[key] = t;
+      }
     }
   }
   get canvas() {
@@ -77,6 +89,13 @@ export class SceneEngine {
       world: this.world,
       camera: this.camera,
       surfaces: this.textures,
+      createLayeredSource: (id, options) => {
+        const source = this.document.sources.find((s) => s.id === id);
+        if (!source) throw new Error(`Unknown source ${id}`);
+        const result = new LayeredSource(source, this.textures, options);
+        this.layeredSources.push(result);
+        return result;
+      },
       document: this.document,
       motion: { clamp, lerp, ease, segment },
     });
@@ -91,7 +110,7 @@ export class SceneEngine {
   ) {
     const task = this.serial.then(async () => {
       if (this.disposed) return;
-      const { images, routes } = await this.source(time, revision);
+      const { images, routes, layers } = await this.source(time, revision);
       for (const [id, data] of Object.entries(images)) {
         if (this.lastImages[id] === data) continue;
         const img = new Image();
@@ -114,6 +133,14 @@ export class SceneEngine {
         this.camera.updateProjectionMatrix();
       }
       this.renderer.setClearColor(document.background);
+      for (const source of this.layeredSources) {
+        const frame = layers?.find((f) => f.sourceId === source.source.id);
+        if (!frame)
+          throw new Error(
+            `Source ${source.source.id} did not provide layer frames`,
+          );
+        source.update(frame);
+      }
       await this.instance!.sample({
         time,
         frame: Math.round(time * document.fps),
@@ -122,7 +149,9 @@ export class SceneEngine {
       });
       if (this.disposed || !present()) return;
       if (routes) this.sourceRoutes = routes;
+      this.layerFrames = layers || [];
       this.renderView();
+      this.presentedLayers = this.layeredSources.flatMap((s) => s.describe());
     });
     this.serial = task.catch(() => {});
     return task;
@@ -188,6 +217,9 @@ export class SceneEngine {
       );
       this.renderer.render(this.world, camera);
     }
+  }
+  describeLayers() {
+    return this.presentedLayers;
   }
   dispose() {
     this.disposed = true;

@@ -19,6 +19,17 @@ export const ParameterSchema = z
     (p) => p.min < p.max && p.value >= p.min && p.value <= p.max,
     "Parameter value must be inside its range",
   );
+export const LayerSpecSchema = z.object({
+  id: z
+    .string()
+    .regex(/^[a-zA-Z][\w-]*$/)
+    .refine((id) => id !== "base", "base is reserved"),
+  label: z.string().max(100).optional(),
+  selector: z.string().min(1).max(1000),
+  padding: z.number().int().min(0).max(256).default(8),
+  optional: z.boolean().default(false),
+});
+export type LayerSpec = z.infer<typeof LayerSpecSchema>;
 export const SceneSchema = z
   .object({
     version: z.literal(1),
@@ -43,6 +54,7 @@ export const SceneSchema = z
             width: z.number().int().min(64).max(4096),
             height: z.number().int().min(64).max(4096),
             sampling: z.enum(["static", "controlled"]).default("static"),
+            layers: z.array(LayerSpecSchema).max(32).default([]),
           })
           .refine(
             (s) => Boolean(s.entry) !== Boolean(s.url),
@@ -65,6 +77,12 @@ export const SceneSchema = z
       .default([]),
   })
   .superRefine((s, ctx) => {
+    for (const source of s.sources)
+      if (new Set(source.layers.map((l) => l.id)).size !== source.layers.length)
+        ctx.addIssue({
+          code: "custom",
+          message: `Layer IDs must be unique in ${source.id}`,
+        });
     if (new Set(s.sources.map((x) => x.id)).size !== s.sources.length)
       ctx.addIssue({ code: "custom", message: "Source IDs must be unique" });
     if (s.size.width % 2 || s.size.height % 2)

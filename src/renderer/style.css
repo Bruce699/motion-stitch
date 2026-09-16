@@ -597,9 +597,11 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .timeline-body {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  min-height: 0;
+  overflow-y: auto;
 }
 .track-names {
+  min-height: min-content;
   width: 158px;
   flex-shrink: 0;
   border-right: 1px solid #323232;
@@ -628,6 +630,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 }
 .tracks {
   position: relative;
+  min-height: min-content;
   flex: 1;
   margin-right: 22px;
   touch-action: none;
@@ -911,7 +914,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 @media (max-width: 1000px) {
   .app {
     grid-template-columns: 140px minmax(0, 1fr) 196px;
-    grid-template-rows: 48px minmax(180px, 1fr) 212px;
+    grid-template-rows: 48px minmax(180px, 1fr) 240px;
   }
   .canvas-toolbar {
     padding: 0 10px;
@@ -943,4 +946,35 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   .inspector-section {
     padding: 14px;
   }
+}
+.source-layers {
+  margin-top: 20px;
+}
+.source-layers .section-heading {
+  margin-bottom: 8px;
+}
+.source-layers button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: 4px;
+  padding: 8px 6px;
+  color: #bbb;
+}
+.source-layers button:hover {
+  background: #ffffff08;
+}
+.source-layers button.selected {
+  background: #403d55;
+  color: #eeeaff;
+}
+.source-layers code {
+  color: #8b859a;
+  font-size: 10px;
+}
+.source-card .layer-warning {
+  white-space: normal;
+  color: #d9b785;
+  line-height: 1.5;
 }

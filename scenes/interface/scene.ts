@@ -5,7 +5,7 @@ export default function createScene({
   THREE,
   world,
   camera,
-  surfaces,
+  createLayeredSource,
   motion,
 }: SceneContext): SceneInstance {
   const { lerp, segment } = motion;
@@ -13,22 +13,12 @@ export default function createScene({
   world.add(rig);
   const width = 5.8,
     height = (width * 640) / 1000;
-  const geometry = new THREE.PlaneGeometry(width, height);
-  const material = new THREE.ShaderMaterial({
-    transparent: true,
-    uniforms: {
-      map: { value: surfaces.ui },
-      aspect: { value: width / height },
-    },
-    vertexShader: `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader:
-      `uniform sampler2D map;uniform float aspect;varying vec2 vUv;void main(){vec2 p=(vUv-.5)*vec2(aspect,1.);vec2 b=vec2(aspect,1.)*.5;float r=.018;vec2 q=abs(p)-b+r;float d=length(max(q,0.))+min(max(q.x,q.y),0.)-r;vec4 c=texture2D(map,vUv);gl_FragColor=vec4(c.rgb,c.a*(1.-smoothstep(-.001,.001,d)));#include <tonemapping_fragment>\n#include <colorspace_fragment>}`.replace(
-        ";#include",
-        ";\n#include",
-      ),
-  });
-  const panel = new THREE.Mesh(geometry, material);
-  rig.add(panel);
+  const ui = createLayeredSource("ui", { width });
+  rig.add(ui.group);
+  const navigation = ui.get("navigation").object;
+  const activeItem = ui.get("active-item").object;
+  const summary = ui.get("summary").object;
+  const tasks = ui.get("tasks").object;
   const edge = new THREE.Mesh(
     new THREE.BoxGeometry(width - 0.02, height - 0.02, 0.025),
     new THREE.MeshBasicMaterial({ color: "#c9c7c4" }),
@@ -65,6 +55,14 @@ export default function createScene({
   return {
     sample({ time, parameters: p, document }) {
       const enter = segment(time, 0, 1.7);
+      const lift = (start: number) =>
+        segment(time, start, start + 1.6) * (1 - segment(time, 5.8, 7.6));
+      const reveal = lift(1.4);
+      navigation.position.z = p.depth * reveal;
+      activeItem.position.z = p.depth * 0.18 * lift(1.8);
+      summary.position.z = p.depth * 0.62 * lift(1.7);
+      tasks.position.z = p.depth * 0.28 * lift(2);
+
       const turn = segment(time, 2.8, 6.6);
       const settle = segment(time, 6.6, 8);
       rig.rotation.set(
@@ -72,6 +70,8 @@ export default function createScene({
         lerp(-p.tilt, p.tilt * 0.55, turn) * (1 - settle * 0.6),
         lerp(-0.025, 0.015, turn),
       );
+      rig.rotation.y -= reveal * 0.52;
+      rig.rotation.x += reveal * 0.14;
       rig.position.set(
         lerp(0.06, -0.06, turn),
         lerp(-0.1, 0.04, enter) + Math.sin(turn * Math.PI) * p.lift * 0.2,
@@ -80,7 +80,10 @@ export default function createScene({
       camera.position.set(
         0,
         0,
-        p.distance + lerp(0.35, 0, enter) - Math.sin(turn * Math.PI) * 0.2,
+        p.distance +
+          lerp(0.35, 0, enter) -
+          Math.sin(turn * Math.PI) * 0.2 +
+          reveal * 2.9,
       );
       camera.lookAt(0, 0, 0);
       shadow.position.y = -0.2 - p.lift * 0.1;

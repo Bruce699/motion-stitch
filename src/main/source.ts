@@ -4,6 +4,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
 import { safePath } from "./files";
+import { randomUUID } from "node:crypto";
+import { planDOMLayers, isolationCSS } from "./dom-layers";
+import {
+  layerTextureKey,
+  type CapturedFrame,
+  type LayerFrame,
+} from "../core/layers";
 
 export function deadline<T>(
   promise: Promise<T>,
@@ -24,7 +31,8 @@ export class WebSource {
   window: BrowserWindow;
   private lastKey: unknown;
   currentRoute = "";
-  private lastImage = "";
+  private lastFrame?: CapturedFrame;
+  private layerMarker = "data-tilt-capture-" + randomUUID();
   private server?: http.Server;
   constructor(
     public spec: SourceSpec,
@@ -34,6 +42,8 @@ export class WebSource {
   ) {
     this.window = new BrowserWindow({
       show: false,
+      transparent: true,
+      backgroundColor: "#00000000",
       width: spec.width,
       height: spec.height,
       useContentSize: true,
@@ -111,6 +121,13 @@ export class WebSource {
     }
     await deadline(this.window.loadURL(url), 30000, "Source load");
     this.currentRoute = await this.route();
+    if (this.spec.layers?.length)
+      await this.window.webContents.insertCSS(
+        ["base", ...this.spec.layers.map((l) => l.id)]
+          .map((id) => isolationCSS(this.layerMarker, id))
+          .join("\n"),
+        { cssOrigin: "user" },
+      );
     await deadline(
       this.window.webContents.executeJavaScript(
         `(async()=>{await document.fonts.ready;await Promise.all([...document.images].map(i=>i.complete?(i.naturalWidth?Promise.resolve():Promise.reject(new Error('Image failed: '+i.src))):i.decode()));if(window.tiltSource?.ready)await window.tiltSource.ready();return true;})()`,
@@ -119,9 +136,12 @@ export class WebSource {
       "Source assets",
     );
   }
-  async sample(time: number, parameters: Record<string, number>) {
-    if (this.spec.sampling === "static" && this.lastImage)
-      return this.lastImage;
+  async sample(
+    time: number,
+    parameters: Record<string, number>,
+  ): Promise<CapturedFrame> {
+    if (this.spec.sampling === "static" && this.lastFrame)
+      return this.lastFrame;
     const payload = JSON.stringify({ time, parameters });
     const result = await deadline(
       this.window.webContents.executeJavaScript(
@@ -132,16 +152,84 @@ export class WebSource {
     );
     const key = result.revision;
     this.currentRoute = result.route;
-    if (key === this.lastKey && this.lastImage) return this.lastImage;
-    await deadline(
+    if (key === this.lastKey && this.lastFrame) {
+      this.lastFrame.routes = [{ id: this.spec.id, route: this.currentRoute }];
+      return this.lastFrame;
+    }
+    await this.paint();
+    const images: Record<string, string> = {
+      [this.spec.id]: await this.capture(),
+    };
+    let layers: LayerFrame[] | undefined;
+    if (this.spec.layers?.length) {
+      const marker = this.layerMarker;
+      try {
+        const planned = await this.window.webContents.executeJavaScript(
+          `(()=>{try{return {plan:(${planDOMLayers.toString()})(${JSON.stringify(this.spec.layers)},${JSON.stringify(marker)},${this.spec.width},${this.spec.height})};}catch(error){return {error:String(error?.message||error)};}})()`,
+        );
+        if (planned.error) throw new Error(planned.error);
+        const plan = planned.plan;
+        const baseTexture = layerTextureKey(this.spec.id, "base");
+        await this.layerPass("base");
+        images[baseTexture] = await this.capture();
+        const regions = [];
+        for (const region of plan.regions) {
+          const texture = layerTextureKey(this.spec.id, region.id);
+          regions.push({ ...region, texture });
+          if (!region.visible) continue;
+          await this.layerPass(region.id);
+          images[texture] = await this.capture(region.crop);
+        }
+        layers = [
+          {
+            sourceId: this.spec.id,
+            width: this.spec.width,
+            height: this.spec.height,
+            baseTexture,
+            regions,
+            warnings: plan.warnings,
+          },
+        ];
+      } finally {
+        await this.window.webContents.executeJavaScript(
+          `document.documentElement.removeAttribute(${JSON.stringify(marker + "-pass")})`,
+        );
+        await this.window.webContents.executeJavaScript(
+          "window.__tiltRestoreLayers?.()",
+        );
+      }
+    }
+    this.lastKey = key;
+    this.lastFrame = {
+      images,
+      layers,
+      routes: [{ id: this.spec.id, route: this.currentRoute }],
+    };
+    return this.lastFrame;
+  }
+  private async layerPass(id: string) {
+    await this.window.webContents.executeJavaScript(
+      `document.documentElement.setAttribute(${JSON.stringify(this.layerMarker + "-pass")},${JSON.stringify(id)})`,
+    );
+    await this.paint();
+  }
+  private paint() {
+    return deadline(
       this.window.webContents.executeJavaScript(
         "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))",
       ),
       15000,
       "Source paint",
     );
+  }
+  private async capture(rect?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) {
     const image = await deadline(
-      this.window.webContents.capturePage(undefined, {
+      this.window.webContents.capturePage(rect, {
         stayHidden: true,
         stayAwake: true,
       }),
@@ -149,10 +237,9 @@ export class WebSource {
       "Source capture",
     );
     if (image.isEmpty()) throw new Error("Source returned an empty frame");
-    this.lastKey = key;
-    this.lastImage = image.toDataURL();
-    return this.lastImage;
+    return image.toDataURL();
   }
+
   async inspect() {
     return this.window.webContents.executeJavaScript(
       `[...document.querySelectorAll('[data-tilt-id]')].map(el=>{const r=el.getBoundingClientRect();return {id:el.getAttribute('data-tilt-id'),tag:el.tagName,text:el.textContent?.trim().slice(0,120),bounds:{x:r.x,y:r.y,width:r.width,height:r.height}}})`,

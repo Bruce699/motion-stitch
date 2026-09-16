@@ -20,7 +20,7 @@ An on-demand detached coordinator serializes queued jobs. Each job starts one El
 
 MP4 encoding writes a temporary file, verifies dimensions/frame count with FFprobe, fully decodes it with FFmpeg, checks cancellation, then publishes it. Closing the editor does not stop the coordinator. Reopening reconciles stale active jobs; explicit Resume retries failed/interrupted jobs. CLI `jobs`, `cancel`, and `resume` also work with the editor closed.
 
-The app code is frozen, not the complete OS: jobs still require the same installed Electron version, FFmpeg and compatible fonts/GPU behavior. Local assets and fixture data are the author’s responsibility. The v1 adapter uses PNG readback; shared GPU textures, multi-pass render graph, media contracts and independently editable DOM surfaces are future performance/capability work, not claimed features.
+The app code is frozen, not the complete OS: jobs still require the same installed Electron version, FFmpeg and compatible fonts/GPU behavior. Local assets and fixture data are the author’s responsibility. The v1 adapter uses PNG readback; shared GPU textures, multi-pass render graph, media contracts and automatic DOM decomposition are future performance/capability work, not claimed features.
 
 ## Viewer context and navigation
 
@@ -29,3 +29,7 @@ Each page gets a distinct viewer ID. Per-scene source sampling is serialized so 
 Canvas gestures update an inspection transform. The compositor uses a copy of the authored camera, or a flat orthographic source view, to apply it. Navigation redraws existing textures immediately, without recapturing the source or resampling animation. Fit returns to the authored framing. This state lives in runtime context and per-tab session state, while creative state remains in scene files. It is excluded from video export.
 
 `.tilt/history`, `.tilt/views` and `.tilt/context.json` are runtime-owned. `.tilt/session.json` contains a private local CLI credential and must never be copied into agent context, exports, logs or Git. The service binds only to loopback and checks Host/Origin; it is a local development runtime, not a remotely hosted editing service.
+
+## Declared DOM layers
+
+`src/core/layers.ts` defines source-pixel bounds, crops and layer-frame metadata. `src/main/dom-layers.ts` plans selectors and paint isolation inside the source browser. `WebSource` samples once, captures full/base/region passes, then restores normal paint. Source revisions cache the complete frame. `src/renderer/layered-source.ts` maps crops back into one coordinate system, with separate browser-layout anchors and authored transform groups. The scene gets `createLayeredSource`; it owns choreography. Export uses this same path. See `docs/layers.md` for the declaration contract and compositing boundaries.

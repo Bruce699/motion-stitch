@@ -180,6 +180,9 @@ function App() {
       selection: view.current.selection,
       inspection: view.current.inspection,
       sourceRoutes: engine.current?.sourceRoutes || [],
+      layers: engine.current?.describeLayers() || [],
+      layerWarnings:
+        engine.current?.layerFrames.flatMap((f) => f.warnings) || [],
       ready: status.current.ready && !s.error,
       error: s.error || status.current.error,
       documentRevision: s.revision,
@@ -900,6 +903,44 @@ function App() {
                 <span>
                   {source.width} × {source.height} · {source.sampling}
                 </span>
+                {!!source.layers?.length && (
+                  <div className="source-layers">
+                    <div className="section-heading plain">Layers</div>
+                    {source.layers.map((layer) => {
+                      const state = engine.current
+                        ?.describeLayers()
+                        .find(
+                          (l) => l.sourceId === source.id && l.id === layer.id,
+                        );
+                      const key = source.id + ":" + layer.id;
+                      return (
+                        <button
+                          key={key}
+                          className={selection.includes(key) ? "selected" : ""}
+                          style={{ paddingLeft: state?.parentId ? 18 : 6 }}
+                          onClick={() => {
+                            view.current.selection = [key];
+                            view.current.sourceId = source.id;
+                            setSelection([key]);
+                            changeMode("camera", source.id);
+                          }}
+                        >
+                          <span>{layer.label || layer.id}</span>
+                          <code title="Local depth">
+                            {(state?.position[2] || 0).toFixed(2)}
+                          </code>
+                        </button>
+                      );
+                    })}
+                    {engine.current?.layerFrames
+                      .find((f) => f.sourceId === source.id)
+                      ?.warnings.map((w) => (
+                        <p className="layer-warning" key={w}>
+                          {w}
+                        </p>
+                      ))}
+                  </div>
+                )}
                 <div className="subject-list">
                   {subjects
                     .find((x) => x.source === source.id)
@@ -1262,9 +1303,9 @@ if (new URLSearchParams(location.search).has("render")) {
     const prep = await call<{ scene: SceneDocument; url: string }>({
       type: "prepare",
     });
-    const e = new SceneEngine(prep.scene, async (t) => ({
-      images: await call({ type: "frame", time: t }),
-    }));
+    const e = new SceneEngine(prep.scene, (t) =>
+      call({ type: "frame", time: t, includeContext: true }),
+    );
     await e.init(prep.url);
     document.body.replaceChildren(e.canvas);
     window.__tiltRender = async (time) => {

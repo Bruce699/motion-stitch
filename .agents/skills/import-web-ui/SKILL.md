@@ -24,8 +24,8 @@ window.tiltSource = {
 ```
 
 5. Tilt waits for the adapter, then pauses/samples document Web Animations to the shared clock and waits for two paint opportunities. Framework subscriptions, canvas, WebGL and videos still need your adapter. For video, set `currentTime` and await `seeked`/decoded-frame readiness; merely assigning time is insufficient.
-6. Add stable `data-tilt-id` attributes for important subjects. `npm run cli -- inspect` returns bounds and text. Read `context --fresh` for the currently presented route and selected IDs. These IDs are semantic handles, not a promise that every element is an independent 3D layer.
-7. Start with a faithful whole surface. If separate depth is needed, author multiple source surfaces/groups explicitly. Preserve clipping, blur, alpha and backdrop dependencies within a group. Never flatten then pretend hidden pixels still exist.
+6. Add stable `data-tilt-id` attributes for important subjects. `npm run cli -- inspect` returns bounds and text. Read `context --fresh` for the currently presented route and selected IDs. These IDs are semantic handles. Declare a selector in `sources[].layers` when a subject should become an independent 3D layer.
+7. Start with a faithful whole surface. For separate depth, follow `../ui-layers/SKILL.md`: declare DOM regions and use `createLayeredSource` so capture/alignment remain shared. Preserve clipping, blur, alpha and backdrop dependencies within a group. Never flatten then pretend hidden pixels still exist.
 8. Check backward seeking, fonts, thin borders, clips and final export. Document external dependencies or unsupported features. A successful vanilla fixture is not universal framework validation.
 
 Browser sources have no Node or editor command bridge, a temporary browser session, no popup allowance and no device permissions. Do not disable these safeguards to work around an import problem. Trusted scene code can remain expressive without giving the imported page arbitrary file access.

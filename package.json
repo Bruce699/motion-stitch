@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "agent": "node dist/agent.cjs",
-    "cli": "node dist/cli.cjs"
+    "cli": "node dist/cli.cjs",
+    "test:layers": "node scripts/verify-layer-capture.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",

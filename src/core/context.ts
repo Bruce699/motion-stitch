@@ -34,6 +34,28 @@ export const ViewStateSchema = z.object({
   sourceRoutes: z
     .array(z.object({ id: z.string(), route: z.string().max(2000) }))
     .default([]),
+  layers: z
+    .array(
+      z.object({
+        sourceId: z.string(),
+        id: z.string(),
+        parentId: z.string().nullable(),
+        visible: z.boolean(),
+        bounds: z
+          .object({
+            x: z.number(),
+            y: z.number(),
+            width: z.number(),
+            height: z.number(),
+          })
+          .nullable(),
+        position: z.array(z.number()).length(3),
+        rotation: z.array(z.number()).length(3),
+        scale: z.array(z.number()).length(3),
+      }),
+    )
+    .default([]),
+  layerWarnings: z.array(z.string()).default([]),
   focused: z.boolean(),
   visible: z.boolean(),
   inspection: InspectionSchema.default(defaultInspection),

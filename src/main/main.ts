@@ -18,7 +18,7 @@ import {
   type SceneDocument,
   type RenderJob,
 } from "../core/schema";
-import { SceneStore } from "./store";
+import type { CapturedFrame } from "../core/layers";
 import { startRuntime } from "./runtime-host";
 import { Jobs } from "./jobs";
 import { WebSource, deadline } from "./source";
@@ -133,10 +133,14 @@ async function prepare() {
 }
 async function sample(time: number) {
   await prepare();
-  const images: Record<string, string> = {};
-  for (const source of sources)
-    images[source.spec.id] = await source.sample(time, values(scene()));
-  return images;
+  const result: CapturedFrame = { images: {}, layers: [], routes: [] };
+  for (const source of sources) {
+    const frame = await source.sample(time, values(scene()));
+    Object.assign(result.images, frame.images);
+    result.layers!.push(...(frame.layers || []));
+    result.routes!.push(...(frame.routes || []));
+  }
+  return result;
 }
 async function state() {
   return {
@@ -159,7 +163,8 @@ async function command(c: Command): Promise<any> {
     if (!Number.isFinite(time) || time < 0 || time > scene().duration)
       throw new Error("Invalid time");
     currentFrame = time;
-    return sample(time);
+    const result = await sample(time);
+    return c.includeContext ? result : result.images;
   }
   throw new Error("Frozen workers are read only");
 }

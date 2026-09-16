@@ -1,5 +1,6 @@
 import path from "node:path";
 import { hash, atomicWrite, safePath } from "./files";
+import type { LayerFrame } from "../core/layers";
 import { WebSource } from "./source";
 import { values, type SceneDocument } from "../core/schema";
 import type { SceneStore } from "./store";
@@ -93,14 +94,19 @@ export class SceneSession {
           "Scene revision changed; waiting for the current preview",
         );
       const images: Record<string, string> = {};
-      for (const s of this.sources)
-        images[s.spec.id] = await s.sample(time, values(prep.scene));
+      const layers: LayerFrame[] = [];
+      for (const s of this.sources) {
+        const frame = await s.sample(time, values(prep.scene));
+        Object.assign(images, frame.images);
+        layers.push(...(frame.layers || []));
+      }
       if (prep.revision !== this.store.revision)
         throw new Error(
           "Scene revision changed; waiting for the current preview",
         );
       return {
         images,
+        layers,
         routes: this.sources.map((s) => ({
           id: s.spec.id,
           route: s.currentRoute,
@@ -116,6 +122,7 @@ export class SceneSession {
           source: s.spec.id,
           route: await s.route(),
           subjects: await s.inspect(),
+          layers: s.spec.layers,
         })),
       );
     });

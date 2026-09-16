@@ -1,5 +1,18 @@
 import type * as THREE from "three";
 import type { SceneDocument } from "./schema";
+import type { LayerLayout } from "./layers";
+export type LayerNode = {
+  id: string;
+  object: THREE.Group;
+  mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+  layout: LayerLayout | null;
+};
+export type LayeredSurface = {
+  group: THREE.Group;
+  base: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+  readonly ids: string[];
+  get: (id: string) => LayerNode;
+};
 export type FrameContext = {
   time: number;
   frame: number;
@@ -11,6 +24,10 @@ export type SceneContext = {
   world: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   surfaces: Record<string, THREE.Texture>;
+  createLayeredSource: (
+    sourceId: string,
+    options: { width: number },
+  ) => LayeredSurface;
   document: SceneDocument;
   motion: {
     clamp: (v: number, min?: number, max?: number) => number;
