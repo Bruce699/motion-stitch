@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "id": "interface",
+  "name": "Interface study",
+  "duration": 8,
+  "fps": 30,
+  "size": {
+    "width": 1440,
+    "height": 900
+  },
+  "background": "#e3e1dc",
+  "entry": "scene.ts",
+  "sources": [
+    {
+      "id": "ui",
+      "kind": "web",
+      "entry": "source/index.html",
+      "width": 1000,
+      "height": 640,
+      "sampling": "controlled"
+    }
+  ],
+  "parameters": {
+    "tilt": {
+      "label": "Tilt",
+      "value": 0.33,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.01
+    },
+    "distance": {
+      "label": "Camera distance",
+      "value": 6.5,
+      "min": 6.5,
+      "max": 12,
+      "step": 0.1
+    },
+    "lift": {
+      "label": "Lift",
+      "value": 0.21,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.01
+    },
+    "atmosphere": {
+      "label": "Atmosphere",
+      "value": 0.41,
+      "min": 0,
+      "max": 1,
+      "step": 0.01
+    }
+  },
+  "tracks": [
+    {
+      "id": "ui",
+      "label": "Interface",
+      "color": "#94b7a6",
+      "start": 0,
+      "end": 8,
+      "keys": [
+        0.6,
+        2.1,
+        3.3,
+        4.8
+      ]
+    },
+    {
+      "id": "camera",
+      "label": "Camera",
+      "color": "#b2a2d3",
+      "start": 0,
+      "end": 8,
+      "keys": [
+        0,
+        2.8,
+        5.5,
+        8
+      ]
+    },
+    {
+      "id": "field",
+      "label": "Light field",
+      "color": "#c6b18b",
+      "start": 0,
+      "end": 8,
+      "keys": [
+        0,
+        8
+      ]
+    }
+  ]
+}

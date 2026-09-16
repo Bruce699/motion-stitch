@@ -1,0 +1,377 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Projects</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          13px -apple-system,
+          BlinkMacSystemFont,
+          Arial,
+          sans-serif;
+        color: #282c28;
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      main {
+        width: 1000px;
+        height: 640px;
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        overflow: hidden;
+        background: #fff;
+      }
+      .nav {
+        background: #f7f8f5;
+        border-right: 1px solid #e8eae5;
+        padding: 29px 18px;
+      }
+      .workspace-name {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        margin: 0 10px 36px;
+      }
+      .nav-item {
+        padding: 10px 12px;
+        display: flex;
+        gap: 11px;
+        align-items: center;
+        color: #777f74;
+        font-size: 12px;
+        margin-bottom: 5px;
+        border-radius: 6px;
+      }
+      .nav-item.active {
+        background: #e9ede5;
+        color: #303b2c;
+      }
+      .nav-item svg {
+        width: 15px;
+        height: 15px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.25;
+      }
+      .nav h5 {
+        color: #9a9f94;
+        font-size: 10px;
+        font-weight: 500;
+        margin: 34px 12px 11px;
+      }
+      .nav .project-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 2px;
+        background: #a7b59c;
+        margin: 0 4px;
+      }
+      .nav .bottom {
+        position: absolute;
+        bottom: 25px;
+        left: 30px;
+        font-size: 11px;
+        color: #899082;
+      }
+      .content {
+        padding: 34px 37px;
+      }
+      .breadcrumb {
+        font-size: 11px;
+        color: #979b92;
+        display: flex;
+        gap: 11px;
+        margin-bottom: 29px;
+      }
+      .heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .heading h1 {
+        font-size: 25px;
+        font-weight: 570;
+        letter-spacing: -0.8px;
+        margin: 0;
+      }
+      .create {
+        border: 1px solid #dde2d7;
+        border-radius: 5px;
+        background: #f7f9f3;
+        color: #526346;
+        padding: 8px 11px;
+        font-size: 11px;
+      }
+      .summary {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 28px;
+      }
+      .stat {
+        flex: 1;
+        border: 1px solid #e7eae2;
+        border-radius: 8px;
+        padding: 18px 18px 15px;
+        height: 102px;
+      }
+      .stat small {
+        font-size: 10px;
+        color: #8c9487;
+      }
+      .stat strong {
+        display: block;
+        font-size: 25px;
+        font-weight: 480;
+        margin-top: 9px;
+        letter-spacing: -0.8px;
+      }
+      .stat:nth-child(3) {
+        background: #f5f7f1;
+        border-color: #e4e9dc;
+      }
+      .stat:nth-child(3) strong {
+        color: #768564;
+      }
+      .tabs {
+        display: flex;
+        gap: 24px;
+        border-bottom: 1px solid #e9ebe5;
+        font-size: 11px;
+        color: #a1a79b;
+        height: 32px;
+      }
+      .tabs .active {
+        color: #3a4534;
+        border-bottom: 2px solid #879875;
+        padding-bottom: 13px;
+      }
+      .table-header,
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 116px 92px;
+        align-items: center;
+      }
+      .table-header {
+        height: 41px;
+        font-size: 10px;
+        color: #a0a699;
+      }
+      .row {
+        height: 51px;
+        border-top: 1px solid #eef0eb;
+        font-size: 12px;
+        will-change: transform, opacity;
+      }
+      .task {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .box {
+        width: 13px;
+        height: 13px;
+        border: 1px solid #cfd6c8;
+        border-radius: 4px;
+        display: grid;
+        place-items: center;
+        font-size: 9px;
+      }
+      .row.done .box {
+        background: #8ea77c;
+        color: white;
+        border-color: #8ea77c;
+      }
+      .status {
+        font-size: 10px;
+        color: #79816f;
+        background: #f0f3eb;
+        border: 1px solid #e1e7d9;
+        display: inline-block;
+        width: max-content;
+        padding: 4px 7px;
+        border-radius: 4px;
+      }
+      .status.progress {
+        color: #a68d53;
+        background: #fbf7ec;
+        border-color: #ede4c9;
+      }
+      .date {
+        font-size: 10px;
+        color: #a1a599;
+      }
+      .toast {
+        position: absolute;
+        bottom: 29px;
+        right: 34px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border: 1px solid #dee6d6;
+        border-radius: 7px;
+        background: #f9fcf4;
+        padding: 12px 17px;
+        font-size: 11px;
+        box-shadow: 0 8px 25px #313b2711;
+        color: #647651;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      .toast span {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #dfeacd;
+        display: grid;
+        place-items: center;
+        font-size: 9px;
+      }
+      .progress-line {
+        height: 3px;
+        border-radius: 3px;
+        background: #e4e9dd;
+        margin-top: 12px;
+        overflow: hidden;
+      }
+      .progress-line i {
+        height: 100%;
+        display: block;
+        width: 0;
+        background: #9aad84;
+        transform-origin: left;
+      }
+    </style>
+  </head>
+  <body>
+    <main data-tilt-id="app">
+      <nav class="nav">
+        <div class="workspace-name">Workspace</div>
+        <div class="nav-item">
+          <svg viewBox="0 0 16 16"><path d="M2 8h12M8 2v12" /></svg>Overview
+        </div>
+        <div class="nav-item active">
+          <svg viewBox="0 0 16 16">
+            <rect x="2" y="2" width="12" height="12" rx="2" />
+            <path d="M2 7h12M7 7v7" /></svg
+          >Projects
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 16 16">
+            <circle cx="8" cy="5" r="3" />
+            <path d="M2 15v-2a6 6 0 0 1 12 0v2" /></svg
+          >Team
+        </div>
+        <h5>YOUR PROJECTS</h5>
+        <div class="nav-item"><i class="project-dot"></i>Website</div>
+        <div class="nav-item">
+          <i class="project-dot" style="background: #c1afce"></i>Mobile app
+        </div>
+        <div class="bottom">Settings</div>
+      </nav>
+      <section class="content">
+        <div class="breadcrumb">Projects<span>/</span>Website</div>
+        <div class="heading" data-tilt-id="heading">
+          <h1>Website</h1>
+          <button class="create" id="create">＋ Add task</button>
+        </div>
+        <div class="summary" data-tilt-id="summary">
+          <div class="stat"><small>Total tasks</small><strong>24</strong></div>
+          <div class="stat"><small>In progress</small><strong>8</strong></div>
+          <div class="stat">
+            <small>Completed</small><strong id="completed">12</strong>
+            <div class="progress-line"><i id="progress"></i></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <span class="active">All tasks</span><span>Board</span
+          ><span>Timeline</span>
+        </div>
+        <div class="table-header">
+          <span>Task</span><span>Status</span><span>Due date</span>
+        </div>
+        <div id="rows" data-tilt-id="task-list"></div>
+      </section>
+      <div class="toast" data-tilt-id="toast">
+        <span>✓</span>Homepage is ready for review
+      </div>
+    </main>
+    <script>
+      const tasks = [
+        ["Refine the homepage", "In progress", "Sep 18"],
+        ["Update component library", "In progress", "Sep 20"],
+        ["Write release notes", "To do", "Sep 22"],
+        ["Check mobile layouts", "To do", "Sep 24"],
+      ];
+      const rows = document.querySelector("#rows");
+      rows.innerHTML = tasks
+        .map(
+          ([name, status, date], i) =>
+            `<div class="row" data-tilt-id="task-${i}"><div class="task"><span class="box"></span>${name}</div><span class="status ${status === "In progress" ? "progress" : ""}">${status}</span><span class="date">${date}</span></div>`,
+        )
+        .join("");
+      const clamp = (t) => Math.max(0, Math.min(1, t));
+      const smooth = (t) => {
+        t = clamp(t);
+        return t * t * (3 - 2 * t);
+      };
+      function sample({ time }) {
+        const t = time;
+        const completed = t >= 3.3;
+        document.querySelector("#completed").textContent = completed
+          ? "13"
+          : "12";
+        document.querySelector("#progress").style.width =
+          50 + smooth((t - 3.1) / 0.65) * 4.2 + "%";
+        [...rows.children].forEach((row, i) => {
+          const a = smooth((t - 0.25 - i * 0.12) / 0.65);
+          row.style.opacity = String(a);
+          row.style.transform = `translateY(${(1 - a) * 12}px)`;
+          row.classList.toggle("done", i === 0 && completed);
+          if (i === 0) {
+            row.querySelector(".box").textContent = completed ? "✓" : "";
+            row.querySelector(".status").textContent = completed
+              ? "Done"
+              : "In progress";
+            row
+              .querySelector(".status")
+              .classList.toggle("progress", !completed);
+          }
+        });
+        const toast = document.querySelector(".toast");
+        const a = smooth((t - 3.4) / 0.35) * (1 - smooth((t - 5.6) / 0.4));
+        toast.style.opacity = String(a);
+        toast.style.transform = `translateY(${(1 - a) * 10}px)`;
+        // Return the same revision while the actual pixels are unchanged: camera-only frames reuse the texture.
+        return {
+          revision:
+            t < 1.3 || (t > 3.1 && t < 4) || (t > 5.6 && t < 6)
+              ? Math.round(t * 10000)
+              : t <= 3.1
+                ? "before"
+                : t <= 5.6
+                  ? "complete"
+                  : "settled",
+        };
+      }
+      window.tiltSource = { ready: () => document.fonts.ready, sample };
+      document.querySelector("#create").onclick = () => {
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML =
+          '<div class="task"><span class="box"></span>New task</div><span class="status">To do</span><span class="date">—</span>';
+        rows.append(row);
+      };
+      sample({ time: 0 });
+    </script>
+  </body>
+</html>
