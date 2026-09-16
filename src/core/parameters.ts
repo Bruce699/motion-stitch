@@ -15,11 +15,21 @@ const vector = z.tuple([
   z.number().finite(),
   z.number().finite(),
 ]);
+const point = z
+  .object({ x: z.number().finite(), y: z.number().finite() })
+  .strict();
+const padAxis = z.object({
+  min: z.number().finite(),
+  max: z.number().finite(),
+  step: z.number().finite().positive().default(0.01),
+  default: z.number().finite().optional(),
+});
 export const ParameterValueSchema = z.union([
   z.number().finite(),
   z.string(),
   z.boolean(),
   vector,
+  point,
 ]);
 export type ParameterValue = z.infer<typeof ParameterValueSchema>;
 export type ParameterValues = Record<string, ParameterValue>;
@@ -44,8 +54,15 @@ export const ParameterSchema = z.preprocess(
       z.object({ ...common, type: z.literal("boolean"), value: z.boolean() }),
       z.object({
         ...common,
+        type: z.literal("text"),
+        value: z.string().max(4000),
+        placeholder: z.string().max(100).optional(),
+      }),
+      z.object({
+        ...common,
         type: z.literal("select"),
         value: z.string(),
+        control: z.enum(["dropdown", "segmented"]).default("dropdown"),
         options: z
           .array(
             z.object({ label: z.string().min(1), value: z.string().min(1) }),
@@ -58,6 +75,19 @@ export const ParameterSchema = z.preprocess(
         ...range,
         type: z.literal("vector3"),
         value: vector,
+      }),
+      z.object({
+        ...common,
+        type: z.literal("pad"),
+        value: point,
+        x: padAxis,
+        y: padAxis,
+        labels: z
+          .object({
+            x: z.string().min(1).max(20).optional(),
+            y: z.string().min(1).max(20).optional(),
+          })
+          .optional(),
       }),
     ])
     .superRefine((p, ctx) => {
@@ -77,6 +107,31 @@ export const ParameterSchema = z.preprocess(
         ctx.addIssue({
           code: "custom",
           message: "Choice values must be unique and include the current value",
+        });
+      if (p.type === "pad") {
+        for (const axis of ["x", "y"] as const) {
+          const r = p[axis];
+          if (
+            r.min >= r.max ||
+            p.value[axis] < r.min ||
+            p.value[axis] > r.max ||
+            (r.default !== undefined &&
+              (r.default < r.min || r.default > r.max))
+          )
+            ctx.addIssue({
+              code: "custom",
+              message: `Pad ${axis.toUpperCase()} must be inside its range`,
+            });
+        }
+      }
+      if (
+        p.type === "select" &&
+        p.control === "segmented" &&
+        p.options.length > 5
+      )
+        ctx.addIssue({
+          code: "custom",
+          message: "Use a dropdown for more than five choices",
         });
     }),
 );
@@ -106,6 +161,8 @@ export function parameterReader(parameters: Record<string, Parameter>) {
     boolean: (key: string) => read(key, "boolean").value,
     select: (key: string) => read(key, "select").value,
     vector3: (key: string) => read(key, "vector3").value,
+    pad: (key: string) => read(key, "pad").value,
+    text: (key: string) => read(key, "text").value,
   };
 }
 export type ParameterReader = ReturnType<typeof parameterReader>;

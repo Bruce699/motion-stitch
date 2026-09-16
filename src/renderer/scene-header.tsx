@@ -89,7 +89,7 @@ export function SceneHeader({
       {editing ? (
         <input
           ref={title}
-          className="cx-input title-input"
+          className="ui-input title-input"
           aria-label="Scene name"
           maxLength={100}
           value={draft}
@@ -109,7 +109,7 @@ export function SceneHeader({
         />
       ) : (
         <button
-          className="cx-button title-name"
+          className="ui-button title-name"
           data-variant="ghost"
           data-size="toolbar"
           title="Double-click to rename"
@@ -127,7 +127,7 @@ export function SceneHeader({
       )}
       <button
         ref={trigger}
-        className="cx-button icon-button"
+        className="ui-button icon-button"
         data-variant="ghost"
         data-size="icon"
         aria-label="Scene settings"
@@ -157,7 +157,7 @@ export function SceneHeader({
         <div
           ref={panel}
           id="scene-settings"
-          className="cx-menu settings-popover"
+          className="ui-popover settings-popover"
           role="dialog"
           aria-label="Scene settings"
           onBlur={(e) => {

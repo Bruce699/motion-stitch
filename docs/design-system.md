@@ -1,35 +1,21 @@
 # Editor design system
 
-Tilt uses the user-supplied Codex style kit. The portable stylesheet is vendored unchanged at `src/renderer/design-system/codex.css`, imported before `src/renderer/style.css`. Keep the editor's identity and purpose: a canvas, timeline and parameters. Scene content is authored independently of the editor theme.
+Tilt uses a selective source fork of [Dial Kit](https://github.com/joshpuckett/dialkit). This follows the latest design direction and replaces the earlier Codex style kit. The source version, license and local adaptations are recorded in [UPSTREAM.md](../src/renderer/vendor/dialkit/UPSTREAM.md).
 
-## Source and fidelity
+`vendor/dialkit/theme.css` supplies the original semantic tokens and selected control rules. `style.css` supplies Tilt's shell layout and compatibility overrides. Use the `--dial-*` tokens, 36px filled controls, compact 28px toolbar actions, restrained system type, Geist Mono values, and subtle tonal separation. Keep the canvas, timeline and parameter panel as the primary structure. Scene content has its own styling.
 
-The supplied archive was `codex-style-kit.zip`, inspected on 16 September 2026. Its manifest identifies installed Codex desktop **26.908.70816, build 9275**. The kit contains extracted component recipes and reconstructed default light/dark theme values; it is not official brand guidance or a live account appearance snapshot.
+## Shared controls
 
-The unchanged portable stylesheet has SHA-256 `af4b37e7bda54b27ffc89d61ed524a5371296676850784765870013204d2dd61`. Do not also import the kit's evidence-only `codex-source-tokens.css` or `codex-default-themes.css`. The complete extraction lives locally under ignored `.tilt/design-reference/`; this document and the portable stylesheet are the durable implementation reference.
+The editor reuses Dial Kit's filled slider, segmented control, toggle, dropdown, XY pad, color picker and autosizing text field. XYZ vectors and number-only fields use Tilt's validated draft input within the same visual treatment. Add scene controls through `scene.json.parameters`; see [parameters.md](parameters.md). Do not create a private widget for every shader.
 
-Exact reused values include the system font stack; 430-weight, 14px/21px body type; 13px/18px button type; semantic colors; neutral primary buttons; 28px toolbar controls; and supported superellipse radii. The 32×20px switch with a 16px thumb follows the source recipe, adapted to Tilt's existing native checkbox. Timecode uses the supplied mono family at 12px.
+Keep keyboard navigation, visible focus, accessible names, Escape dismissal and popup collision handling. Use the existing shared icons; do not invent brand marks. Retain the MIT notice when adapting upstream code. Motion's springs are an implementation dependency; Dial Kit itself is not installed.
 
-Tilt-specific composition includes the 275px parameter panel, timeline, slider treatment and compact input sizes. Existing Tilt transport/settings icons are retained at 16px or 18px: they are not claimed as extracted Codex icons. The kit's seven sidebar icons have no matching role in this editor. Native window vibrancy and pixel identity with the Codex application are not claimed.
+All creative values flow through Tilt's file journal. Control gestures share an ordered save queue and finish one edit group. No independent preset store, browser-only values, or hidden animation loop. Reduced motion disables decorative spring settling/transitions; it does not alter authored animation or direct inspection.
 
-## Rules for changes
+## Timeline and layout
 
-- Use existing `--color-*` roles, `--radius-*`, `--shadow-*` and font tokens. Do not create another palette, hardcode purple accents, or use Inter as the default UI font.
-- Prefer `cx-button` with an explicit size and variant. Primary actions use the neutral solid fill; ordinary actions use ghost or secondary styles. Preserve keyboard focus and disabled behavior.
-- Popovers use the kit's elevated surface, fine ring, shadow and corner recipe. Keep positioning inside the viewport and preserve Escape, outside-click dismissal and focus return.
-- Parameter controls remain data-driven through `scene.json.parameters` and `parameters.tsx`. A shader's controls should use that vocabulary, not a private component or stylesheet. See `docs/parameters.md`.
-- Use 4px-based spacing, 12–14px editor type, restrained weights and tonal separation. Avoid redundant cards and explanatory copy. Creative cue colors still come from the scene, mixed with theme tokens for legibility.
-- Do not apply global active-scale animations. Respect reduced motion for switches, buttons and loading indicators. Inspection gestures and authored motion remain separate from shell animation preferences.
-- Keep the vendored stylesheet byte-identical. Local compatibility fixes belong in `style.css`; its round-corner fallback intentionally has enough specificity to override explicit theme selectors.
+The controlled timeline uses Dial Kit's overview, adaptive ticks, playhead, lanes and anchored zoom patterns. Drag to seek, Option/Alt-drag to zoom, Shift-drag to reset and seek, and Option/Alt-wheel to zoom under the pointer. The overview navigates the full scene; a horizontal scroll track appears when zoomed. Arrow keys step one frame, Shift-arrows ten frames, Home/End go to the bounds. Bars/diamonds display authored cues; editing their timing is not implemented.
 
-The default is dark. An embedding host or a reviewer can request `?theme=light` or `?theme=dark` in the viewer URL. This only changes editor presentation; it does not write the scene or change render output. No application-wide appearance setting is added yet.
+The default theme is dark. `?theme=light` or `?theme=dark` changes only the viewer shell. Colors, shaders and exports do not inherit the editor theme. Desktop uses a 304px parameter panel (280px below 1000px) and a 250px timeline; below 640px, parameters move beneath the timeline with their own scroll region. Canvas fitting measures the actual available space. Do not reset a user's pan, zoom, orbit or time while restyling.
 
-At widths below 640px, parameters move below the timeline into their own scrolling region. At desktop widths they remain on the right. The canvas measures its actual CSS padding when fitting, and ruler labels adapt to available width and scene duration.
-
-## Verification
-
-Checked real browser rendering in both themes, including a 390px-wide view, long title drafts, settings focus/dismissal, and popover viewport boundaries. Computed styles confirmed body 14px/430/21px, 28px buttons/compact controls, a 20px supported popover radius and the source theme colors. The browser supports superellipse; the unsupported-browser fallback was reviewed in code, not rendered in an older browser.
-
-An isolated local project exposed toggle, color, choice, XYZ, numeric-only and slider controls. The toggle and keyboard slider edits saved and undid through Tilt's history. Reduced-motion emulation produced zero-duration switch transitions. Typecheck, the production build and all 20 existing behavioral tests passed. The authored scene and the primary viewer's inspection were preserved.
-
-The isolated viewer also exercised 2D panning, wheel zoom and playback. Fresh runtime context confirmed nonzero pan, zoom 1.241 and advancing presented time. This redesign did not change the rendering engine or scene choreography; the full video-export checks in `docs/verification.md` describe the preceding runtime revision.
+Geist Mono is bundled locally with its SIL license. There are no remote font requests. The original Codex archive remains a local reference, but its stylesheet is no longer imported or carried in the product.

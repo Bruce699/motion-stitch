@@ -1,40 +1,56 @@
-/* Tilt layout and editor-specific controls. Theme values come from codex.css. */
+@font-face {
+  font-family: "Geist Mono";
+  src: url("./fonts/geist-mono-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
 :root {
   font-synthesis: none;
-  --inspector-width: 275px;
-  --timeline-height: 240px;
-  --track-height: 40px;
-  --ruler-height: 32px;
+  color-scheme: dark;
+  --inspector-width: 304px;
+  --timeline-height: 250px;
 }
-/* The vendor fallback has lower specificity than its explicit theme selectors. */
-@supports not (corner-shape: superellipse(1.5)) {
-  :root[data-theme] {
-    --corner-radius-scale: 1;
-    --codex-corner-radius-scale: 1;
-    --codex-corner-shape: round;
-  }
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+* {
+  box-sizing: border-box;
 }
 body {
+  margin: 0;
   overflow: hidden;
+}
+.tilt-ui {
+  background: #181818;
+  color: var(--dial-text-primary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.tilt-ui[data-theme="light"] {
+  background: #f0f0f0;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 button {
   border: 0;
-  background: transparent;
+  background: none;
   color: inherit;
+  cursor: default;
 }
 button:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: default;
 }
 button,
 input,
-select {
+select,
+textarea {
   -webkit-app-region: no-drag;
-}
-button {
-  transition:
-    background-color 150ms ease-out,
-    color 150ms ease-out;
 }
 input,
 select {
@@ -43,11 +59,9 @@ select {
 svg {
   flex-shrink: 0;
 }
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--color-ring);
-  outline-offset: 2px;
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 input[type="number"]::-webkit-inner-spin-button {
   opacity: 0;
@@ -55,15 +69,11 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"]:hover::-webkit-inner-spin-button {
   opacity: 0.6;
 }
-.codex-ui .cx-button {
-  font-size: 13px;
-  line-height: 18px;
-}
 .app {
   height: 100dvh;
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--inspector-width);
-  grid-template-rows: 46px minmax(180px, 1fr) var(--timeline-height);
+  grid-template-rows: 48px minmax(180px, 1fr) var(--timeline-height);
   grid-template-areas: "header header" "workspace inspector" "timeline inspector";
 }
 .titlebar {
@@ -73,8 +83,8 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   align-items: center;
   gap: 12px;
   z-index: 10;
-  border-bottom: 0.5px solid var(--color-border);
-  background: var(--color-surface);
+  border-bottom: 1px solid var(--dial-border);
+  background: var(--dial-glass-bg);
   padding: 0 16px 0 90px;
   -webkit-app-region: drag;
 }
@@ -82,8 +92,9 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   padding-left: 20px;
 }
 .brand {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .document-title {
   min-width: 0;
@@ -92,32 +103,51 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   gap: 4px;
   -webkit-app-region: no-drag;
 }
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: var(--dial-surface);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color 150ms,
+    color 150ms;
+}
+.ui-button:hover:not(:disabled) {
+  background: var(--dial-surface-hover);
+}
+.ui-button[data-variant="ghost"] {
+  background: transparent;
+  color: var(--dial-text-label);
+}
+.ui-button[data-variant="ghost"]:hover:not(:disabled),
+.ui-button[aria-expanded="true"] {
+  background: var(--dial-surface-hover);
+  color: var(--dial-text-primary);
+}
 .document-title .title-name {
   display: block;
-  flex-shrink: 1;
   min-width: 0;
   max-width: 280px;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: text;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--dial-text-root);
 }
 .document-title .title-input {
   width: 240px;
-  max-width: 100%;
   height: 28px;
-  padding: 0 8px;
   font-size: 14px;
-  font-weight: 500;
-}
-.settings-popover {
-  position: fixed;
-  width: 286px;
-  max-width: calc(100vw - 16px);
-  max-height: calc(100dvh - 64px);
-  overflow: auto;
-  padding: 16px;
+  font-weight: 600;
+  padding: 0 8px;
 }
 .header-actions {
   justify-self: end;
@@ -128,23 +158,35 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .icon-button {
   width: 28px;
   height: 28px;
-}
-.cx-button.icon-button[data-variant="ghost"] {
-  color: var(--color-text-secondary);
-}
-.cx-button.icon-button:hover:not(:disabled),
-.cx-button.icon-button[aria-expanded="true"] {
-  color: var(--color-text);
-}
-.cx-button[aria-expanded="true"],
-.view-controls .cx-button[aria-pressed="true"] {
-  background: var(--color-background-primary-ghost-hover);
+  padding: 4px;
+  flex-shrink: 0;
 }
 .render-button {
   margin-left: 8px;
+  background: var(--dial-text-root);
+  color: var(--dial-glass-bg);
+  border-radius: 999px;
+}
+.render-button:hover:not(:disabled) {
+  background: var(--dial-text-primary);
 }
 .redo svg {
   transform: scaleX(-1);
+}
+.ui-popover {
+  background: var(--dial-dropdown-bg);
+  border: 1px solid var(--dial-border);
+  border-radius: 12px;
+  box-shadow: var(--dial-shadow-dropdown);
+  color: var(--dial-text-primary);
+}
+.settings-popover {
+  position: fixed;
+  width: 286px;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 64px);
+  overflow: auto;
+  padding: 12px;
 }
 .workspace {
   grid-area: workspace;
@@ -152,38 +194,31 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  background: var(--color-surface-secondary);
   overflow: hidden;
 }
 .canvas-toolbar {
-  height: 40px;
+  height: 44px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  color: var(--color-text-secondary);
-  font-size: 13px;
+  padding: 0 12px;
+  color: var(--dial-text-label);
 }
 .view-controls {
   display: flex;
   align-items: center;
   gap: 4px;
 }
-.view-controls .cx-button[data-variant="ghost"] {
-  color: var(--color-text-secondary);
-}
-.view-controls .cx-button[aria-pressed="true"] {
-  color: var(--color-text);
-}
 .divider {
   height: 16px;
-  border-left: 0.5px solid var(--color-border);
+  border-left: 1px solid var(--dial-border);
   margin: 0 4px;
 }
 .zoom-readout {
   min-width: 40px;
   margin-left: 4px;
   font-size: 12px;
+  font-family: "Geist Mono", monospace;
   font-variant-numeric: tabular-nums;
 }
 .canvas-area {
@@ -202,10 +237,10 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   flex-shrink: 0;
   container-type: size;
   box-shadow:
-    0 0 0 0.5px var(--color-border),
-    var(--shadow-lg);
+    0 0 0 1px var(--dial-border),
+    0 8px 32px #0002;
   overflow: hidden;
-  background: var(--color-surface);
+  background: var(--dial-glass-bg);
 }
 .scene-stage {
   width: 100%;
@@ -231,7 +266,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   flex-shrink: 0;
   padding: 0 16px;
   align-items: center;
-  color: var(--color-text-tertiary);
+  color: var(--dial-text-tertiary);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
@@ -242,15 +277,14 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: color-mix(in srgb, var(--color-surface) 35%, transparent);
-  color: var(--color-text);
+  background: color-mix(in srgb, var(--dial-glass-bg) 35%, transparent);
   backdrop-filter: blur(3px);
 }
 .spinner {
   height: 12px;
   width: 12px;
-  border: 1.5px solid var(--color-border);
-  border-top-color: var(--color-text-secondary);
+  border: 1.5px solid var(--dial-border);
+  border-top-color: var(--dial-text-secondary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   display: inline-block;
@@ -264,213 +298,164 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   grid-area: inspector;
   min-height: 0;
   min-width: 0;
-  background: var(--color-surface);
-  border-left: 0.5px solid var(--color-border);
+  background: var(--dial-glass-bg);
+  border-left: 1px solid var(--dial-border);
   overflow: auto;
   scrollbar-width: thin;
+  scrollbar-color: var(--dial-text-tertiary) transparent;
 }
 .inspector-heading {
-  height: 40px;
+  height: 44px;
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  color: var(--color-text);
-  font-size: 13px;
-  font-weight: 500;
+  padding: 0 16px;
+  color: var(--dial-text-root);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .parameter-group {
   min-width: 0;
   margin: 0;
-  padding: 20px;
+  padding: 12px;
   border: 0;
-  border-top: 0.5px solid var(--color-border);
+  border-top: 1px solid var(--dial-border);
 }
 .parameter-group legend {
   float: left;
   width: 100%;
-  padding: 0 0 16px;
+  padding: 4px 0 12px;
+  color: var(--dial-text-section);
   font-size: 13px;
-  color: var(--color-text-tertiary);
+  font-weight: 500;
 }
-.parameter-group legend + .parameter {
+.parameter-group legend + .parameter-control {
   clear: both;
 }
 .parameter-group:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
 }
-.parameter {
-  display: block;
-  margin-bottom: 20px;
-  font-size: 13px;
-  color: var(--color-text);
+.parameter-control {
+  margin-bottom: var(--dial-row-gap);
+  min-width: 0;
 }
-.parameter:last-child {
+.parameter-control:last-child {
   margin-bottom: 0;
 }
-.control-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 13px;
-}
-.control-row > span:first-child {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.parameter > .control-row {
-  margin-bottom: 8px;
-}
-.number-value {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-.parameter-unit {
-  color: var(--color-text-tertiary);
-  font-size: 12px;
-}
-.parameter input[type="number"],
-.color-value input[type="text"],
-.parameter select,
-.field select,
-.field input,
-.input-unit {
-  height: 28px;
-  background: var(--color-background-primary-soft);
-  border: 0.5px solid var(--color-border-primary-outline);
-  border-radius: var(--radius-md);
-  corner-shape: var(--codex-corner-shape, round);
-  padding: 0 8px;
-  color: var(--color-text);
-  font-size: 13px;
-  line-height: 18px;
-  font-variant-numeric: tabular-nums;
-}
-.parameter input[type="number"] {
-  width: 64px;
-  text-align: right;
-}
-.parameter input[type="range"] {
-  display: block;
-  appearance: none;
-  width: 100%;
-  height: 20px;
-  margin: 0;
-  background: transparent;
-  cursor: ew-resize;
-  border-radius: var(--radius-sm);
-  accent-color: var(--color-text);
-}
-.parameter input[type="range"]::-webkit-slider-runnable-track {
-  height: 3px;
-  background: var(--color-border-primary-outline);
-  border-radius: 9999px;
-}
-.parameter input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  margin-top: -4.5px;
-  border-radius: 50%;
-  background: var(--color-text);
-  border: 1px solid var(--color-surface);
-  box-shadow: var(--shadow-sm);
-}
-.parameter input[type="range"]::-moz-range-track {
-  height: 3px;
-  background: var(--color-border-primary-outline);
-  border-radius: 9999px;
-}
-.parameter input[type="range"]::-moz-range-thumb {
-  width: 10px;
-  height: 10px;
-  background: var(--color-text);
-  border: 1px solid var(--color-surface);
-  border-radius: 50%;
-}
-.parameter input[role="switch"] {
-  appearance: none;
-  position: relative;
-  width: 32px;
-  height: 20px;
-  margin: 0;
-  flex-shrink: 0;
-  border: 0;
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--color-text) 10%, transparent);
-  transition: background-color 150ms ease-out;
-}
-.parameter input[role="switch"]:checked {
-  background: var(--color-background-info-solid);
-}
-.parameter input[role="switch"]::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 2px;
-  width: 16px;
-  height: 16px;
-  border: 1px solid var(--color-control-thumb-on-accent);
-  background: var(--color-control-thumb-on-accent);
-  border-radius: 50%;
-  box-shadow: var(--shadow-sm);
-  transform: translateX(2px);
-  transition: transform 150ms ease-out;
-}
-.parameter input[role="switch"]:checked::before {
-  transform: translateX(14px);
-}
-.parameter select {
-  max-width: 132px;
-}
-.color-value {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.color-value input[type="text"] {
-  width: 84px;
-  text-transform: uppercase;
-  font-size: 12px;
-  font-family: var(--font-mono);
-}
-.color-value input[type="color"] {
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  border: 0.5px solid var(--color-border-primary-outline);
-  border-radius: var(--radius-sm);
-  padding: 0;
+.dialkit-slider-label {
+  max-width: calc(100% - 80px);
+  white-space: nowrap;
   overflow: hidden;
-  background: transparent;
+  text-overflow: ellipsis;
 }
-.color-value input::-webkit-color-swatch-wrapper {
-  padding: 0;
+.dialkit-slider-input {
+  width: 7ch;
+  max-width: 12ch;
 }
-.color-value input::-webkit-color-swatch {
-  border: 0;
+.parameter-segmented {
+  height: auto;
+  min-height: 36px;
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+.parameter-segmented .dialkit-labeled-control-label {
+  padding: 6px 0;
+}
+.parameter-segmented .dialkit-segmented {
+  max-width: 100%;
+  min-width: 0;
+}
+.parameter-segmented .dialkit-segmented-button {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dialkit-labeled-control-label,
+.dialkit-select-label,
+.dialkit-color-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dialkit-labeled-control-label,
+.dialkit-color-label {
+  flex-shrink: 1;
+}
+.vector-parameter {
+  margin: 12px 0;
+}
+.vector-heading {
+  display: flex;
+  justify-content: space-between;
+  color: var(--dial-text-label);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 2px 8px;
 }
 .vector-control {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 .vector-control label {
   display: flex;
   align-items: center;
   gap: 4px;
   min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: var(--dial-surface);
+  color: var(--dial-text-label);
 }
-.vector-control label > span {
-  font-size: 12px;
-  color: var(--color-text-tertiary);
+.vector-control input,
+.number-control input {
+  background: transparent;
+  border: 0;
+  color: var(--dial-text-primary);
+  text-align: right;
+  padding: 0;
+  min-width: 0;
+  font:
+    500 13px "Geist Mono",
+    monospace;
 }
-.vector-control input[type="number"] {
+.vector-control input {
   width: 100%;
-  padding: 0 4px;
+}
+.number-control input {
+  width: 70px;
+}
+.number-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "Geist Mono", monospace;
+}
+.ui-input,
+.field select,
+.field input,
+.input-unit,
+.color-value input[type="text"] {
+  height: 32px;
+  background: var(--dial-surface);
+  border: 1px solid var(--dial-border);
+  border-radius: 8px;
+  padding: 0 8px;
+  color: var(--dial-text-primary);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.tilt-ui .ui-input:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible,
+.number-control input:focus-visible,
+.vector-control input:focus-visible,
+.color-value input:focus-visible {
+  outline: 2px solid var(--dial-focus-ring);
+  outline-offset: -2px;
 }
 .field {
   display: flex;
@@ -478,12 +463,12 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   gap: 8px;
   font-size: 13px;
   margin-bottom: 16px;
+  color: var(--dial-text-label);
 }
 .field input,
 .field select,
 .input-unit {
   width: 100%;
-  height: 32px;
 }
 .field-pair {
   display: grid;
@@ -496,8 +481,8 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   padding: 0 10px 0 0;
 }
 .input-unit:focus-within {
-  outline: 2px solid var(--color-ring);
-  outline-offset: 0;
+  outline: 2px solid var(--dial-focus-ring);
+  outline-offset: -2px;
 }
 .input-unit input {
   height: 100%;
@@ -505,17 +490,53 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   background: transparent;
   padding: 0 10px;
 }
-.input-unit input:focus-visible {
+.tilt-ui .input-unit input:focus-visible {
   outline: none;
 }
 .input-unit > span {
-  color: var(--color-text-tertiary);
+  color: var(--dial-text-tertiary);
+}
+.control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.color-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.color-value input[type="text"] {
+  width: 88px;
+  text-transform: uppercase;
+  font:
+    12px "Geist Mono",
+    monospace;
+}
+.color-value input[type="color"] {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--dial-border);
+  border-radius: 6px;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+.color-value input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.color-value input::-webkit-color-swatch {
+  border: 0;
 }
 .timeline {
   grid-area: timeline;
   min-width: 0;
-  background: var(--color-surface);
-  border-top: 0.5px solid var(--color-border);
+  min-height: 0;
+  background: var(--dial-glass-bg);
+  border-top: 1px solid var(--dial-border);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -523,11 +544,10 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .transport {
   display: flex;
   justify-content: space-between;
-  height: 44px;
+  height: 40px;
   flex-shrink: 0;
   align-items: center;
-  border-bottom: 0.5px solid var(--color-border);
-  padding: 0 16px;
+  padding: 0 12px;
   gap: 8px;
 }
 .transport-left,
@@ -536,30 +556,29 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   align-items: center;
   gap: 4px;
 }
-.transport-left .icon-button:nth-child(2) {
-  color: var(--color-text);
-}
 .timecode,
 .total-time {
-  font: 400 12px/18px var(--font-mono);
+  font:
+    500 12px/18px "Geist Mono",
+    monospace;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .timecode {
-  margin-left: 12px;
-  color: var(--color-text);
+  margin-left: 10px;
+  color: var(--dial-text-primary);
 }
 .total-time {
-  color: var(--color-text-tertiary);
+  color: var(--dial-text-tertiary);
   margin-left: 4px;
 }
 .transport-right {
   gap: 12px;
-  color: var(--color-text-tertiary);
+  color: var(--dial-text-tertiary);
   font-size: 12px;
 }
 .job-count {
-  background: var(--color-background-primary-ghost-hover);
+  background: var(--dial-surface-active);
   font-size: 12px;
   min-width: 16px;
   height: 16px;
@@ -567,126 +586,94 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   place-items: center;
   border-radius: 9999px;
 }
-.timeline-body {
+.tilt-timeline {
   display: flex;
-  flex: 1;
+  flex-direction: column;
   min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: thin;
+  flex: 1;
+  padding: 0 12px 10px;
+  --dial-timeline-label-w: 96px;
+  --dial-timeline-header-h: 0px;
 }
-.track-names {
-  min-height: min-content;
-  width: 144px;
-  flex-shrink: 0;
-  border-right: 0.5px solid var(--color-border);
-}
-.ruler-name {
-  height: var(--ruler-height);
-}
-.track-name {
-  height: var(--track-height);
+.timeline-overview-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--color-text-secondary);
-  padding: 0 16px;
-}
-.track-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+  gap: 12px;
+  height: 30px;
   flex-shrink: 0;
 }
-.track-label {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.tracks {
-  position: relative;
-  min-height: min-content;
-  min-width: 0;
+.timeline-overview-row .dialkit-timeline-overview {
   flex: 1;
-  margin-right: 20px;
-  touch-action: none;
-  user-select: none;
-  cursor: crosshair;
-  background: repeating-linear-gradient(
-    to right,
-    transparent 0,
-    transparent calc(12.5% - 0.5px),
-    var(--color-border) calc(12.5% - 0.5px),
-    var(--color-border) 12.5%
-  );
 }
-.ruler {
-  height: var(--ruler-height);
-  position: relative;
-  border-bottom: 0.5px solid var(--color-border);
+.timeline-zoom {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--dial-text-label);
+  font-size: 12px;
 }
-.ruler > span {
-  position: absolute;
-  top: 8px;
-  font: 400 12px/16px var(--font-mono);
-  color: var(--color-text-tertiary);
-  transform: translateX(4px);
+.timeline-zoom button {
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 6px;
+  min-width: 24px;
 }
-.ruler > span:last-child {
-  transform: translateX(-100%);
+.timeline-zoom button:hover:not(:disabled) {
+  background: var(--dial-surface-hover);
 }
-.track-row {
-  height: var(--track-height);
-  position: relative;
-  padding: 7px 0;
+.timeline-zoom button:nth-child(2) {
+  min-width: 36px;
+  font:
+    11px "Geist Mono",
+    monospace;
 }
-.track-clip {
-  position: absolute;
-  height: calc(var(--track-height) - 14px);
-  min-width: 2px;
-  border: 0.5px solid color-mix(in srgb, var(--track-color) 28%, transparent);
-  border-radius: var(--radius-xs);
-  color: color-mix(in srgb, var(--track-color) 60%, var(--color-text));
-  background: color-mix(in srgb, var(--track-color) 10%, var(--color-surface));
+.timeline-cue-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  scrollbar-width: thin;
 }
-.track-clip > i {
-  position: absolute;
-  top: calc(50% - 2.5px);
-  width: 5px;
-  height: 5px;
-  background: currentColor;
-  transform: translateX(-2.5px) rotate(45deg);
+.tilt-timeline .dialkit-timeline-grid {
+  margin-right: 1px;
 }
-.playhead {
-  position: absolute;
+.tilt-timeline .dialkit-timeline-ruler-row {
   top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--color-text);
-  pointer-events: none;
-  z-index: 2;
 }
-.playhead > span {
-  position: absolute;
-  width: 9px;
-  height: 12px;
-  background: var(--color-text);
-  top: 0;
+.tilt-timeline .dialkit-timeline-ruler {
+  overflow: hidden;
+}
+.tilt-timeline .dialkit-timeline-tick-label[data-end] {
   left: -4px;
-  clip-path: polygon(0 0, 100% 0, 100% 65%, 50% 100%, 0 65%);
+  transform: translate(-100%, -50%);
 }
-.timeline-accessible {
+.tilt-timeline .dialkit-timeline-clip {
+  cursor: ew-resize;
+}
+.tilt-timeline .dialkit-timeline-lane {
+  touch-action: none;
+  cursor: ew-resize;
+}
+.timeline-cue {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  bottom: 0;
-  left: 0;
+  top: calc(50% - 2px);
+  width: 4px;
+  height: 4px;
+  transform: translateX(-2px) rotate(45deg);
+  background: #0006;
+  pointer-events: none;
 }
-.timeline-accessible:focus-visible {
-  opacity: 1;
-  width: 100%;
-  height: 8px;
+.tilt-timeline .dialkit-timeline-playhead-control {
+  z-index: 6;
+}
+.tilt-timeline .dialkit-timeline-playhead-anchor {
+  position: sticky;
+  top: 14px;
+  margin-top: 14px;
+}
+.tilt-timeline .dialkit-timeline-scroll-row {
+  position: static;
+  padding: 4px 0 0;
+  margin: 0;
 }
 .error-toast {
   position: fixed;
@@ -697,15 +684,13 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   gap: 12px;
   align-items: center;
   padding: 12px 16px;
-  background: var(--color-background-danger-surface);
-  border-radius: var(--radius-xl);
-  corner-shape: var(--codex-corner-shape, round);
-  box-shadow:
-    0 0 0 0.5px var(--color-border),
-    var(--shadow-xl);
+  background: var(--dial-dropdown-bg);
+  border: 1px solid var(--dial-border);
+  border-radius: 12px;
+  box-shadow: var(--dial-shadow-dropdown);
   z-index: 11;
   font-size: 13px;
-  color: var(--color-text-danger);
+  color: #e99696;
 }
 .error-toast > div {
   flex: 1;
@@ -720,7 +705,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 }
 .jobs-panel {
   position: fixed;
-  right: calc(var(--inspector-width) + 16px);
+  right: calc(var(--inspector-width) + 12px);
   bottom: calc(var(--timeline-height) + 8px);
   width: 320px;
   max-width: calc(100vw - 16px);
@@ -733,14 +718,13 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--color-text);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   padding: 0 8px 8px;
 }
 .job {
   padding: 16px 8px;
-  border-top: 0.5px solid var(--color-border);
+  border-top: 1px solid var(--dial-border);
 }
 .job-top,
 .job-actions {
@@ -757,28 +741,28 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 }
 .job-top > span {
   font-size: 12px;
-  color: var(--color-text-secondary);
+  color: var(--dial-text-secondary);
   text-transform: capitalize;
 }
 .job-detail {
   font-size: 12px;
-  color: var(--color-text-tertiary);
+  color: var(--dial-text-tertiary);
   margin: 8px 0 12px;
 }
 .job-actions {
   font-size: 12px;
-  color: var(--color-text-tertiary);
+  color: var(--dial-text-tertiary);
 }
 .job-actions button {
   height: 28px;
-  padding: 0 8px;
-  border: 0.5px solid var(--color-border);
-  border-radius: 9999px;
-  color: var(--color-text);
+  padding: 0 10px;
+  border-radius: 8px;
+  background: var(--dial-surface);
+  color: var(--dial-text-label);
   font-size: 13px;
 }
 .job-actions button:hover {
-  background: var(--color-background-primary-ghost-hover);
+  background: var(--dial-surface-hover);
 }
 .job progress {
   width: 100%;
@@ -787,28 +771,28 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   margin: 0 0 12px;
 }
 .job progress::-webkit-progress-bar {
-  background: var(--color-border);
+  background: var(--dial-border);
   border-radius: 9999px;
 }
 .job progress::-webkit-progress-value {
-  background: var(--color-text);
+  background: var(--dial-text-primary);
   border-radius: 9999px;
 }
 .job-error {
-  color: var(--color-text-danger);
+  color: #e99696;
   font-size: 12px;
   margin-top: 10px;
   overflow-wrap: anywhere;
 }
 .empty-jobs {
   padding: 24px;
-  color: var(--color-text-secondary);
+  color: var(--dial-text-secondary);
   text-align: center;
   font-size: 13px;
 }
 @media (max-width: 1000px) {
   :root {
-    --inspector-width: 248px;
+    --inspector-width: 280px;
   }
   .titlebar {
     gap: 8px;
@@ -816,18 +800,9 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   .document-title .title-name {
     max-width: 220px;
   }
-  .transport {
-    padding: 0 12px;
-  }
   .transport-right > span,
   .total-time {
     display: none;
-  }
-  .track-names {
-    width: 112px;
-  }
-  .track-name {
-    padding: 0 12px;
   }
 }
 @media (max-width: 760px) {
@@ -843,9 +818,6 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   .title-input {
     width: 180px;
   }
-  .canvas-toolbar {
-    padding: 0 12px;
-  }
   .canvas-area {
     padding: 12px;
   }
@@ -858,19 +830,14 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   .transport-right {
     gap: 0;
   }
-  .tracks {
-    margin-right: 12px;
-  }
 }
 @media (max-width: 640px) {
   :root {
-    --timeline-height: 224px;
-    --track-height: 36px;
-    --ruler-height: 28px;
+    --timeline-height: 246px;
   }
   .app {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 46px minmax(160px, 1fr) var(--timeline-height) minmax(
+    grid-template-rows: 48px minmax(160px, 1fr) var(--timeline-height) minmax(
         180px,
         0.8fr
       );
@@ -896,10 +863,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   }
   .inspector {
     border-left: 0;
-    border-top: 0.5px solid var(--color-border);
-  }
-  .parameter-group {
-    padding: 16px 20px;
+    border-top: 1px solid var(--dial-border);
   }
   .jobs-panel {
     right: 8px;
@@ -911,12 +875,15 @@ input[type="number"]:hover::-webkit-inner-spin-button {
     right: 8px;
     bottom: 8px;
   }
+  .dialkit-pad-surface {
+    max-height: 260px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  button,
-  .parameter input[role="switch"],
-  .parameter input[role="switch"]::before {
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
   }
   .spinner {
     animation: none;

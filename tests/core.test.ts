@@ -175,7 +175,10 @@ test("a batched source and document edit still invalidates source preparation", 
       path.join(store.directory, "scene.json"),
       JSON.stringify(seed),
     );
-    await pause(350);
+    // macOS file events can arrive after the debounce window under load.
+    const deadline = Date.now() + 3000;
+    while (store.codeRevision <= previous && Date.now() < deadline)
+      await pause(25);
     assert.ok(store.codeRevision > previous);
   } finally {
     await clean();

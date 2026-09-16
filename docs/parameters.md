@@ -4,13 +4,15 @@ The right panel is generated from `scene.json.parameters`. An agent edits a decl
 
 ## Control vocabulary
 
-| Type      | Value         | Required metadata                               | Editor                                                        |
-| --------- | ------------- | ----------------------------------------------- | ------------------------------------------------------------- |
-| `number`  | finite number | `min`, `max`; optional `step` (0.01) and `unit` | Slider and number field; `control: "number"` omits the slider |
-| `color`   | `#rrggbb`     | none                                            | Color swatch and editable hex value                           |
-| `boolean` | true/false    | none                                            | Toggle                                                        |
-| `select`  | string        | `options: [{label, value}]`                     | Dropdown                                                      |
-| `vector3` | `[x, y, z]`   | `min`, `max`; optional `step` and `unit`        | XYZ number fields                                             |
+| Type      | Value                          | Required metadata                                                  | Editor                                                        |
+| --------- | ------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------- |
+| `number`  | finite number                  | `min`, `max`; optional `step` (0.01) and `unit`                    | Slider and number field; `control: "number"` omits the slider |
+| `color`   | `#rrggbb`                      | none                                                               | Color swatch and editable hex value                           |
+| `boolean` | true/false                     | none                                                               | Toggle                                                        |
+| `select`  | string                         | `options: [{label, value}]`                                        | Dropdown; `control: "segmented"` for up to five choices       |
+| `pad`     | `{ "x": 0, "y": 0 }`           | `x` and `y`: `{min, max, step?, default?}`; optional axis `labels` | XY pad with numeric fields                                    |
+| `text`    | string (up to 4000 characters) | optional `placeholder`                                             | Autosizing text field                                         |
+| `vector3` | `[x, y, z]`                    | `min`, `max`; optional `step` and `unit`                           | XYZ number fields                                             |
 
 Every definition has a short `label`. `group` is optional. Groups and controls follow first appearance in the JSON object. Omit groups for a handful of unrelated controls; use them to distinguish meaningful subjects, such as Camera or the name of an authored shader. `unit` describes the stored value; it never silently converts it. Existing numeric definitions without `type` remain valid.
 
@@ -45,6 +47,7 @@ Add to `parameters`:
   },
   "ripplePattern": {
     "type": "select",
+    "control": "segmented",
     "label": "Pattern",
     "group": "Ripple",
     "value": "soft",
@@ -78,7 +81,7 @@ sample({ time, controls }) {
 }
 ```
 
-The shader's behavior belongs to scene code. Tilt supplies controls and typed values; it does not infer arbitrary uniform names or prescribe the effect. `controls.number/color/boolean/select/vector3(key)` verifies the declared type and returns that value. `frame.parameters` remains a plain map for code that needs the full value set, and source adapters receive that same serializable map. Missing keys or wrong reader types fail with a specific error.
+The shader's behavior belongs to scene code. Tilt supplies controls and typed values; it does not infer arbitrary uniform names or prescribe the effect. `controls.number/color/boolean/select/vector3/pad/text(key)` verifies the declared type and returns that value. `frame.parameters` remains a plain map for code that needs the full value set, and source adapters receive that same serializable map. Missing keys or wrong reader types fail with a specific error.
 
 ## Standard conventions
 
@@ -96,10 +99,30 @@ The shader's behavior belongs to scene code. Tilt supplies controls and typed va
 
 These are conventions, not preset effects. Use stable descriptive keys; group names and labels may change without renaming those keys. For multiple similar objects, prefix keys (for example `navDepth`, `cardDepth`). Expose useful creative decisions rather than every internal constant. Do not expose shader source text as an ordinary text input.
 
+## XY pad and text
+
+```json
+{
+  "lightOrigin": {
+    "type": "pad",
+    "label": "Light origin",
+    "group": "Light",
+    "value": { "x": 0, "y": 0 },
+    "x": { "min": -1, "max": 1, "step": 0.01, "default": 0 },
+    "y": { "min": -1, "max": 1, "step": 0.01, "default": 0 }
+  },
+  "caption": { "type": "text", "label": "Caption", "value": "Hello" }
+}
+```
+
+Read `const {x, y} = controls.pad("lightOrigin")` and set an existing Vector2/uniform with `.set(x, y)`. Use `controls.text("caption")` for authored copy. Pad Y increases upward; define the conversion explicitly if the target uses downward-positive pixels. Shift-drag locks one axis; double-click or Home resets to the declared defaults (otherwise zero clamped into each range). An axis default is a reset target, not a second saved value. Both coordinates and defaults must lie within their axis ranges.
+
+The local Dial Kit fork supplies these widgets automatically. Do not create another persistence store or expose raw shader code through the text widget.
+
 ## Editing and verification
 
-Number/hex fields commit on Enter or blur; Escape cancels the draft. Invalid drafts restore the saved value. Sliders preview while dragging or holding arrow keys and close one history group on release, cancellation or blur. Toggles, choices and color-picker changes write through the same validated command. A native color picker may emit several changes; each is currently a normal history edit rather than one grouped color session.
+Number/hex fields commit on Enter or blur; Escape cancels the draft. Invalid drafts restore the saved value. Sliders preview while dragging or holding arrow keys and close one history group on release, cancellation or blur. Toggles, choices and color-picker changes write through the same validated command. The color plane/hue controls, XY pad and slider each group a gesture into one undo step. Text saves while typing and closes its group on blur. Control writes share a queue so moving between controls or immediately pressing Undo preserves order. Text fields retain native draft undo while focused.
 
-CLI examples: `set rippleStrength 0.4`, `set rippleEnabled false`, `set rippleTint '#112233'`, `set ripplePattern bands`, `set rippleOrigin '[1,0,2]'`. Ordinary file writes remain the primary agent workflow. Coordinate definition and shader changes in an edit group so neither becomes visible without the other.
+CLI examples: `set rippleStrength 0.4`, `set rippleEnabled false`, `set rippleTint '#112233'`, `set ripplePattern bands`, `set rippleOrigin '[1,0,2]'`, `set lightOrigin '{"x":0.2,"y":-0.4}'`, `set caption '"Hello world"'`. JSON-quote text that looks like a number or boolean to retain its string type. Ordinary file writes remain the primary agent workflow. Coordinate definition and shader changes in an edit group so neither becomes visible without the other.
 
 Verify the control appears without modifying the editor, changes the intended rendered property, saves the correct JSON type, and survives reload and Undo/Redo. Check backward seeking and an export through the same `sample` path. Grouping labels are not executable bindings, and parameter edits are not automatically keyframes.

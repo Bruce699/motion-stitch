@@ -18,7 +18,7 @@ Read the thesis in README.md. Keep the product a small, malleable container for 
 - Keep output files out of Git. Do not commit `.tilt`, credentials, captures, videos, caches or `node_modules`.
 - New effects usually belong in the scene. Promote helpers into core only after multiple concrete scenes need them.
 - UI copy must serve an action or necessary state. Do not add decorative explanatory text.
-- Editor styling: read `docs/design-system.md`. Use the supplied Codex tokens and shared controls; keep `src/renderer/design-system/codex.css` unchanged. New scene parameters inherit the editor styles automatically.
+- Editor styling: read `docs/design-system.md`. Use the local Dial Kit subset and its tokens; read `src/renderer/vendor/dialkit/UPSTREAM.md` before changing forked primitives. Preserve Tilt's file history and single clock. New scene parameters inherit the editor styles automatically.
 - Validate with typecheck, targeted behavioral tests, and rendered evidence. A successful build alone is not visual proof.
 
 The initial scene is a small vanilla fixture. It proves source capture, absolute time, a custom shader and persistence; it does not prove every framework or arbitrary production app works without an adapter.

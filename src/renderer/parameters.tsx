@@ -5,6 +5,14 @@ import {
   type ParameterValue,
 } from "../core/parameters";
 import { call } from "./bridge";
+import { queueControlEdit } from "./control-edits";
+import { Slider } from "./vendor/dialkit/components/Slider";
+import { Toggle } from "./vendor/dialkit/components/Toggle";
+import { SelectControl } from "./vendor/dialkit/components/SelectControl";
+import { SegmentedControl } from "./vendor/dialkit/components/SegmentedControl";
+import { DialPad } from "./vendor/dialkit/components/DialPad";
+import { ColorControl } from "./vendor/dialkit/components/ColorControl";
+import { TextControl } from "./vendor/dialkit/components/TextControl";
 
 export function NumberValue({
   label,
@@ -135,14 +143,12 @@ function ParameterControl({
   const active = useRef(false),
     pending = useRef(0),
     group = useRef<string | null>(null);
-  const queue = useRef<Promise<unknown>>(Promise.resolve());
   useEffect(() => {
     if (!active.current && !pending.current) setDraft(p.value);
   }, [p.value]);
   const enqueue = (fn: () => Promise<unknown>) => {
     pending.current++;
-    queue.current = queue.current
-      .then(fn)
+    void queueControlEdit(fn)
       .catch((e) => {
         setDraft(latest.current.value);
         reportError(e);
@@ -181,128 +187,134 @@ function ParameterControl({
     });
   };
   useEffect(() => () => finish(), []);
-  if (p.type === "boolean")
-    return (
-      <label className="parameter control-row">
-        <span>{p.label}</span>
-        <input
-          type="checkbox"
-          role="switch"
-          aria-label={p.label}
-          checked={draft as boolean}
-          onChange={(e) => change(e.target.checked)}
-        />
-      </label>
-    );
-  if (p.type === "select")
-    return (
-      <label className="parameter control-row">
-        <span>{p.label}</span>
-        <select
-          aria-label={p.label}
+  const lifecycle = { onInteractionStart: begin, onInteractionEnd: finish };
+  const content = (() => {
+    if (p.type === "boolean")
+      return (
+        <Toggle label={p.label} checked={draft as boolean} onChange={change} />
+      );
+    if (p.type === "color")
+      return (
+        <ColorControl
+          label={p.label}
           value={draft as string}
-          onChange={(e) => change(e.target.value)}
-        >
-          {p.options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
-    );
-  if (p.type === "color")
-    return (
-      <div className="parameter control-row">
-        <span>{p.label}</span>
-        <ColorValue label={p.label} value={draft as string} onCommit={change} />
-      </div>
-    );
-  if (p.type === "vector3")
-    return (
-      <div className="parameter">
-        <div className="control-row">
-          <span>{p.label}</span>
-          {p.unit && <span className="parameter-unit">{p.unit}</span>}
-        </div>
-        <div className="vector-control">
-          {["X", "Y", "Z"].map((axis, i) => (
-            <label key={axis}>
-              <span>{axis}</span>
-              <NumberValue
-                label={`${p.label} ${axis}`}
-                value={(draft as number[])[i]}
-                min={p.min}
-                max={p.max}
-                step={p.step}
-                onCommit={(value) => {
-                  const next = [...(draft as [number, number, number])] as [
-                    number,
-                    number,
-                    number,
-                  ];
-                  next[i] = value;
-                  change(next);
-                }}
-              />
-            </label>
-          ))}
-        </div>
-      </div>
-    );
-  return (
-    <div className="parameter">
-      <div className="control-row">
-        <span>{p.label}</span>
-        <div className="number-value">
-          <NumberValue
-            label={p.label + " value"}
-            value={draft as number}
-            min={p.min}
-            max={p.max}
-            step={p.step}
-            onCommit={change}
-          />
-          {p.unit && <span className="parameter-unit">{p.unit}</span>}
-        </div>
-      </div>
-      {p.control === "slider" && (
-        <input
-          type="range"
-          aria-label={p.label}
-          min={p.min}
-          max={p.max}
-          step={p.step}
-          value={draft as number}
-          onPointerDown={(e) => {
-            e.currentTarget.setPointerCapture(e.pointerId);
-            begin();
-          }}
-          onChange={(e) => change(Number(e.target.value))}
-          onPointerUp={finish}
-          onPointerCancel={finish}
-          onLostPointerCapture={finish}
-          onKeyDown={(e) => {
-            if (
-              [
-                "ArrowLeft",
-                "ArrowRight",
-                "ArrowUp",
-                "ArrowDown",
-                "Home",
-                "End",
-                "PageUp",
-                "PageDown",
-              ].includes(e.key)
-            )
-              begin();
-          }}
-          onKeyUp={finish}
-          onBlur={finish}
+          onChange={change}
+          {...lifecycle}
         />
-      )}
-    </div>
-  );
+      );
+    if (p.type === "text")
+      return (
+        <TextControl
+          label={p.label}
+          value={draft as string}
+          placeholder={p.placeholder}
+          onChange={change}
+          {...lifecycle}
+        />
+      );
+    if (p.type === "select") {
+      if (p.control === "segmented")
+        return (
+          <div className="dialkit-labeled-control parameter-segmented">
+            <span className="dialkit-labeled-control-label">{p.label}</span>
+            <SegmentedControl
+              value={draft as string}
+              options={p.options}
+              onChange={change}
+            />
+          </div>
+        );
+      return (
+        <SelectControl
+          label={p.label}
+          value={draft as string}
+          options={p.options}
+          onChange={change}
+        />
+      );
+    }
+    if (p.type === "pad") {
+      const axis = (r: typeof p.x): [number, number, number, number] => [
+        r.default ?? Math.max(r.min, Math.min(r.max, 0)),
+        r.min,
+        r.max,
+        r.step,
+      ];
+      return (
+        <DialPad
+          label={p.label}
+          value={draft as { x: number; y: number }}
+          x={axis(p.x)}
+          y={axis(p.y)}
+          labels={p.labels}
+          onChange={change}
+          {...lifecycle}
+        />
+      );
+    }
+    if (p.type === "vector3")
+      return (
+        <div className="vector-parameter">
+          <div className="vector-heading">
+            {p.label}
+            {p.unit && <span>{p.unit}</span>}
+          </div>
+          <div className="vector-control">
+            {["X", "Y", "Z"].map((axis, i) => (
+              <label key={axis}>
+                <span>{axis}</span>
+                <NumberValue
+                  label={`${p.label} ${axis}`}
+                  value={(draft as number[])[i]}
+                  min={p.min}
+                  max={p.max}
+                  step={p.step}
+                  onCommit={(value) => {
+                    const next = [...(draft as [number, number, number])] as [
+                      number,
+                      number,
+                      number,
+                    ];
+                    next[i] = value;
+                    change(next);
+                  }}
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+      );
+    if (p.control === "number")
+      return (
+        <label className="dialkit-labeled-control number-control">
+          <span className="dialkit-labeled-control-label">{p.label}</span>
+          <span className="number-value">
+            <NumberValue
+              label={p.label + " value"}
+              value={draft as number}
+              min={p.min}
+              max={p.max}
+              step={p.step}
+              onCommit={change}
+            />
+            {p.unit && <span>{p.unit}</span>}
+          </span>
+        </label>
+      );
+    return (
+      <Slider
+        label={p.label}
+        value={draft as number}
+        min={p.min}
+        max={p.max}
+        step={p.step}
+        unit={p.unit}
+        onChange={change}
+        {...lifecycle}
+      />
+    );
+  })();
+  return <div className="parameter-control">{content}</div>;
 }
 
 export function ParameterPanel({
@@ -324,11 +336,12 @@ export function ParameterPanel({
           className="parameter-group"
           key={group.name}
           disabled={disabled}
+          inert={disabled}
         >
           {group.name && <legend>{group.name}</legend>}
           {group.entries.map(({ key, parameter }) => (
             <ParameterControl
-              key={sceneId + ":" + key + ":" + parameter.type}
+              key={sceneId + ":" + key + ":" + parameter.type + ":" + disabled}
               name={key}
               parameter={parameter}
               sceneId={sceneId}

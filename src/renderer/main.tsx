@@ -1,3 +1,4 @@
+import { flushControlEdits } from "./control-edits";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type {
@@ -8,7 +9,10 @@ import type {
 } from "../core/schema";
 import { SceneClock, LatestFrame } from "../core/motion";
 import { SceneEngine } from "./engine";
-import "./design-system/codex.css";
+import "./vendor/dialkit/theme.css";
+import { MotionConfig } from "motion/react";
+import { Timeline } from "./vendor/dialkit/Timeline";
+import { SegmentedControl } from "./vendor/dialkit/components/SegmentedControl";
 import "./style.css";
 
 import { call, onChange, onRequest, savedView } from "./bridge";
@@ -18,7 +22,7 @@ import { ParameterPanel } from "./parameters";
 import { SceneHeader } from "./scene-header";
 
 // Embedding hosts can select the matching shell theme without touching scene files.
-document.documentElement.dataset.theme =
+document.body.dataset.theme = document.documentElement.dataset.theme =
   new URLSearchParams(location.search).get("theme") === "light"
     ? "light"
     : "dark";
@@ -107,7 +111,7 @@ function Button({
 }) {
   return (
     <button
-      className={`cx-button icon-button ${className}`}
+      className={`ui-button icon-button ${className}`}
       data-variant="ghost"
       data-size="icon"
       aria-label={label}
@@ -117,39 +121,6 @@ function Button({
     >
       <Icon name={icon} size={18} />
     </button>
-  );
-}
-
-function TimelineRuler({ duration }: { duration: number }) {
-  const element = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(640);
-  useEffect(() => {
-    if (!element.current) return;
-    const observer = new ResizeObserver(([entry]) =>
-      setWidth(entry.contentRect.width),
-    );
-    observer.observe(element.current);
-    return () => observer.disconnect();
-  }, []);
-  const targetStep = duration / Math.max(1, Math.floor(width / 56));
-  const magnitude = 10 ** Math.floor(Math.log10(targetStep));
-  const step =
-    [1, 2, 5, 10].find((value) => value * magnitude >= targetStep)! * magnitude;
-  const ticks = Array.from(
-    { length: Math.ceil(duration / step) },
-    (_, i) => i * step,
-  );
-  if (ticks.length > 1 && duration - ticks[ticks.length - 1] < step * 0.75)
-    ticks.pop();
-  ticks.push(duration);
-  return (
-    <div className="ruler" ref={element}>
-      {ticks.map((tick) => (
-        <span key={tick} style={{ left: `${(tick / duration) * 100}%` }}>
-          {Number(tick.toFixed(3))}s
-        </span>
-      ))}
-    </div>
   );
 }
 
@@ -195,6 +166,7 @@ function App() {
   const lastPublished = useRef({ json: "", at: 0 });
   const invoke = async (cmd: Command) => {
     try {
+      if (cmd.type === "undo" || cmd.type === "redo") await flushControlEdits();
       return await call(cmd);
     } catch (e) {
       setError(String(e));
@@ -615,7 +587,11 @@ function App() {
         void invoke({ type: e.shiftKey ? "redo" : "undo" });
         return;
       }
-      if (target.closest("input,textarea,select,button,[role='dialog']"))
+      if (
+        target.closest(
+          "input,textarea,select,button,[role='dialog'],[role='slider'],[role='radiogroup'],.dialkit-pad",
+        )
+      )
         return;
       if (e.code === "Space" && !e.repeat) {
         e.preventDefault();
@@ -678,7 +654,7 @@ function App() {
             onClick={() => void invoke({ type: "redo" })}
           />
           <button
-            className="cx-button render-button"
+            className="ui-button render-button"
             data-size="composer"
             onClick={() => void render()}
             disabled={!ready || exporting}
@@ -691,27 +667,20 @@ function App() {
       <main className="workspace">
         <div className="canvas-toolbar">
           <span className="view-controls">
-            <button
-              className="cx-button"
-              data-variant="ghost"
-              data-size="toolbar"
-              aria-pressed={mode === "source"}
-              onClick={() => changeMode("source")}
-            >
-              2D
-            </button>
-            <button
-              className="cx-button"
-              data-variant="ghost"
-              data-size="toolbar"
-              aria-pressed={mode === "camera"}
-              onClick={() => changeMode("camera")}
-            >
-              Camera
-            </button>
+            <div aria-label="Canvas view">
+              <SegmentedControl
+                label="Canvas view"
+                value={mode}
+                options={[
+                  { value: "source", label: "2D" },
+                  { value: "camera", label: "Camera" },
+                ]}
+                onChange={(next) => changeMode(next)}
+              />
+            </div>
             <span className="divider" />
             <button
-              className="cx-button"
+              className="ui-button"
               data-variant="ghost"
               data-size="toolbar"
               onClick={() => fit()}
@@ -786,7 +755,7 @@ function App() {
           <div className="transport-right">
             <span>{s?.fps} fps</span>
             <button
-              className="cx-button jobs-toggle"
+              className="ui-button jobs-toggle"
               data-variant="ghost"
               data-size="toolbar"
               aria-expanded={showJobs}
@@ -800,79 +769,14 @@ function App() {
             </button>
           </div>
         </div>
-        <div className="timeline-body">
-          <div className="track-names">
-            <div className="ruler-name" />
-            {s?.tracks.map((track) => (
-              <div className="track-name" key={track.id} title={track.label}>
-                <span
-                  className="track-dot"
-                  style={{ background: track.color }}
-                />
-                <span className="track-label">{track.label}</span>
-              </div>
-            ))}
-          </div>
-          <div
-            className="tracks"
-            onPointerDown={(e) => {
-              e.currentTarget.setPointerCapture(e.pointerId);
-              const r = e.currentTarget.getBoundingClientRect();
-              seek(((e.clientX - r.left) / r.width) * (s?.duration || 1));
-            }}
-            onPointerMove={(e) => {
-              if (e.buttons === 1) {
-                const r = e.currentTarget.getBoundingClientRect();
-                seek(((e.clientX - r.left) / r.width) * (s?.duration || 1));
-              }
-            }}
-            onPointerUp={() =>
-              void call({ type: "activity", activity: "idle" })
-            }
-          >
-            <TimelineRuler duration={s?.duration || 8} />
-            {s?.tracks.map((track) => (
-              <div className="track-row" key={track.id}>
-                <div
-                  className="track-clip"
-                  title={track.label}
-                  style={
-                    {
-                      left: `${(track.start / s.duration) * 100}%`,
-                      width: `${((track.end - track.start) / s.duration) * 100}%`,
-                      "--track-color": track.color,
-                    } as React.CSSProperties
-                  }
-                >
-                  {track.keys.map((k, i) => (
-                    <i
-                      key={i}
-                      style={{
-                        left: `${((k - track.start) / (track.end - track.start)) * 100}%`,
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-            <div
-              className="playhead"
-              style={{ left: `${(time / (s?.duration || 8)) * 100}%` }}
-            >
-              <span />
-            </div>
-            <input
-              className="timeline-accessible"
-              type="range"
-              aria-label="Scene time"
-              min="0"
-              max={s?.duration || 8}
-              step={1 / (s?.fps || 30)}
-              value={time}
-              onChange={(e) => seek(+e.target.value)}
-            />
-          </div>
-        </div>
+        <Timeline
+          duration={s?.duration || 8}
+          time={time}
+          fps={s?.fps || 30}
+          tracks={s?.tracks || []}
+          onSeek={seek}
+          onScrubEnd={() => void call({ type: "activity", activity: "idle" })}
+        />
       </section>
       {error && (
         <div className="error-toast" role="alert">
@@ -901,7 +805,7 @@ function App() {
       )}
       {showJobs && (
         <div
-          className="cx-menu jobs-panel"
+          className="ui-popover jobs-panel"
           id="render-jobs"
           aria-label="Renders"
         >
@@ -1000,4 +904,9 @@ if (new URLSearchParams(location.search).has("render")) {
     document.body.textContent = String(e);
     console.error(e);
   });
-} else createRoot(document.getElementById("root")!).render(<App />);
+} else
+  createRoot(document.getElementById("root")!).render(
+    <MotionConfig reducedMotion="user">
+      <App />
+    </MotionConfig>,
+  );

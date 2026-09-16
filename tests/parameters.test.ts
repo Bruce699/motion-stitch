@@ -13,11 +13,20 @@ import { SceneStore } from "../src/main/store";
 import { values } from "../src/core/schema";
 
 const declarations = {
+  origin: {
+    type: "pad",
+    label: "Origin",
+    value: { x: 0, y: 0 },
+    x: { min: -1, max: 1, step: 0.01 },
+    y: { min: -1, max: 1, step: 0.01 },
+  },
+  caption: { type: "text", label: "Caption", value: "Tilt" },
   strength: { label: "Strength", value: 0.5, min: 0, max: 1, step: 0.01 },
   tint: { type: "color", label: "Tint", value: "#c8b9e8", group: "Shader" },
   enabled: { type: "boolean", label: "Enabled", value: true, group: "Shader" },
   pattern: {
     type: "select",
+    control: "segmented",
     label: "Pattern",
     value: "soft",
     options: [
@@ -43,6 +52,8 @@ test("parameter contracts preserve legacy numbers and reject invalid typed edits
   );
   const reader = parameterReader(parsed);
   assert.equal(reader.number("strength"), 0.5);
+  assert.deepEqual(reader.pad("origin"), { x: 0, y: 0 });
+  assert.equal(reader.text("caption"), "Tilt");
   assert.equal(reader.color("tint"), "#c8b9e8");
   assert.equal(reader.boolean("enabled"), true);
   assert.equal(reader.select("pattern"), "soft");
@@ -50,6 +61,11 @@ test("parameter contracts preserve legacy numbers and reject invalid typed edits
   assert.throws(() => reader.number("tint"), /tint.*number/);
   assert.throws(() => reader.number("missing"), /missing/);
   for (const [key, value] of [
+    ["origin", { x: 2, y: 0 }],
+    ["origin", { x: 0 }],
+    ["origin", { x: 0, y: 0, z: 0 }],
+    ["caption", 3],
+    ["caption", "a".repeat(4001)],
     ["strength", 2],
     ["strength", "0.5"],
     ["tint", "red"],
@@ -69,6 +85,19 @@ test("parameter contracts preserve legacy numbers and reject invalid typed edits
     }).success,
     false,
   );
+  for (const declaration of [
+    { ...declarations.origin, x: { min: 1, max: -1 } },
+    { ...declarations.origin, y: { min: -1, max: 1, default: 2 } },
+    { ...declarations.origin, x: { min: -1, max: 1, step: 0 } },
+    {
+      ...declarations.pattern,
+      options: Array.from({ length: 6 }, (_, i) => ({
+        label: String(i),
+        value: i ? String(i) : "soft",
+      })),
+    },
+  ])
+    assert.equal(ParameterSchema.safeParse(declaration).success, false);
   for (const [input, expected] of [
     ["false", false],
     ["#c8b9e8", "#c8b9e8"],
@@ -107,6 +136,8 @@ test("all control values persist, undo, redo and reopen without type coercion", 
       ["scene.json"],
     );
     for (const [key, value] of Object.entries({
+      origin: { x: 0.3, y: -0.7 },
+      caption: "Hello world",
       strength: 0.8,
       tint: "#112233",
       enabled: false,
@@ -123,6 +154,8 @@ test("all control values persist, undo, redo and reopen without type coercion", 
     await store.apply(edit.id);
     const updated = values(store.scene);
     assert.deepEqual(updated, {
+      origin: { x: 0.3, y: -0.7 },
+      caption: "Hello world",
       strength: 0.8,
       tint: "#112233",
       enabled: false,
