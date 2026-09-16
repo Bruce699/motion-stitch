@@ -1,6 +1,7 @@
 import { request, project } from "./client";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { parseParameterArgument } from "../core/parameters";
 const argv = process.argv.slice(2);
 const [action] = argv;
 const args: string[] = [];
@@ -25,7 +26,11 @@ const commands: Record<string, () => Record<string, unknown>> = {
     type: "capture",
     ...(args[0] !== undefined ? { time: Number(args[0]) } : {}),
   }),
-  set: () => ({ type: "set_parameter", key: args[0], value: Number(args[1]) }),
+  set: () => ({
+    type: "set_parameter",
+    key: args[0],
+    value: parseParameterArgument(args[1]),
+  }),
   play: () => ({ type: "play" }),
   pause: () => ({ type: "pause" }),
   render: () => ({ type: "export", requestId: args[0] }),

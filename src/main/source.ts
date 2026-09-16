@@ -1,5 +1,6 @@
 import { BrowserWindow } from "electron";
 import type { SourceSpec } from "../core/schema";
+import type { ParameterValues } from "../core/parameters";
 import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
@@ -138,7 +139,7 @@ export class WebSource {
   }
   async sample(
     time: number,
-    parameters: Record<string, number>,
+    parameters: ParameterValues,
   ): Promise<CapturedFrame> {
     if (this.spec.sampling === "static" && this.lastFrame)
       return this.lastFrame;

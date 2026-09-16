@@ -33,3 +33,9 @@ Canvas gestures update an inspection transform. The compositor uses a copy of th
 ## Declared DOM layers
 
 `src/core/layers.ts` defines source-pixel bounds, crops and layer-frame metadata. `src/main/dom-layers.ts` plans selectors and paint isolation inside the source browser. `WebSource` samples once, captures full/base/region passes, then restores normal paint. Source revisions cache the complete frame. `src/renderer/layered-source.ts` maps crops back into one coordinate system, with separate browser-layout anchors and authored transform groups. The scene gets `createLayeredSource`; it owns choreography. Export uses this same path. See `docs/layers.md` for the declaration contract and compositing boundaries.
+
+## Declared controls
+
+`src/core/parameters.ts` validates a small typed control vocabulary and supplies a typed scene reader. Definitions and values live in `scene.json.parameters`. The generic `src/renderer/parameters.tsx` renders these declarations, with no shader-specific widgets or bindings. Number gestures use the existing history-group API; discrete values use the same validated `set_parameter` command. The CLI and optional MCP adapter preserve numbers, strings, booleans and XYZ arrays without numeric coercion. Preview and frozen export receive both the serializable value map and `controls` typed readers. Scene code owns the final transform/material/uniform assignments.
+
+The editor shell contains the canvas, timeline and parameter panel. `scene-header.tsx` handles inline renaming and the duration/frame-rate/background popover. Scene/files/source inspection remains available to agents through files, context and commands. No source content or parameter description is rendered as executable editor UI.

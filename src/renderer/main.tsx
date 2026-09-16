@@ -13,6 +13,8 @@ import "./style.css";
 import { call, onChange, onRequest, savedView } from "./bridge";
 import { defaultInspection } from "../core/context";
 import { bindNavigation } from "./navigation";
+import { ParameterPanel } from "./parameters";
+import { SceneHeader } from "./scene-header";
 const timecode = (t: number, fps: number) =>
   `${Math.floor(t / 60)
     .toString()
@@ -116,17 +118,10 @@ function App() {
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [fps, setFps] = useState(0);
-  const [files, setFiles] = useState<string[]>([]);
-  const [tab, setTab] = useState<"scene" | "source">("scene");
-  const [subjects, setSubjects] = useState<any[]>([]);
   const [exporting, setExporting] = useState(false);
   const [showJobs, setShowJobs] = useState(false);
-  const [newName, setNewName] = useState<string | null>(null);
   const [mode, setMode] = useState<"source" | "camera">(
     savedView?.mode || "camera",
-  );
-  const [selection, setSelection] = useState<string[]>(
-    savedView?.selection || [],
   );
   const [zoom, setZoom] = useState(savedView?.inspection?.zoom || 1);
   const [retry, setRetry] = useState(0);
@@ -231,26 +226,6 @@ function App() {
       setError(String(e));
     }
   }
-  async function openScene(id?: string, name?: string) {
-    presentation.current++;
-    request.current?.invalidate();
-    clock.current.pause();
-    clock.current.ready = false;
-    setPlaying(false);
-    setReady(false);
-    const next = await invoke(
-      name ? { type: "create", name } : { type: "open", id },
-    );
-    if (!next) return;
-    current.current = next;
-    clock.current.seek(0);
-    setTime(0);
-    displayed.current = { time: 0, revision: null };
-    view.current.selection = [];
-    setSelection([]);
-    setState(next);
-    await publish();
-  }
   function applyView() {
     const e = engine.current;
     if (e) {
@@ -350,12 +325,6 @@ function App() {
     };
   }, []);
   useEffect(() => {
-    if (!state) return;
-    void call<string[]>({ type: "list_files", sceneId: state.scene.id })
-      .then(setFiles)
-      .catch(() => {});
-  }, [state?.scene.id, state?.codeRevision]);
-  useEffect(() => {
     if (!state || state.error) return;
     const n = ++generation.current;
     const s = state.scene;
@@ -422,9 +391,6 @@ function App() {
         }, failed);
         if (current.current?.revision !== prep.revision)
           request.current.request(t);
-        void call<any[]>({ type: "inspect", sceneId: s.id })
-          .then(setSubjects)
-          .catch(() => {});
       } catch (e) {
         candidate?.dispose();
         if (!disposed) {
@@ -587,11 +553,24 @@ function App() {
   }, [state?.scene.size.width, state?.scene.size.height]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement).matches("input,textarea,select")) return;
+      if (e.defaultPrevented) return;
+      const target = e.target as HTMLElement;
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") {
+        // Text drafts keep native undo; other controls use the scene journal.
+        if (
+          target.isContentEditable ||
+          target.matches(
+            "textarea,input:not([type='range']):not([type='checkbox']):not([type='color'])",
+          )
+        )
+          return;
         e.preventDefault();
         void invoke({ type: e.shiftKey ? "redo" : "undo" });
-      } else if (e.code === "Space" && !e.repeat) {
+        return;
+      }
+      if (target.closest("input,textarea,select,button,[role='dialog']"))
+        return;
+      if (e.code === "Space" && !e.repeat) {
         e.preventDefault();
         toggle();
       } else if (e.key === "ArrowLeft") {
@@ -628,10 +607,15 @@ function App() {
     >
       <header className="titlebar">
         <div className="brand">Tilt</div>
-        <div className="document-title">
-          {s?.name || "Opening…"}
-          <span className="saved-dot" title="Saved to scene.json" />
-        </div>
+        {s && (
+          <SceneHeader
+            scene={s}
+            disabled={!!state?.history?.pendingEdit}
+            onSetting={(key, value) =>
+              invoke({ type: "set_setting", sceneId: s.id, key, value })
+            }
+          />
+        )}
         <div className="header-actions">
           <Button
             icon="undo"
@@ -646,11 +630,6 @@ function App() {
             disabled={!state?.history?.canRedo || !!state.history.pendingEdit}
             onClick={() => void invoke({ type: "redo" })}
           />
-          <Button
-            icon="folder"
-            label="Reveal scene files"
-            onClick={() => void invoke({ type: "reveal" })}
-          />
           <button
             className="render-button"
             onClick={() => void render()}
@@ -661,58 +640,8 @@ function App() {
           </button>
         </div>
       </header>
-      <aside className="sidebar">
-        <div className="section-heading">
-          Scenes
-          <Button
-            icon="plus"
-            label="New scene"
-            onClick={() => setNewName("Untitled")}
-          />
-        </div>
-        <div className="scene-list">
-          {state?.scenes.map((item) => (
-            <button
-              key={item.id}
-              className={`scene-item ${s?.id === item.id ? "selected" : ""}`}
-              onClick={() => void openScene(item.id)}
-            >
-              <Icon name="scene" />
-              <span>{item.name}</span>
-            </button>
-          ))}
-        </div>
-        <div className="files-heading section-heading">
-          Files
-          <Button
-            icon="folder"
-            label="Open folder"
-            onClick={() => void invoke({ type: "reveal" })}
-          />
-        </div>
-        <div className="file-list">
-          {files.map((file) => (
-            <div className="file-item" key={file} title={file}>
-              <Icon name={file.endsWith(".ts") ? "code" : "file"} size={14} />
-              <span>{file}</span>
-            </div>
-          ))}
-        </div>
-        <button
-          className="agent-help"
-          onClick={() => void invoke({ type: "reveal" })}
-        >
-          <Icon name="code" />
-          <span>Agent workspace</span>
-          <Icon name="chevron" size={12} />
-        </button>
-      </aside>
       <main className="workspace">
         <div className="canvas-toolbar">
-          <span>
-            <Icon name="scene" />
-            {s?.name}
-          </span>
           <span className="view-controls">
             <button
               className={mode === "source" ? "active" : ""}
@@ -759,10 +688,6 @@ function App() {
         </div>
         <div className="canvas-status">
           <span>
-            {s?.sources.length || 0} web source
-            {(s?.sources.length || 0) === 1 ? "" : "s"}
-          </span>
-          <span>
             {state?.history?.pendingEdit
               ? state.history.pendingEdit.label + " · editing"
               : playing
@@ -773,200 +698,14 @@ function App() {
           </span>
         </div>
       </main>
-      <aside className="inspector">
-        <div className="tabs">
-          <button
-            className={tab === "scene" ? "active" : ""}
-            onClick={() => setTab("scene")}
-          >
-            Scene
-          </button>
-          <button
-            className={tab === "source" ? "active" : ""}
-            onClick={() => setTab("source")}
-          >
-            Sources
-          </button>
-        </div>
-        {s && tab === "scene" ? (
-          <>
-            <div className="inspector-section">
-              <label className="field">
-                <span>Name</span>
-                <input
-                  key={s.id + s.name}
-                  aria-label="Scene name"
-                  defaultValue={s.name}
-                  onBlur={(e) => {
-                    if (e.target.value !== s.name)
-                      void invoke({
-                        type: "set_setting",
-                        key: "name",
-                        value: e.target.value,
-                      });
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") e.currentTarget.blur();
-                  }}
-                />
-              </label>
-              <div className="field-pair">
-                <label className="field">
-                  <span>Duration</span>
-                  <div className="input-unit">
-                    <input
-                      aria-label="Duration"
-                      type="number"
-                      min="0.1"
-                      max="600"
-                      step="0.1"
-                      value={s.duration}
-                      onChange={(e) => {
-                        if (e.target.value)
-                          void invoke({
-                            type: "set_setting",
-                            key: "duration",
-                            value: +e.target.value,
-                          });
-                      }}
-                    />
-                    <span>s</span>
-                  </div>
-                </label>
-                <label className="field">
-                  <span>Frame rate</span>
-                  <select
-                    aria-label="Frame rate"
-                    value={s.fps}
-                    onChange={(e) =>
-                      void invoke({
-                        type: "set_setting",
-                        key: "fps",
-                        value: +e.target.value,
-                      })
-                    }
-                  >
-                    {[24, 25, 30, 60, 120].map((n) => (
-                      <option key={n} value={n}>
-                        {n} fps
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <label className="color-field">
-                <span>Background</span>
-                <input
-                  type="color"
-                  aria-label="Background"
-                  value={s.background}
-                  onChange={(e) =>
-                    void invoke({
-                      type: "set_setting",
-                      key: "background",
-                      value: e.target.value,
-                    })
-                  }
-                />
-                <code>{s.background.toUpperCase()}</code>
-              </label>
-            </div>
-            <div className="inspector-section">
-              <div className="section-heading plain">Parameters</div>
-              {Object.entries(s.parameters).map(([key, p]) => (
-                <Parameter
-                  key={s.id + key}
-                  name={key}
-                  param={p}
-                  sceneId={s.id}
-                  reportError={(e) => setError(String(e))}
-                />
-              ))}
-            </div>
-            <div className="code-reference">
-              <Icon name="code" />
-              <span>{s.entry}</span>
-              <button onClick={() => void invoke({ type: "reveal" })}>
-                Open folder
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="inspector-section">
-            {s?.sources.map((source) => (
-              <div className="source-card" key={source.id}>
-                <div>
-                  <Icon name="grid" />
-                  <strong>{source.id}</strong>
-                </div>
-                <p>{source.url || source.entry}</p>
-                <span>
-                  {source.width} × {source.height} · {source.sampling}
-                </span>
-                {!!source.layers?.length && (
-                  <div className="source-layers">
-                    <div className="section-heading plain">Layers</div>
-                    {source.layers.map((layer) => {
-                      const state = engine.current
-                        ?.describeLayers()
-                        .find(
-                          (l) => l.sourceId === source.id && l.id === layer.id,
-                        );
-                      const key = source.id + ":" + layer.id;
-                      return (
-                        <button
-                          key={key}
-                          className={selection.includes(key) ? "selected" : ""}
-                          style={{ paddingLeft: state?.parentId ? 18 : 6 }}
-                          onClick={() => {
-                            view.current.selection = [key];
-                            view.current.sourceId = source.id;
-                            setSelection([key]);
-                            changeMode("camera", source.id);
-                          }}
-                        >
-                          <span>{layer.label || layer.id}</span>
-                          <code title="Local depth">
-                            {(state?.position[2] || 0).toFixed(2)}
-                          </code>
-                        </button>
-                      );
-                    })}
-                    {engine.current?.layerFrames
-                      .find((f) => f.sourceId === source.id)
-                      ?.warnings.map((w) => (
-                        <p className="layer-warning" key={w}>
-                          {w}
-                        </p>
-                      ))}
-                  </div>
-                )}
-                <div className="subject-list">
-                  {subjects
-                    .find((x) => x.source === source.id)
-                    ?.subjects.map((item: any) => (
-                      <button
-                        key={item.id}
-                        className={
-                          selection.includes(item.id) ? "selected" : ""
-                        }
-                        onClick={() => {
-                          view.current.selection = [item.id];
-                          view.current.sourceId = source.id;
-                          setSelection([item.id]);
-                          changeMode("source", source.id);
-                        }}
-                      >
-                        <span className="subject-dot" />
-                        {item.id}
-                      </button>
-                    ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </aside>
+      {s && (
+        <ParameterPanel
+          parameters={s.parameters}
+          sceneId={s.id}
+          reportError={(e) => setError(String(e))}
+          disabled={state?.history?.pendingEdit?.kind === "agent"}
+        />
+      )}
       <section className="timeline">
         <div className="transport">
           <div className="transport-left">
@@ -1001,7 +740,7 @@ function App() {
         </div>
         <div className="timeline-body">
           <div className="track-names">
-            <div className="ruler-name">{s?.name}</div>
+            <div className="ruler-name" />
             {s?.tracks.map((track) => (
               <div className="track-name" key={track.id}>
                 <span style={{ background: track.color }} />
@@ -1182,122 +921,9 @@ function App() {
           ))}
         </div>
       )}
-      {newName !== null && (
-        <div className="modal-backdrop" onClick={() => setNewName(null)}>
-          <form
-            className="modal"
-            onClick={(e) => e.stopPropagation()}
-            onSubmit={(e) => {
-              e.preventDefault();
-              void openScene(undefined, newName || "Untitled");
-              setNewName(null);
-            }}
-          >
-            <h2>New scene</h2>
-            <input
-              autoFocus
-              aria-label="New scene name"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-            />
-            <div>
-              <button type="button" onClick={() => setNewName(null)}>
-                Cancel
-              </button>
-              <button className="primary" type="submit">
-                Create
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
     </div>
   );
 }
-function Parameter({
-  name,
-  param,
-  sceneId,
-  reportError,
-}: {
-  name: string;
-  param: SceneDocument["parameters"][string];
-  sceneId: string;
-  reportError: (e: unknown) => void;
-}) {
-  const [draft, setDraft] = useState(param.value);
-  const dragging = useRef(false);
-  const queue = useRef<Promise<unknown>>(Promise.resolve());
-  const group = useRef<string | null>(null);
-  useEffect(() => {
-    if (!dragging.current) setDraft(param.value);
-  }, [param.value]);
-  const enqueue = (fn: () => Promise<unknown>) => {
-    queue.current = queue.current.then(fn).catch(reportError);
-  };
-  const change = (value: number) =>
-    enqueue(() => call({ type: "set_parameter", sceneId, key: name, value }));
-  const finish = () => {
-    dragging.current = false;
-    enqueue(async () => {
-      if (group.current) {
-        const id = group.current;
-        await call({ type: "edit_apply", sceneId, id });
-        group.current = null;
-      }
-    });
-  };
-  return (
-    <label className="parameter">
-      <div>
-        <span>{param.label}</span>
-        <input
-          aria-label={param.label + " value"}
-          type="number"
-          min={param.min}
-          max={param.max}
-          step={param.step}
-          value={draft}
-          onChange={(e) => setDraft(+e.target.value)}
-          onBlur={() => change(draft)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") e.currentTarget.blur();
-          }}
-        />
-      </div>
-      <input
-        aria-label={param.label}
-        type="range"
-        min={param.min}
-        max={param.max}
-        step={param.step}
-        value={draft}
-        onPointerDown={(e) => {
-          e.currentTarget.setPointerCapture(e.pointerId);
-          dragging.current = true;
-          enqueue(async () => {
-            const result = await call({
-              type: "edit_begin",
-              sceneId,
-              label: param.label,
-              kind: "gesture",
-              paths: ["scene.json"],
-            });
-            group.current = result.id;
-          });
-        }}
-        onChange={(e) => {
-          const value = +e.target.value;
-          setDraft(value);
-          change(value);
-        }}
-        onPointerUp={finish}
-        onPointerCancel={finish}
-      />
-    </label>
-  );
-}
-
 if (new URLSearchParams(location.search).has("render")) {
   const setup = async () => {
     const prep = await call<{ scene: SceneDocument; url: string }>({

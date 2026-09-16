@@ -60,7 +60,15 @@ tool(
 tool(
   "tilt_set_parameter",
   "Persist one custom scene parameter. The editor and this tool use the same command.",
-  { key: z.string(), value: z.number() },
+  {
+    key: z.string(),
+    value: z.union([
+      z.number(),
+      z.string(),
+      z.boolean(),
+      z.tuple([z.number(), z.number(), z.number()]),
+    ]),
+  },
   (a) => ({ type: "set_parameter", ...a }),
 );
 tool(

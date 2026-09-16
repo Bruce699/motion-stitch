@@ -23,10 +23,10 @@ export default function createScene({ world, createLayeredSource, motion }) {
   const navigation = ui.get("navigation").object;
   const activeItem = ui.get("active-item").object;
   return {
-    sample({ time, parameters }) {
+    sample({ time, controls }) {
       const lift =
         motion.segment(time, 1, 2) * (1 - motion.segment(time, 5, 6));
-      navigation.position.z = lift * parameters.depth;
+      navigation.position.z = lift * controls.number("depth");
       activeItem.position.z = lift * 0.2;
     },
   };
@@ -35,7 +35,7 @@ export default function createScene({ world, createLayeredSource, motion }) {
 
 All ordinary Three transforms are available. Neutral transforms are position/rotation zero and scale one. Browser layout lives in an internal anchor, so updating content and bounds never overwrites authored animation. Nested objects inherit their parent transform; the active item in this example gets the navigation's lift plus its own local 0.2. The group's width sets CSS pixels to world units. `get(id).mesh` exposes geometry/material for bespoke effects; `get(id).layout` exposes the current browser bounds/crop. `base` is the remaining page mesh, and `ids` lists the declared layers.
 
-`surfaces.ui` remains the original complete page texture. `surfaces['ui/base']` and `surfaces['ui/navigation']` are also available for custom composition. Use the helper for alignment instead of reproducing crop/parent math. The 2D viewer deliberately shows the complete page; Camera shows the authored layered composition. Sources lists layers with local depth values. Selecting one records `sourceId:layerId` in agent context.
+`surfaces.ui` remains the original complete page texture. `surfaces['ui/base']` and `surfaces['ui/navigation']` are also available for custom composition. Use the helper for alignment instead of reproducing crop/parent math. The 2D viewer deliberately shows the complete page; Camera shows the authored layered composition. The editor keeps only the parameter panel visible. Read the layer hierarchy and local transforms from agent context or inspect declarations through the CLI.
 
 ## Capture and sampling
 

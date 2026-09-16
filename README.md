@@ -19,7 +19,7 @@ npm start -- --browser
 
 Open the printed localhost URL in Codex or any browser. The local Electron runtime supplies Chromium source capture, files, history and rendering to both viewers. It reuses its previous port when available. Closing a viewer leaves the runtime running; `npm run cli -- stop` stops it. `npm run cli -- desktop` opens the desktop viewer again. `Tilt.command` remains a double-click launcher. Restart after changing editor/runtime code. No account, model key, built-in agent or MCP server is required.
 
-Drag in Camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In 2D, dragging pans the source directly. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline scrubs. Numeric controls save immediately; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. New Scene copies the starter. Render writes an MP4 to `exports/`.
+Drag in Camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In 2D, dragging pans the source directly. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline scrubs. Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. The right panel contains only declared parameters. Render writes an MP4 to `exports/`.
 
 ## Scene files
 
@@ -30,15 +30,21 @@ scenes/interface/
   source/index.html   # real browser UI with a small time-control adapter
 ```
 
-`scene.ts` exports a factory receiving Three.js, a world, a camera, source textures, and time helpers. It returns `sample({time, frame, parameters, document})`. Sampling must reconstruct the frame from absolute time, including after backward seeks. Parameters are declared by the scene and generate inspector controls. Timeline tracks and diamonds are **authored visual cues**; animation remains in scene code. They are not a second animation engine or a keyframe-editing UI.
+`scene.ts` exports a factory receiving Three.js, a world, a camera, source textures, and time helpers. It returns `sample({time, frame, parameters, controls, document})`. Sampling must reconstruct the frame from absolute time, including after backward seeks. Parameters are declared by the scene and generate inspector controls. Timeline tracks and diamonds are **authored visual cues**; animation remains in scene code. They are not a second animation engine or a keyframe-editing UI.
 
 Web sources run in isolated Chromium windows without Node or the editor bridge. Any framework that produces a browser app can supply a source: vanilla, React, Svelte, Vue, and others. A local entry gets its own origin rooted at the entry file’s directory, including root-relative assets and SPA routes. Live URLs can be previewed. For exports, use a local production build and fixture data; Tilt refuses to pretend a mutable URL is an immutable input.
 
 ## Layers
 
-Declare DOM regions in `sources[].layers`, then use `createLayeredSource()` in scene code. Each region becomes a separately positioned, transparent surface, with browser layout preserved and nested regions inheriting their parent's 3D transform. The sample lifts navigation, its active item, summary cards and tasks into depth, then settles them back into the interface. Scrub around 4 seconds in Camera view; use Layer depth to adjust separation. Sources lists the layers and their local depth.
+Declare DOM regions in `sources[].layers`, then use `createLayeredSource()` in scene code. Each region becomes a separately positioned, transparent surface, with browser layout preserved and nested regions inheriting their parent's 3D transform. The sample lifts navigation, its active item, summary cards and tasks into depth, then settles them back into the interface. Scrub around 4 seconds in Camera view; use Layer depth to adjust separation. The agent context records layers, hierarchy and local transforms.
 
 This works at the rendered DOM boundary, so it does not depend on React or another specific framework. See [the layer contract](docs/layers.md) and [the agent skill](.agents/skills/ui-layers/SKILL.md) for selectors, transforms, grouping, and capture limits.
+
+## Parameter controls
+
+The sidebar is generated from `scene.json.parameters`. The shared vocabulary supports sliders/numbers, colors, toggles, choices and XYZ vectors, with optional groups and units. An agent can expose an input for a bespoke shader or transform by adding a declaration and reading it in `sample` through `controls.number/color/boolean/select/vector3(key)`. No editor component or effect-specific plugin is required. Values use the same validation, persistence, history and export path as other scene edits.
+
+See [the control contract and recipes](docs/parameters.md) and [the agent skill](.agents/skills/parameter-controls/SKILL.md). The included scene groups its existing controls under Composition, Camera and Light field.
 
 ## Bring your own agent
 

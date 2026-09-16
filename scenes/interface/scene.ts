@@ -53,7 +53,14 @@ export default function createScene({
   field.renderOrder = -10;
   world.add(field);
   return {
-    sample({ time, parameters: p, document }) {
+    sample({ time, controls, document }) {
+      const p = {
+        tilt: controls.number("tilt"),
+        distance: controls.number("distance"),
+        lift: controls.number("lift"),
+        atmosphere: controls.number("atmosphere"),
+        depth: controls.number("depth"),
+      };
       const enter = segment(time, 0, 1.7);
       const lift = (start: number) =>
         segment(time, start, start + 1.6) * (1 - segment(time, 5.8, 7.6));

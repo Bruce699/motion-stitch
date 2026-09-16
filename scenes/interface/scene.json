@@ -52,35 +52,40 @@
       "value": 0.33,
       "min": 0,
       "max": 0.8,
-      "step": 0.01
+      "step": 0.01,
+      "group": "Composition"
     },
     "distance": {
       "label": "Camera distance",
       "value": 6.5,
       "min": 6.5,
       "max": 12,
-      "step": 0.1
+      "step": 0.1,
+      "group": "Camera"
     },
     "lift": {
       "label": "Lift",
       "value": 0.21,
       "min": 0,
       "max": 0.8,
-      "step": 0.01
+      "step": 0.01,
+      "group": "Composition"
     },
     "atmosphere": {
       "label": "Atmosphere",
       "value": 0.41,
       "min": 0,
       "max": 1,
-      "step": 0.01
+      "step": 0.01,
+      "group": "Light field"
     },
     "depth": {
       "label": "Layer depth",
       "value": 1.15,
       "min": 0,
       "max": 2,
-      "step": 0.01
+      "step": 0.01,
+      "group": "Composition"
     }
   },
   "tracks": [

@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { ParameterSchema } from "./parameters";
+export { ParameterSchema } from "./parameters";
 
 const localPath = z
   .string()
@@ -6,18 +8,6 @@ const localPath = z
   .refine(
     (v) => !v.startsWith("/") && !v.split(/[\\/]/).includes(".."),
     "Use a path inside the scene",
-  );
-export const ParameterSchema = z
-  .object({
-    label: z.string(),
-    value: z.number().finite(),
-    min: z.number().finite(),
-    max: z.number().finite(),
-    step: z.number().positive().default(0.01),
-  })
-  .refine(
-    (p) => p.min < p.max && p.value >= p.min && p.value <= p.max,
-    "Parameter value must be inside its range",
   );
 export const LayerSpecSchema = z.object({
   id: z

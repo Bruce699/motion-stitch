@@ -9,6 +9,7 @@ import {
   type LayerFrame,
 } from "../core/layers";
 import { LayeredSource } from "./layered-source";
+import { parameterReader } from "../core/parameters";
 
 export class SceneEngine {
   renderer: THREE.WebGLRenderer;
@@ -145,6 +146,7 @@ export class SceneEngine {
         time,
         frame: Math.round(time * document.fps),
         parameters: values(document),
+        controls: parameterReader(document.parameters),
         document,
       });
       if (this.disposed || !present()) return;

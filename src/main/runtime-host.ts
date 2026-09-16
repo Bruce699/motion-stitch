@@ -3,6 +3,7 @@ import path from "node:path";
 import { randomBytes, randomUUID } from "node:crypto";
 import { app, BrowserWindow, Menu, shell } from "electron";
 import { SceneSchema, type Command } from "../core/schema";
+import { withParameterValue } from "../core/parameters";
 import { SceneStore } from "./store";
 import { SceneSession, compileScene } from "./scene-session";
 import { ViewRegistry } from "./views";
@@ -216,7 +217,7 @@ export async function startRuntime(
           (doc) => {
             const p = doc.parameters[String(c.key)];
             if (!p) throw new Error("Unknown parameter");
-            p.value = Number(c.value);
+            doc.parameters[String(c.key)] = withParameterValue(p, c.value);
           },
           undefined,
           actor,

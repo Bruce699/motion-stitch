@@ -1,6 +1,7 @@
 import type * as THREE from "three";
 import type { SceneDocument } from "./schema";
 import type { LayerLayout } from "./layers";
+import type { ParameterValues, ParameterReader } from "./parameters";
 export type LayerNode = {
   id: string;
   object: THREE.Group;
@@ -16,7 +17,8 @@ export type LayeredSurface = {
 export type FrameContext = {
   time: number;
   frame: number;
-  parameters: Record<string, number>;
+  parameters: ParameterValues;
+  controls: ParameterReader;
   document: SceneDocument;
 };
 export type SceneContext = {

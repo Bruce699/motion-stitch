@@ -4,6 +4,7 @@ Read the thesis in README.md. Keep the product a small, malleable container for 
 
 - First read `.agents/skills/workspace-context/SKILL.md` for the active viewer, file workflow and edit groups.
 - Scene work: read `.agents/skills/scene-authoring/SKILL.md`.
+- Adding or changing exposed controls: read `.agents/skills/parameter-controls/SKILL.md`. Declare them in `scene.json.parameters`; use the shared control vocabulary rather than a bespoke editor widget.
 - Importing/adapting UI: read `.agents/skills/import-web-ui/SKILL.md`.
 - Splitting UI into layers or animating depth: read `.agents/skills/ui-layers/SKILL.md`. Use `createLayeredSource`; do not build another capture system per scene.
 - Cameras, shaders, 3D and surfaces: read `.agents/skills/custom-rendering/SKILL.md`.
