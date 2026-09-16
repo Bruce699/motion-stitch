@@ -24,7 +24,7 @@ window.tiltSource = {
 ```
 
 5. Tilt waits for the adapter, then pauses/samples document Web Animations to the shared clock and waits for two paint opportunities. Framework subscriptions, canvas, WebGL and videos still need your adapter. For video, set `currentTime` and await `seeked`/decoded-frame readiness; merely assigning time is insufficient.
-6. Add stable `data-tilt-id` attributes for important subjects. `tilt_inspect` returns bounds and text. These IDs are semantic handles, not a promise that every element is an independent 3D layer.
+6. Add stable `data-tilt-id` attributes for important subjects. `npm run cli -- inspect` returns bounds and text. Read `context --fresh` for the currently presented route and selected IDs. These IDs are semantic handles, not a promise that every element is an independent 3D layer.
 7. Start with a faithful whole surface. If separate depth is needed, author multiple source surfaces/groups explicitly. Preserve clipping, blur, alpha and backdrop dependencies within a group. Never flatten then pretend hidden pixels still exist.
 8. Check backward seeking, fonts, thin borders, clips and final export. Document external dependencies or unsupported features. A successful vanilla fixture is not universal framework validation.
 

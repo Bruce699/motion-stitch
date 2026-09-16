@@ -10,7 +10,9 @@ import { SceneClock, LatestFrame } from "../core/motion";
 import { SceneEngine } from "./engine";
 import "./style.css";
 
-const call = <T = any,>(command: Command) => window.tilt.invoke<T>(command);
+import { call, onChange, onRequest, savedView } from "./bridge";
+import { defaultInspection } from "../core/context";
+import { bindNavigation } from "./navigation";
 const timecode = (t: number, fps: number) =>
   `${Math.floor(t / 60)
     .toString()
@@ -120,16 +122,40 @@ function App() {
   const [exporting, setExporting] = useState(false);
   const [showJobs, setShowJobs] = useState(false);
   const [newName, setNewName] = useState<string | null>(null);
+  const [mode, setMode] = useState<"source" | "camera">(
+    savedView?.mode || "camera",
+  );
+  const [selection, setSelection] = useState<string[]>(
+    savedView?.selection || [],
+  );
+  const [zoom, setZoom] = useState(savedView?.inspection?.zoom || 1);
+  const [retry, setRetry] = useState(0);
   const stage = useRef<HTMLDivElement>(null);
   const engine = useRef<SceneEngine | null>(null);
-  const clock = useRef(new SceneClock(8, 30));
+  const clock = useRef(
+    Object.assign(new SceneClock(8, 30), {
+      time: savedView?.requestedTime || 0,
+    }),
+  );
   const current = useRef(state);
   current.current = state;
-  const generation = useRef(0);
-  const presentation = useRef(0);
-  const contextRetries = useRef(0);
+  const status = useRef({ ready, error });
+  status.current = { ready, error };
+  const view = useRef({
+    mode: "camera" as "camera" | "source",
+    sourceId: null as string | null,
+    selection: [] as string[],
+    inspection: defaultInspection(),
+    ...savedView,
+  });
+  const displayed = useRef({ time: 0, revision: null as string | null });
+  const generation = useRef(0),
+    presentation = useRef(0),
+    contextRetries = useRef(0);
   const request = useRef<LatestFrame<number> | null>(null);
-  const [retry, setRetry] = useState(0);
+  const interacted = useRef(false);
+  const contextQueue = useRef<Promise<unknown>>(Promise.resolve());
+  const lastPublished = useRef({ json: "", at: 0 });
   const invoke = async (cmd: Command) => {
     try {
       return await call(cmd);
@@ -138,39 +164,191 @@ function App() {
       return undefined;
     }
   };
+  function context() {
+    const s = current.current;
+    if (!s) throw new Error("Scene is preparing");
+    return {
+      sceneId: s.scene.id,
+      name: new URLSearchParams(location.search).has("desktop")
+        ? "Desktop"
+        : "Browser",
+      requestedTime: clock.current.time,
+      presentedTime: displayed.current.time,
+      playing: clock.current.playing,
+      mode: view.current.mode,
+      sourceId: view.current.sourceId,
+      selection: view.current.selection,
+      inspection: view.current.inspection,
+      sourceRoutes: engine.current?.sourceRoutes || [],
+      ready: status.current.ready && !s.error,
+      error: s.error || status.current.error,
+      documentRevision: s.revision,
+      displayedRevision: displayed.current.revision,
+      viewport: {
+        width: stage.current?.clientWidth || 0,
+        height: stage.current?.clientHeight || 0,
+      },
+      focused: document.hasFocus(),
+      visible: document.visibilityState === "visible",
+    };
+  }
+  function publish() {
+    const result = contextQueue.current.then(async () => {
+      if (!current.current) return;
+      const interaction = interacted.current;
+      interacted.current = false;
+      const value = context();
+      const json = JSON.stringify(value);
+      if (
+        !interaction &&
+        json === lastPublished.current.json &&
+        Date.now() - lastPublished.current.at < 1400
+      )
+        return;
+      lastPublished.current = { json, at: Date.now() };
+      sessionStorage.setItem("tilt-view", JSON.stringify(value));
+      return call({ type: "context_update", context: value, interaction });
+    });
+    contextQueue.current = result.catch(() => {});
+    return result;
+  }
   async function refresh() {
     try {
-      const s = await call<ProjectState>({ type: "state" });
+      const requestedScene = current.current?.scene.id;
+      const s = await call<ProjectState>({
+        type: "state",
+        sceneId: current.current?.scene.id || savedView?.sceneId,
+      });
+      if (requestedScene && current.current?.scene.id !== requestedScene)
+        return;
+      current.current = s;
       setState(s);
       if (s.error) setError(s.error);
     } catch (e) {
       setError(String(e));
     }
   }
+  async function openScene(id?: string, name?: string) {
+    presentation.current++;
+    request.current?.invalidate();
+    clock.current.pause();
+    clock.current.ready = false;
+    setPlaying(false);
+    setReady(false);
+    const next = await invoke(
+      name ? { type: "create", name } : { type: "open", id },
+    );
+    if (!next) return;
+    current.current = next;
+    clock.current.seek(0);
+    setTime(0);
+    displayed.current = { time: 0, revision: null };
+    view.current.selection = [];
+    setSelection([]);
+    setState(next);
+    await publish();
+  }
+  function applyView() {
+    const e = engine.current;
+    if (e) {
+      e.mode = view.current.mode;
+      e.sourceId = view.current.sourceId;
+      e.inspection = { ...view.current.inspection };
+      e.renderView();
+    }
+    setMode(view.current.mode);
+    setZoom(view.current.inspection.zoom);
+  }
+  function changeMode(next: "camera" | "source", sourceId?: string) {
+    view.current.mode = next;
+    if (sourceId) view.current.sourceId = sourceId;
+    applyView();
+    interacted.current = true;
+    void publish();
+  }
+  function fit() {
+    view.current.inspection = defaultInspection();
+    applyView();
+    interacted.current = true;
+    void publish();
+  }
+  async function draw(t: number, valid: () => boolean = () => true) {
+    const e = engine.current,
+      s = current.current;
+    if (!e || !s || !clock.current.ready) throw new Error("Scene is preparing");
+    const epoch = presentation.current;
+    const canPresent = () =>
+      valid() &&
+      epoch === presentation.current &&
+      e === engine.current &&
+      current.current?.codeRevision === s.codeRevision &&
+      current.current?.scene.id === s.scene.id;
+    await e.sample(t, s.scene, canPresent, s.revision);
+    if (!canPresent()) return false;
+    displayed.current = { time: t, revision: s.revision };
+    setTime(t);
+    return true;
+  }
+  function failed(e: unknown) {
+    if (String(e).includes("revision changed")) {
+      void refresh();
+      return;
+    }
+    clock.current.pause();
+    setPlaying(false);
+    setError(String(e));
+  }
+  function seek(t: number) {
+    presentation.current++;
+    clock.current.pause();
+    setPlaying(false);
+    const next = clock.current.seek(t);
+    setTime(next);
+    request.current?.request(next);
+    interacted.current = true;
+    void call({ type: "activity", activity: "scrub" }).catch(() => {});
+  }
+  function toggle() {
+    clock.current.playing ? clock.current.pause() : clock.current.play();
+    setPlaying(clock.current.playing);
+    interacted.current = true;
+    void publish();
+  }
   useEffect(() => {
     void refresh();
-    const off = window.tilt.onChange(() => {
-      void refresh();
-    });
+    const off = onChange(() => void refresh());
     let pending = false;
     const timer = setInterval(async () => {
       if (pending) return;
       pending = true;
       try {
+        await publish();
         const jobs = await call<RenderJob[]>({ type: "jobs" });
         setState((s) => (s ? { ...s, jobs } : s));
+      } catch (e) {
+        setError(String(e));
       } finally {
         pending = false;
       }
-    }, 2000);
+    }, 1500);
+    const interaction = () => {
+      interacted.current = true;
+    };
+    window.addEventListener("pointerdown", interaction, true);
+    window.addEventListener("keydown", interaction, true);
+    window.addEventListener("focus", interaction);
     return () => {
       off();
       clearInterval(timer);
+      window.removeEventListener("pointerdown", interaction, true);
+      window.removeEventListener("keydown", interaction, true);
+      window.removeEventListener("focus", interaction);
+      engine.current?.dispose();
     };
   }, []);
   useEffect(() => {
     if (!state) return;
-    void call<string[]>({ type: "list_files" })
+    void call<string[]>({ type: "list_files", sceneId: state.scene.id })
       .then(setFiles)
       .catch(() => {});
   }, [state?.scene.id, state?.codeRevision]);
@@ -183,18 +361,35 @@ function App() {
     request.current?.invalidate();
     let disposed = false;
     let candidate: SceneEngine | null = null;
-    const init = async () => {
+    void (async () => {
       try {
-        const prep = await call<{ url: string; scene: SceneDocument }>({
-          type: "prepare",
-        });
+        const prep = await call<{
+          url: string;
+          scene: SceneDocument;
+          revision: string;
+          codeRevision: number;
+        }>({ type: "prepare", sceneId: s.id });
         if (disposed || n !== generation.current) return;
-        candidate = new SceneEngine(prep.scene, (t) =>
-          call({ type: "frame", time: t }),
+        candidate = new SceneEngine(prep.scene, (t, revision) =>
+          call({
+            type: "frame",
+            sceneId: s.id,
+            time: t,
+            revision,
+            includeContext: true,
+          }),
         );
-        await candidate.init(prep.url + "?generation=" + n);
-        const t = clock.current.seek(Math.min(clock.current.time, s.duration));
-        await candidate.sample(t, current.current?.scene || s);
+        await candidate.init(prep.url);
+        const t = Math.min(clock.current.time, s.duration);
+        candidate.mode = view.current.mode;
+        candidate.sourceId = view.current.sourceId;
+        candidate.inspection = { ...view.current.inspection };
+        await candidate.sample(
+          t,
+          prep.scene,
+          () => !disposed && n === generation.current,
+          prep.revision,
+        );
         if (disposed || n !== generation.current) {
           candidate.dispose();
           return;
@@ -203,49 +398,38 @@ function App() {
         engine.current = candidate;
         stage.current!.replaceChildren(candidate.canvas);
         old?.dispose();
+        displayed.current = { time: t, revision: prep.revision };
         candidate.canvas.addEventListener("webglcontextlost", (event) => {
           if (engine.current !== candidate) return;
           event.preventDefault();
           clock.current.ready = false;
           setReady(false);
-          if (contextRetries.current < 1) {
-            contextRetries.current++;
-            setRetry((x) => x + 1);
-          } else setError("Graphics context lost. Retry to rebuild the scene.");
+          if (contextRetries.current++ < 1) setRetry((x) => x + 1);
+          else setError("Graphics context lost. Retry to rebuild the scene.");
         });
         clock.current.duration = s.duration;
         clock.current.fps = s.fps;
+        clock.current.seek(t);
         clock.current.ready = true;
         setReady(true);
+        setTime(t);
         setError(null);
-        request.current = new LatestFrame(
-          async (t, isCurrent) => {
-            const epoch = presentation.current;
-            const valid = () => isCurrent() && epoch === presentation.current;
-            await engine.current?.sample(t, current.current!.scene, valid);
-            if (valid()) {
-              setTime(t);
-            }
-          },
-          (e) => {
-            clock.current.pause();
-            setPlaying(false);
-            setError(String(e));
-          },
-        );
-        void call<any[]>({ type: "inspect" })
+        request.current = new LatestFrame(async (t, valid) => {
+          await draw(t, valid);
+        }, failed);
+        if (current.current?.revision !== prep.revision)
+          request.current.request(t);
+        void call<any[]>({ type: "inspect", sceneId: s.id })
           .then(setSubjects)
           .catch(() => {});
       } catch (e) {
         candidate?.dispose();
         if (!disposed) {
-          setError(String(e));
-          clock.current.pause();
-          setPlaying(false);
+          if (String(e).includes("revision changed")) setRetry((x) => x + 1);
+          else failed(e);
         }
       }
-    };
-    void init();
+    })();
     return () => {
       disposed = true;
     };
@@ -261,13 +445,17 @@ function App() {
     clock.current.duration = state.scene.duration;
     clock.current.fps = state.scene.fps;
     clock.current.seek(clock.current.time);
-    request.current?.request(clock.current.time);
+    if (!state.error) {
+      setError(null);
+      request.current?.request(clock.current.time);
+    }
   }, [state?.revision]);
   useEffect(() => {
-    let stop = false;
-    let last = performance.now();
-    let frames = 0;
-    let measure = last;
+    let stop = false,
+      last = performance.now(),
+      frames = 0,
+      measure = last,
+      lastContext = last;
     const tick = async () => {
       if (stop) return;
       const now = performance.now();
@@ -279,17 +467,9 @@ function App() {
       ) {
         const t = clock.current.advance((now - last) / 1000);
         last = now;
-        const epoch = presentation.current;
         try {
-          await engine.current.sample(
-            t,
-            current.current.scene,
-            () => epoch === presentation.current,
-          );
-          if (epoch === presentation.current) {
-            setTime(clock.current.time);
-            setPlaying(clock.current.playing);
-          }
+          await draw(t);
+          setPlaying(clock.current.playing);
           frames++;
           if (now - measure > 1000) {
             setFps(Math.round((frames * 1000) / (now - measure)));
@@ -297,86 +477,104 @@ function App() {
             measure = now;
           }
         } catch (e) {
-          clock.current.pause();
-          setPlaying(false);
-          setError(String(e));
+          failed(e);
         }
       } else {
         last = now;
         measure = now;
         frames = 0;
       }
-      requestAnimationFrame(() => {
-        void tick();
-      });
+      if (now - lastContext > 250 && current.current) {
+        lastContext = now;
+        void publish().catch(() => {});
+      }
+      requestAnimationFrame(() => void tick());
     };
     void tick();
     return () => {
       stop = true;
     };
   }, []);
-  function seek(t: number) {
-    presentation.current++;
-    clock.current.pause();
-    setPlaying(false);
-    const next = clock.current.seek(t);
-    setTime(next);
-    request.current?.request(next);
-    void call({ type: "activity", activity: "scrub" });
-  }
-  function toggle() {
-    if (clock.current.playing) clock.current.pause();
-    else clock.current.play();
-    setPlaying(clock.current.playing);
-  }
   useEffect(() => {
-    void call({ type: "activity", activity: playing ? "play" : "idle" });
+    void call({ type: "activity", activity: playing ? "play" : "idle" }).catch(
+      () => {},
+    );
     if (!playing) return;
-    const timer = setInterval(() => {
-      void call({ type: "activity", activity: "play" });
-    }, 1000);
-    return () => {
-      clearInterval(timer);
-      void call({ type: "activity", activity: "idle" });
-    };
+    const timer = setInterval(
+      () => void call({ type: "activity", activity: "play" }).catch(() => {}),
+      1000,
+    );
+    return () => clearInterval(timer);
   }, [playing]);
   useEffect(
     () =>
-      window.tilt.onTransport((c) => {
-        if (c.time !== undefined) seek(c.time);
-        if (c.playing !== undefined) {
-          c.playing ? clock.current.play() : clock.current.pause();
-          setPlaying(c.playing);
+      onRequest(async (c) => {
+        try {
+          if (c.type === "view") {
+            if (c.mode !== "camera" && c.mode !== "source")
+              throw new Error("View must be camera or source");
+            changeMode(c.mode, c.sourceId);
+          }
+          if (["seek", "capture"].includes(c.type)) {
+            presentation.current++;
+            request.current?.invalidate();
+            clock.current.pause();
+            setPlaying(false);
+            const t = clock.current.seek(c.time ?? clock.current.time);
+            if (!(await draw(t)))
+              throw new Error("View changed during capture. Retry.");
+          }
+          if (c.type === "play") {
+            clock.current.play();
+            setPlaying(true);
+          }
+          if (c.type === "pause") {
+            clock.current.pause();
+            setPlaying(false);
+          }
+          const result =
+            c.type === "capture"
+              ? {
+                  data: engine.current!.canvas.toDataURL("image/png"),
+                  context: context(),
+                }
+              : context();
+          await publish();
+          await call({ type: "view_ack", id: c.id, result });
+        } catch (e) {
+          await call({ type: "view_ack", id: c.id, error: String(e) }).catch(
+            () => {},
+          );
         }
       }),
     [],
   );
   useEffect(() => {
-    window.__tiltCapture = async (t) => {
-      presentation.current++;
-      clock.current.pause();
-      setPlaying(false);
-      request.current?.invalidate();
-      if (!engine.current || !current.current)
-        throw new Error("Scene is preparing");
-      clock.current.seek(t);
-      await engine.current.sample(t, current.current.scene);
-      setTime(t);
-      return engine.current.canvas.toDataURL("image/png");
-    };
-    return () => {
-      delete window.__tiltCapture;
-    };
+    const element = stage.current;
+    if (!element) return;
+    return bindNavigation(
+      element,
+      () => view.current,
+      (next) => {
+        view.current.inspection = next;
+        applyView();
+        interacted.current = true;
+      },
+    );
   }, []);
   useEffect(() => {
-    const frame = stage.current?.parentElement;
-    const area = frame?.parentElement;
-    if (!frame || !area || !s) return;
+    const frame = stage.current?.parentElement,
+      area = frame?.parentElement;
+    if (!frame || !area || !state) return;
+    const s = state.scene;
     const fit = () => {
       frame.style.width =
-        Math.min(
-          area.clientWidth - 72,
-          ((area.clientHeight - 38) * s.size.width) / s.size.height,
+        Math.max(
+          1,
+          Math.min(
+            area.clientWidth - 72,
+            ((area.clientHeight - 38) * s.size.width) / s.size.height,
+          ),
         ) + "px";
     };
     const observer = new ResizeObserver(fit);
@@ -387,7 +585,10 @@ function App() {
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement).matches("input,textarea,select")) return;
-      if (e.code === "Space") {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        void invoke({ type: e.shiftKey ? "redo" : "undo" });
+      } else if (e.code === "Space" && !e.repeat) {
         e.preventDefault();
         toggle();
       } else if (e.key === "ArrowLeft") {
@@ -397,6 +598,7 @@ function App() {
         e.preventDefault();
         seek(clock.current.time + 1 / clock.current.fps);
       } else if (e.key === "Home") seek(0);
+      else if (e.key.toLowerCase() === "f") fit();
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
@@ -414,7 +616,13 @@ function App() {
       ["preparing", "queued", "capturing", "encoding"].includes(j.phase),
     ) || [];
   return (
-    <div className="app">
+    <div
+      className={
+        new URLSearchParams(location.search).has("desktop")
+          ? "app desktop"
+          : "app"
+      }
+    >
       <header className="titlebar">
         <div className="brand">Tilt</div>
         <div className="document-title">
@@ -425,7 +633,15 @@ function App() {
           <Button
             icon="undo"
             label="Undo"
+            disabled={!state?.history?.canUndo || !!state.history.pendingEdit}
             onClick={() => void invoke({ type: "undo" })}
+          />
+          <Button
+            icon="undo"
+            label="Redo"
+            className="redo"
+            disabled={!state?.history?.canRedo || !!state.history.pendingEdit}
+            onClick={() => void invoke({ type: "redo" })}
           />
           <Button
             icon="folder"
@@ -456,14 +672,7 @@ function App() {
             <button
               key={item.id}
               className={`scene-item ${s?.id === item.id ? "selected" : ""}`}
-              onClick={() => {
-                clock.current.pause();
-                setPlaying(false);
-                clock.current.seek(0);
-                void invoke({ type: "open", id: item.id }).then(() =>
-                  refresh(),
-                );
-              }}
+              onClick={() => void openScene(item.id)}
             >
               <Icon name="scene" />
               <span>{item.name}</span>
@@ -501,10 +710,24 @@ function App() {
             <Icon name="scene" />
             {s?.name}
           </span>
-          <span>
-            {s?.size.width} × {s?.size.height}
+          <span className="view-controls">
+            <button
+              className={mode === "source" ? "active" : ""}
+              onClick={() => changeMode("source")}
+            >
+              2D
+            </button>
+            <button
+              className={mode === "camera" ? "active" : ""}
+              onClick={() => changeMode("camera")}
+            >
+              Camera
+            </button>
             <span className="divider" />
-            Fit
+            <button onClick={() => fit()} title="Reset view (F)">
+              Fit
+            </button>
+            <span className="zoom-readout">{Math.round(zoom * 100)}%</span>
           </span>
         </div>
         <div className="canvas-area">
@@ -514,7 +737,15 @@ function App() {
               aspectRatio: s ? `${s.size.width}/${s.size.height}` : "1.6",
             }}
           >
-            <div className="scene-stage" ref={stage} />
+            <div
+              className="scene-stage"
+              ref={stage}
+              title={
+                mode === "camera"
+                  ? "Drag to orbit · Shift-drag or right-drag to pan · Scroll to zoom"
+                  : "Drag to pan · Scroll to zoom"
+              }
+            />
             {!ready && (
               <div className="preparing">
                 <span className="spinner" />
@@ -529,7 +760,13 @@ function App() {
             {(s?.sources.length || 0) === 1 ? "" : "s"}
           </span>
           <span>
-            {playing ? `${fps} fps preview` : ready ? "Ready" : "Preparing"}
+            {state?.history?.pendingEdit
+              ? state.history.pendingEdit.label + " · editing"
+              : playing
+                ? `${fps} fps preview`
+                : ready
+                  ? "Ready"
+                  : "Preparing"}
           </span>
         </div>
       </main>
@@ -638,9 +875,8 @@ function App() {
                   key={s.id + key}
                   name={key}
                   param={p}
-                  change={(value) =>
-                    void invoke({ type: "set_parameter", key, value })
-                  }
+                  sceneId={s.id}
+                  reportError={(e) => setError(String(e))}
                 />
               ))}
             </div>
@@ -668,10 +904,21 @@ function App() {
                   {subjects
                     .find((x) => x.source === source.id)
                     ?.subjects.map((item: any) => (
-                      <div key={item.id}>
+                      <button
+                        key={item.id}
+                        className={
+                          selection.includes(item.id) ? "selected" : ""
+                        }
+                        onClick={() => {
+                          view.current.selection = [item.id];
+                          view.current.sourceId = source.id;
+                          setSelection([item.id]);
+                          changeMode("source", source.id);
+                        }}
+                      >
                         <span className="subject-dot" />
                         {item.id}
-                      </div>
+                      </button>
                     ))}
                 </div>
               </div>
@@ -901,9 +1148,7 @@ function App() {
             onClick={(e) => e.stopPropagation()}
             onSubmit={(e) => {
               e.preventDefault();
-              void invoke({ type: "create", name: newName || "Untitled" }).then(
-                () => refresh(),
-              );
+              void openScene(undefined, newName || "Untitled");
               setNewName(null);
             }}
           >
@@ -931,17 +1176,36 @@ function App() {
 function Parameter({
   name,
   param,
-  change,
+  sceneId,
+  reportError,
 }: {
   name: string;
   param: SceneDocument["parameters"][string];
-  change: (v: number) => void;
+  sceneId: string;
+  reportError: (e: unknown) => void;
 }) {
   const [draft, setDraft] = useState(param.value);
   const dragging = useRef(false);
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+  const group = useRef<string | null>(null);
   useEffect(() => {
     if (!dragging.current) setDraft(param.value);
   }, [param.value]);
+  const enqueue = (fn: () => Promise<unknown>) => {
+    queue.current = queue.current.then(fn).catch(reportError);
+  };
+  const change = (value: number) =>
+    enqueue(() => call({ type: "set_parameter", sceneId, key: name, value }));
+  const finish = () => {
+    dragging.current = false;
+    enqueue(async () => {
+      if (group.current) {
+        const id = group.current;
+        await call({ type: "edit_apply", sceneId, id });
+        group.current = null;
+      }
+    });
+  };
   return (
     <label className="parameter">
       <div>
@@ -967,17 +1231,27 @@ function Parameter({
         max={param.max}
         step={param.step}
         value={draft}
-        onPointerDown={() => {
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
           dragging.current = true;
+          enqueue(async () => {
+            const result = await call({
+              type: "edit_begin",
+              sceneId,
+              label: param.label,
+              kind: "gesture",
+              paths: ["scene.json"],
+            });
+            group.current = result.id;
+          });
         }}
         onChange={(e) => {
-          const v = +e.target.value;
-          setDraft(v);
-          change(v);
+          const value = +e.target.value;
+          setDraft(value);
+          change(value);
         }}
-        onPointerUp={() => {
-          dragging.current = false;
-        }}
+        onPointerUp={finish}
+        onPointerCancel={finish}
       />
     </label>
   );
@@ -988,9 +1262,9 @@ if (new URLSearchParams(location.search).has("render")) {
     const prep = await call<{ scene: SceneDocument; url: string }>({
       type: "prepare",
     });
-    const e = new SceneEngine(prep.scene, (t) =>
-      call({ type: "frame", time: t }),
-    );
+    const e = new SceneEngine(prep.scene, async (t) => ({
+      images: await call({ type: "frame", time: t }),
+    }));
     await e.init(prep.url);
     document.body.replaceChildren(e.canvas);
     window.__tiltRender = async (time) => {

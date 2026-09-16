@@ -11,9 +11,15 @@ npm ci
 npm start
 ```
 
-This builds and opens the Electron app. You can also double-click `Tilt.command`. Scene files reload automatically; restart after changing the editor or main process. No account, cloud service, or model key is required. The included interface is an original local HTML fixture, not Shopify code.
+This builds and opens the desktop viewer. To run without a desktop window:
 
-Space plays/pauses. Arrow keys step a frame. Click or drag the timeline to seek. Inspector edits save immediately to `scene.json`; Undo/Redo cover document edits. New Scene creates a separate editable copy of the starter. Render produces an MP4 under `exports/`.
+```sh
+npm start -- --browser
+```
+
+Open the printed localhost URL in Codex or any browser. The local Electron runtime supplies Chromium source capture, files, history and rendering to both viewers. It reuses its previous port when available. Closing a viewer leaves the runtime running; `npm run cli -- stop` stops it. `npm run cli -- desktop` opens the desktop viewer again. `Tilt.command` remains a double-click launcher. Restart after changing editor/runtime code. No account, model key, built-in agent or MCP server is required.
+
+Drag in Camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In 2D, dragging pans the source directly. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline scrubs. Numeric controls save immediately; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. New Scene copies the starter. Render writes an MP4 to `exports/`.
 
 ## Scene files
 
@@ -28,42 +34,40 @@ scenes/interface/
 
 Web sources run in isolated Chromium windows without Node or the editor bridge. Any framework that produces a browser app can supply a source: vanilla, React, Svelte, Vue, and others. A local entry gets its own origin rooted at the entry file’s directory, including root-relative assets and SPA routes. Live URLs can be previewed. For exports, use a local production build and fixture data; Tilt refuses to pretend a mutable URL is an immutable input.
 
-## Agent tools
+## Bring your own agent
 
-Start Tilt, then use the CLI or configure an MCP client:
+Point Codex, Claude or another agent at this folder and [AGENTS.md](AGENTS.md). Edit ordinary scene files. The viewer watches them and keeps the last successful frame while a replacement prepares. No special tool call is needed for a normal file edit.
 
-```json
-{
-  "mcpServers": {
-    "tilt": {
-      "command": "node",
-      "args": ["/Users/jaytel/Developer/Tilt/dist/agent.cjs"],
-      "env": { "TILT_PROJECT": "/Users/jaytel/Developer/Tilt" }
-    }
-  }
-}
-```
+The runtime writes `.tilt/context.json` plus `.tilt/views/<view-id>.json`: active viewer, scene, requested and presented time, source routes, 2D/camera mode, selection, pan/zoom/orbit, viewport, readiness, errors and saved/displayed revisions. These are **read-only observations**, with timestamps and connection state; editing them does not control the viewer. They contain no session credential. Read them before acting. For an acknowledged fresh observation or capture, use the CLI:
 
 ```sh
-npm run cli -- state
+npm run cli -- context --fresh
 npm run cli -- inspect
-npm run cli -- set tilt 0.4
+npm run cli -- seek 4.5
 npm run cli -- capture 4.5
+npm run cli -- history
+npm run cli -- undo
 npm run cli -- render
 npm run cli -- jobs
 ```
 
-MCP supports scene state, reading/writing files with conflict checks, replacing the document with a revision check, parameters, DOM subjects, seeking, PNG capture, and submitting/cancelling/resuming exports. External agents may also edit scene files directly. No model is coupled to the engine. See [AGENTS.md](AGENTS.md) and the three skills under `.agents/skills/` before authoring.
+Add `--view <id>` to target a particular viewer; add `--scene <id>` for file/history/render operations. Capture saves both a PNG and the context of the frame actually presented. Multiple viewers have independent transport and inspection state. Reloading a tab restores its inspection state and time; playback resumes paused.
+
+For a multi-file change, `npm run cli -- begin "Describe the edit" <revision>` returns an edit ID. Write the files, then `npm run cli -- apply <id>`. The old complete preview stays visible until Apply, and the change becomes one undo step. `discard <id>` restores its base. Groups survive runtime restarts. The JSON `command` escape hatch also accepts `paths` on `edit_begin` to restrict the files an edit may touch. Ordinary ungrouped saves are checkpointed after a short debounce; use a group when partial multi-file builds would be invalid.
+
+Revision/hash guards reject stale replacements through the command API. Independent programs writing the same raw file cannot communicate their intent; the history records what it observes, not keystrokes or ownership. Avoid simultaneous writers to the same file. Scenes containing symlinks or hidden dependencies must be materialized into ordinary local files. History currently retains snapshots without automatic pruning.
+
+An optional MCP adapter remains at `dist/agent.cjs` for clients that want it; set `TILT_PROJECT` to the absolute project folder. It is not needed for the file/CLI workflow.
 
 ## Architecture and boundaries
 
-- **Electron + React + TypeScript:** desktop host and thin editor. The source app does not need React or TypeScript.
+- **Electron runtime + React + TypeScript viewer:** one local runtime, optional desktop shell and the same editor over HTTP in a browser. The source app does not need React or TypeScript.
 - **Standalone TypeScript contracts:** validated scene document, absolute-time helpers, playback intent, latest-request scheduling.
 - **Chromium web adapter:** readiness, controlled UI sampling, actual browser pixels, semantic subject inspection.
 - **Three.js compositor:** textures, geometry, cameras, arbitrary materials and shaders. A native adapter could later supply surfaces through the same boundary; no Swift implementation is included.
 - **Local background queue + FFmpeg:** frozen source/module/runtime snapshots, one warm browser per job, atomic PNG checkpoints, frame adoption on resume, verified MP4 before publication.
 
-The editor advances only after preparation succeeds. Rapid seeks coalesce. Unchanged source revisions reuse their last texture; camera-only animation does not recapture the browser. Scene code reload keeps the previous valid canvas until the replacement draws successfully. Workers pause capture during scrubbing and reduce throughput during playback; activity expires after three seconds. Jobs survive closing the editor and recover queued/capture work on reopening. Cancelling preserves diagnostics and prevents publication.
+The editor advances only after preparation succeeds. Browser sessions use an HTTP-only cookie and origin checks; local CLI authentication lives in a private session file. A sampled source route travels with the presented frame, not another viewer’s last sample. Rapid seeks coalesce. Unchanged source revisions reuse their last texture; camera-only animation does not recapture the browser. Scene code reload keeps the previous valid canvas until the replacement draws successfully. Workers pause capture during scrubbing and reduce throughput during playback; activity expires after three seconds. Jobs survive closing the editor and recover queued/capture work on reopening. Cancelling preserves diagnostics and prevents publication.
 
 This is a working prototype, not a finished NLE. Browser-to-GPU transfer currently uses PNG readback, not shared GPU textures. Source capture is a faithful **whole surface**, not automatic independent DOM layers. Native DOM clips, masks and blur stay baked into that surface; split surfaces explicitly when independent depth is required. Export runtime JavaScript and scene code are frozen, but the installed Electron binary and FFmpeg are still required. Media timing, external network resources, arbitrary shaders and app state need their scene adapter to be deterministic. Scene code is trusted project code: browser sources have reduced capabilities, but this is not a hostile-code sandbox. There is no integrated chat, audio timeline, Swift adapter, or packaged installer yet.
 

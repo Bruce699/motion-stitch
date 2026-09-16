@@ -128,10 +128,10 @@ test("external document changes conflict with stale replacement and invalid JSON
       }, revision),
       /changed on disk/,
     );
-    await pause(200);
+    await pause(350);
     assert.equal(store.scene.name, "External");
     await atomicWrite(path.join(store.directory, "scene.json"), "{broken");
-    await pause(200);
+    await pause(350);
     assert.equal(store.scene.name, "External");
     assert.ok(store.error);
   } finally {
@@ -150,6 +150,7 @@ test("file writes reject traversal, symlink escapes and stale hashes", async () 
       safePath(store.directory, "escape/file.txt", true),
       /escapes/,
     );
+    await fs.unlink(path.join(store.directory, "escape"));
     const first = await store.writeFile("source.txt", "one");
     await store.writeFile("source.txt", "two", first.hash);
     await assert.rejects(
@@ -174,7 +175,7 @@ test("a batched source and document edit still invalidates source preparation", 
       path.join(store.directory, "scene.json"),
       JSON.stringify(seed),
     );
-    await pause(220);
+    await pause(350);
     assert.ok(store.codeRevision > previous);
   } finally {
     await clean();

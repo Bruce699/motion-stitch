@@ -5,6 +5,7 @@ import { EventEmitter } from "node:events";
 import { randomUUID } from "node:crypto";
 import { SceneSchema, type SceneDocument } from "../core/schema";
 import { atomicWrite, hash, readJSON, safePath } from "./files";
+import { SceneHistory } from "./history";
 
 export class SceneStore extends EventEmitter {
   scene!: SceneDocument;
@@ -13,10 +14,9 @@ export class SceneStore extends EventEmitter {
   error: string | null = null;
   id = "";
   watcher?: FSWatcher;
+  journal!: SceneHistory;
   private timer?: NodeJS.Timeout;
-  private sourceDirty = false;
-  private undo: SceneDocument[] = [];
-  private redo: SceneDocument[] = [];
+  private sourceHash = "";
   private queue: Promise<unknown> = Promise.resolve();
   constructor(public root: string) {
     super();
@@ -24,12 +24,16 @@ export class SceneStore extends EventEmitter {
   get directory() {
     return path.join(this.root, "scenes", this.id);
   }
+  exclusive<T>(fn: () => Promise<T>): Promise<T> {
+    const next = this.queue.then(fn, fn);
+    this.queue = next.catch(() => {});
+    return next;
+  }
   async list() {
-    const all = await fs.readdir(path.join(this.root, "scenes"), {
-      withFileTypes: true,
-    });
     const out = [];
-    for (const d of all) {
+    for (const d of await fs.readdir(path.join(this.root, "scenes"), {
+      withFileTypes: true,
+    })) {
       if (!d.isDirectory() || d.name.startsWith(".")) continue;
       try {
         const s = SceneSchema.parse(
@@ -41,116 +45,170 @@ export class SceneStore extends EventEmitter {
     return out;
   }
   async open(id: string) {
-    return this.exclusive(() => this.load(id));
+    return this.exclusive(async () => {
+      if (!/^[a-z0-9-]+$/.test(id)) throw new Error("Invalid scene ID");
+      this.watcher?.close();
+      clearTimeout(this.timer);
+      this.id = id;
+      this.journal = new SceneHistory(
+        this.directory,
+        path.join(this.root, ".tilt", "history", id),
+      );
+      await this.journal.init();
+      await this.refresh(false);
+      if (!this.scene) {
+        const entries = this.journal.ledger.entries;
+        for (let i = entries.length - 1; i >= 0; i--) {
+          try {
+            const dir = await this.journal.materialize(entries[i].revision);
+            this.scene = SceneSchema.parse(
+              await readJSON(path.join(dir, "scene.json")),
+            );
+            break;
+          } catch {}
+        }
+      }
+      if (!this.scene) throw new Error(this.error || "No valid scene document");
+      this.watcher = watch(
+        this.directory,
+        { recursive: true },
+        (_event, file) => {
+          if (
+            !file ||
+            file.endsWith(".tmp") ||
+            file.split("/").some((p) => p.startsWith("."))
+          )
+            return;
+          clearTimeout(this.timer);
+          this.timer = setTimeout(() => {
+            void this.exclusive(() => this.refresh()).catch((e) => {
+              this.error = String(e);
+              this.emit("change");
+            });
+          }, 180);
+        },
+      );
+      this.emit("change");
+    });
   }
-  private async load(id: string) {
-    if (!/^[a-z0-9-]+$/.test(id)) throw new Error("Invalid scene ID");
-    const scene = SceneSchema.parse(
-      await readJSON(path.join(this.root, "scenes", id, "scene.json")),
-    );
-    if (scene.id !== id) throw new Error("Scene ID must match its folder");
-    this.watcher?.close();
-    clearTimeout(this.timer);
-    this.sourceDirty = false;
-    this.id = id;
-    this.scene = scene;
-    this.revision = hash(JSON.stringify(scene));
-    this.codeRevision++;
-    this.error = null;
-    this.undo = [];
-    this.redo = [];
-    this.watcher = watch(
-      this.directory,
-      { recursive: true },
-      (_event, file) => {
-        if (
-          !file ||
-          file.includes(".tmp") ||
-          file.split("/").some((x) => x.startsWith("."))
-        )
-          return;
-        if (file !== "scene.json") this.sourceDirty = true;
-        clearTimeout(this.timer);
-        this.timer = setTimeout(() => {
-          const changed = this.sourceDirty ? "source" : "scene.json";
-          this.sourceDirty = false;
-          void this.exclusive(() => this.refresh(changed));
-        }, 120);
-      },
-    );
-    this.emit("change");
-  }
-  private exclusive<T>(fn: () => Promise<T>): Promise<T> {
-    const next = this.queue.then(fn, fn);
-    this.queue = next.catch(() => {});
-    return next;
-  }
-  private async refresh(file: string) {
+  private async refresh(observe = true) {
+    if (observe && !this.journal.group) await this.journal.observe();
+    const group = this.journal.group;
+    if (group?.kind === "agent") {
+      if (!this.scene) {
+        const dir = await this.journal.materialize(group.base);
+        this.scene = SceneSchema.parse(
+          await readJSON(path.join(dir, "scene.json")),
+        );
+      }
+      this.revision = this.journal.revision;
+      this.emit("change");
+      return;
+    }
     try {
-      const s = SceneSchema.parse(
+      const document = SceneSchema.parse(
         await readJSON(path.join(this.directory, "scene.json")),
       );
-      if (s.id !== this.id) throw new Error("Scene ID must match its folder");
-      const rev = hash(JSON.stringify(s));
-      if (rev !== this.revision) {
-        this.undo.push(this.scene);
-        this.redo = [];
-        this.scene = s;
-        this.revision = rev;
-      }
-      if (file !== "scene.json") this.codeRevision++;
+      if (document.id !== this.id)
+        throw new Error("Scene ID must match its folder");
+      this.scene = document;
       this.error = null;
     } catch (e) {
       this.error = String(e);
     }
+    this.revision = group
+      ? hash(JSON.stringify(await this.journal.collect()))
+      : this.journal.revision;
+    const files = this.journal.head?.files || {};
+    const sourceHash = hash(
+      JSON.stringify(
+        Object.entries(files).filter(([name]) => name !== "scene.json"),
+      ),
+    );
+    if (sourceHash !== this.sourceHash) {
+      this.sourceHash = sourceHash;
+      this.codeRevision++;
+    }
     this.emit("change");
   }
-  async edit(change: (scene: SceneDocument) => void, expected?: string) {
+  async sync() {
+    return this.exclusive(() => this.refresh());
+  }
+  async edit(
+    change: (s: SceneDocument) => void,
+    expected?: string,
+    actor = "editor",
+  ) {
     return this.exclusive(async () => {
+      const group = this.journal.group;
+      if (group && (group.actor !== actor || group.kind !== "gesture"))
+        throw new Error(
+          `Scene has an open edit: ${group.id}. Apply or cancel it first.`,
+        );
+      if (!group) await this.journal.observe();
+      if (expected && expected !== this.journal.revision) {
+        await this.refresh(false);
+        throw new Error("Scene changed on disk. Refresh before replacing it.");
+      }
       const disk = SceneSchema.parse(
         await readJSON(path.join(this.directory, "scene.json")),
       );
-      const diskRev = hash(JSON.stringify(disk));
-      if (expected && expected !== diskRev)
-        throw new Error("Scene changed on disk. Refresh before replacing it.");
       const next = structuredClone(disk);
       change(next);
       const parsed = SceneSchema.parse(next);
       if (parsed.id !== this.id) throw new Error("Scene ID cannot change");
-      this.undo.push(disk);
-      this.undo = this.undo.slice(-100);
-      this.redo = [];
-      await this.persist(parsed);
+      if (JSON.stringify(parsed) !== JSON.stringify(disk))
+        await atomicWrite(
+          path.join(this.directory, "scene.json"),
+          JSON.stringify(parsed, null, 2) + "\n",
+        );
+      if (!group) await this.journal.observe("Scene settings", actor);
+      await this.refresh(false);
       return this.scene;
     });
   }
-  private async persist(scene: SceneDocument) {
-    await atomicWrite(
-      path.join(this.directory, "scene.json"),
-      JSON.stringify(scene, null, 2) + "\n",
-    );
-    this.scene = scene;
-    this.revision = hash(JSON.stringify(scene));
-    this.error = null;
-    this.emit("change");
-  }
   async history(direction: "undo" | "redo") {
     return this.exclusive(async () => {
-      const disk = SceneSchema.parse(
+      await this.journal.move(direction);
+      await this.refresh(false);
+      return this.scene;
+    });
+  }
+  async begin(
+    label: string,
+    actor: string,
+    expected?: string,
+    kind: "agent" | "gesture" = "agent",
+    paths?: string[],
+  ) {
+    return this.exclusive(async () => {
+      const group = await this.journal.begin(
+        label,
+        actor,
+        expected,
+        kind,
+        paths,
+      );
+      this.emit("change");
+      return group;
+    });
+  }
+  async apply(id: string) {
+    return this.exclusive(async () => {
+      const doc = SceneSchema.parse(
         await readJSON(path.join(this.directory, "scene.json")),
       );
-      if (hash(JSON.stringify(disk)) !== this.revision) {
-        await this.refresh("scene.json");
-        throw new Error("External edit loaded. Try undo again.");
-      }
-      const from = direction === "undo" ? this.undo : this.redo;
-      const to = direction === "undo" ? this.redo : this.undo;
-      const next = from.pop();
-      if (next) {
-        to.push(this.scene);
-        await this.persist(next);
-      }
-      return this.scene;
+      if (doc.id !== this.id) throw new Error("Scene ID must match its folder");
+      await this.journal.apply(id);
+      await this.refresh(false);
+      return { revision: this.revision };
+    });
+  }
+  async cancel(id: string) {
+    return this.exclusive(async () => {
+      await this.journal.cancel(id);
+      await this.refresh(false);
+      return { revision: this.revision };
     });
   }
   async readFile(relative: string) {
@@ -158,17 +216,16 @@ export class SceneStore extends EventEmitter {
   }
   async writeFile(relative: string, content: string, expectedHash?: string) {
     return this.exclusive(async () => {
-      if (relative === "scene.json")
-        throw new Error("Use replace_scene with its revision for scene.json");
       const file = await safePath(this.directory, relative, true);
-      if (expectedHash) {
-        const current = await fs.readFile(file, "utf8");
-        if (hash(current) !== expectedHash)
-          throw new Error("File changed; read it before writing again");
-      }
+      if (expectedHash && hash(await fs.readFile(file)) !== expectedHash)
+        throw new Error("File changed; read it before writing again");
       await atomicWrite(file, content);
+      await this.refresh();
       return { path: relative, hash: hash(content) };
     });
+  }
+  async previewDirectory() {
+    return this.journal.materialize();
   }
   async create(name: string) {
     const slug =
@@ -183,16 +240,13 @@ export class SceneStore extends EventEmitter {
       recursive: true,
       filter: (s) => !s.includes("node_modules"),
     });
-    const scene = SceneSchema.parse(
-      await readJSON(path.join(dir, "scene.json")),
-    );
-    scene.id = slug;
-    scene.name = name;
+    const doc = SceneSchema.parse(await readJSON(path.join(dir, "scene.json")));
+    doc.id = slug;
+    doc.name = name;
     await atomicWrite(
       path.join(dir, "scene.json"),
-      JSON.stringify(scene, null, 2) + "\n",
+      JSON.stringify(doc, null, 2) + "\n",
     );
-    await this.open(slug);
-    return scene;
+    return { id: slug, name };
   }
 }

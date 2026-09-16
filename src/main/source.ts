@@ -23,6 +23,7 @@ export function deadline<T>(
 export class WebSource {
   window: BrowserWindow;
   private lastKey: unknown;
+  currentRoute = "";
   private lastImage = "";
   private server?: http.Server;
   constructor(
@@ -109,6 +110,7 @@ export class WebSource {
         throw new Error("Sources must use HTTP or HTTPS");
     }
     await deadline(this.window.loadURL(url), 30000, "Source load");
+    this.currentRoute = await this.route();
     await deadline(
       this.window.webContents.executeJavaScript(
         `(async()=>{await document.fonts.ready;await Promise.all([...document.images].map(i=>i.complete?(i.naturalWidth?Promise.resolve():Promise.reject(new Error('Image failed: '+i.src))):i.decode()));if(window.tiltSource?.ready)await window.tiltSource.ready();return true;})()`,
@@ -121,13 +123,15 @@ export class WebSource {
     if (this.spec.sampling === "static" && this.lastImage)
       return this.lastImage;
     const payload = JSON.stringify({ time, parameters });
-    const key = await deadline(
+    const result = await deadline(
       this.window.webContents.executeJavaScript(
-        `(async()=>{const f=${payload};if(${JSON.stringify(this.spec.sampling)}==='controlled'&&typeof window.tiltSource?.sample!=='function')throw new Error('Controlled source must implement window.tiltSource.sample');const result=await window.tiltSource?.sample?.(f);for(const a of document.getAnimations()){a.pause();a.currentTime=f.time*1000;}return result?.revision??f.time;})()`,
+        `(async()=>{const f=${payload};if(${JSON.stringify(this.spec.sampling)}==='controlled'&&typeof window.tiltSource?.sample!=='function')throw new Error('Controlled source must implement window.tiltSource.sample');const result=await window.tiltSource?.sample?.(f);for(const a of document.getAnimations()){a.pause();a.currentTime=f.time*1000;}return {revision:result?.revision??f.time,route:location.pathname+location.search+location.hash};})()`,
       ),
       15000,
       "Source sample",
     );
+    const key = result.revision;
+    this.currentRoute = result.route;
     if (key === this.lastKey && this.lastImage) return this.lastImage;
     await deadline(
       this.window.webContents.executeJavaScript(
@@ -152,6 +156,11 @@ export class WebSource {
   async inspect() {
     return this.window.webContents.executeJavaScript(
       `[...document.querySelectorAll('[data-tilt-id]')].map(el=>{const r=el.getBoundingClientRect();return {id:el.getAttribute('data-tilt-id'),tag:el.tagName,text:el.textContent?.trim().slice(0,120),bounds:{x:r.x,y:r.y,width:r.width,height:r.height}}})`,
+    );
+  }
+  async route() {
+    return this.window.webContents.executeJavaScript(
+      "location.pathname + location.search + location.hash",
     );
   }
   dispose() {

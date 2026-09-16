@@ -2,11 +2,22 @@ import * as THREE from "three";
 import { clamp, lerp, ease, segment } from "../core/motion";
 import { values, type SceneDocument } from "../core/schema";
 import type { SceneFactory, SceneInstance } from "../core/runtime";
+import { defaultInspection } from "../core/context";
 
 export class SceneEngine {
   renderer: THREE.WebGLRenderer;
   world = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
+  mode: "source" | "camera" = "camera";
+  sourceId: string | null = null;
+  sourceRoutes: { id: string; route: string }[] = [];
+  inspection = defaultInspection();
+  private flatWorld = new THREE.Scene();
+  private flatCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+  private flatPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ transparent: true }),
+  );
   textures: Record<string, THREE.Texture> = {};
   private lastImages: Record<string, string> = {};
   private instance?: SceneInstance;
@@ -14,7 +25,13 @@ export class SceneEngine {
   private serial: Promise<unknown> = Promise.resolve();
   constructor(
     public document: SceneDocument,
-    private source: (time: number) => Promise<Record<string, string>>,
+    private source: (
+      time: number,
+      revision?: string,
+    ) => Promise<{
+      images: Record<string, string>;
+      routes?: { id: string; route: string }[];
+    }>,
   ) {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -37,6 +54,8 @@ export class SceneEngine {
     this.camera.aspect = document.size.width / document.size.height;
     this.camera.position.z = 7;
     this.camera.updateProjectionMatrix();
+    this.flatCamera.position.z = 2;
+    this.flatWorld.add(this.flatPlane);
     for (const s of document.sources) {
       const t = new THREE.Texture();
       t.colorSpace = THREE.SRGBColorSpace;
@@ -68,10 +87,11 @@ export class SceneEngine {
     time: number,
     document = this.document,
     present: () => boolean = () => true,
+    revision?: string,
   ) {
     const task = this.serial.then(async () => {
       if (this.disposed) return;
-      const images = await this.source(time);
+      const { images, routes } = await this.source(time, revision);
       for (const [id, data] of Object.entries(images)) {
         if (this.lastImages[id] === data) continue;
         const img = new Image();
@@ -101,10 +121,73 @@ export class SceneEngine {
         document,
       });
       if (this.disposed || !present()) return;
-      this.renderer.render(this.world, this.camera);
+      if (routes) this.sourceRoutes = routes;
+      this.renderView();
     });
     this.serial = task.catch(() => {});
     return task;
+  }
+  renderView() {
+    if (this.disposed) return;
+    const document = this.document;
+    const v = this.inspection;
+    if (this.mode === "source") {
+      const source =
+        document.sources.find((s) => s.id === this.sourceId) ||
+        document.sources[0];
+      const aspect = document.size.width / document.size.height;
+      this.flatCamera.left = -aspect;
+      this.flatCamera.right = aspect;
+      this.flatCamera.zoom = v.zoom;
+      this.flatCamera.position.set(
+        (-v.panX * 2 * aspect) / v.zoom,
+        (v.panY * 2) / v.zoom,
+        2,
+      );
+      this.flatCamera.updateProjectionMatrix();
+      this.flatPlane.visible = Boolean(source);
+      if (source) {
+        const ratio = source.width / source.height;
+        const height = Math.min(2, (2 * aspect) / ratio);
+        this.flatPlane.scale.set(height * ratio, height, 1);
+        this.flatPlane.material.map = this.textures[source.id];
+        this.flatPlane.material.needsUpdate = true;
+      }
+      this.renderer.render(this.flatWorld, this.flatCamera);
+    } else {
+      const camera = this.camera.clone();
+      const distance = Math.max(0.1, camera.position.length());
+      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(
+        camera.quaternion,
+      );
+      const target = camera.position.clone().addScaledVector(forward, distance);
+      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(
+        camera.quaternion,
+      );
+      const rotation = new THREE.Quaternion()
+        .setFromAxisAngle(up, v.orbitX)
+        .multiply(new THREE.Quaternion().setFromAxisAngle(right, v.orbitY));
+      const offset = camera.position
+        .clone()
+        .sub(target)
+        .applyQuaternion(rotation)
+        .divideScalar(v.zoom);
+      camera.quaternion.premultiply(rotation);
+      camera.position.copy(target).add(offset);
+      const height =
+        ((2 * distance) / v.zoom) *
+        Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      camera.position.addScaledVector(
+        new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion),
+        -v.panX * height * camera.aspect,
+      );
+      camera.position.addScaledVector(
+        new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion),
+        v.panY * height,
+      );
+      this.renderer.render(this.world, camera);
+    }
   }
   dispose() {
     this.disposed = true;
@@ -129,6 +212,8 @@ export class SceneEngine {
     materials.forEach((m) => m.dispose());
     textures.forEach((t) => t.dispose());
     this.renderer.dispose();
+    this.flatPlane.geometry.dispose();
+    this.flatPlane.material.dispose();
     this.renderer.forceContextLoss();
   }
 }

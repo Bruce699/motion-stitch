@@ -19,6 +19,7 @@ import {
   type RenderJob,
 } from "../core/schema";
 import { SceneStore } from "./store";
+import { startRuntime } from "./runtime-host";
 import { Jobs } from "./jobs";
 import { WebSource, deadline } from "./source";
 import { serve } from "./server";
@@ -57,7 +58,7 @@ const jobs = new Jobs(
 );
 let editor: BrowserWindow | undefined;
 let origin = "";
-let store: SceneStore;
+
 let frozen: SceneDocument | undefined;
 let frozenDirectory = "";
 let sources: WebSource[] = [];
@@ -65,8 +66,11 @@ let preparedKey = "";
 let preparing: Promise<any> | null = null;
 let compiled = "";
 let activity = "idle";
-const scene = () => frozen || store.scene;
-const sceneDir = () => frozenDirectory || store.directory;
+const scene = () => {
+  if (!frozen) throw new Error("No render snapshot");
+  return frozen;
+};
+const sceneDir = () => frozenDirectory;
 const moduleDir = path.join(root, ".tilt", "modules");
 let currentFrame = 0;
 
@@ -95,12 +99,7 @@ async function compileScene(
 async function prepare() {
   const s = scene();
   const directory = sceneDir();
-  const key = JSON.stringify([
-    s.id,
-    s.entry,
-    s.sources,
-    store?.codeRevision || 0,
-  ]);
+  const key = JSON.stringify([s.id, s.entry, s.sources, 0]);
   if (key === preparedKey)
     return { url: `${origin}/modules/${path.basename(compiled)}`, scene: s };
   if (preparing) {
@@ -141,14 +140,12 @@ async function sample(time: number) {
 }
 async function state() {
   return {
-    scenes: frozen
-      ? [{ id: frozen.id, name: frozen.name }]
-      : await store.list(),
+    scenes: [{ id: scene().id, name: scene().name }],
     scene: scene(),
-    revision: store?.revision || "frozen",
-    codeRevision: store?.codeRevision || 0,
+    revision: "frozen",
+    codeRevision: 0,
     path: sceneDir(),
-    error: store?.error || null,
+    error: null,
     jobs: jobId ? [] : await jobs.list(),
   };
 }
@@ -164,128 +161,7 @@ async function command(c: Command): Promise<any> {
     currentFrame = time;
     return sample(time);
   }
-  if (jobId) throw new Error("Frozen workers are read only");
-  switch (c.type) {
-    case "set_parameter":
-      return store.edit((s) => {
-        const p = s.parameters[String(c.key)];
-        if (!p) throw new Error("Unknown parameter");
-        p.value = Number(c.value);
-      });
-    case "set_setting":
-      return store.edit((s) => {
-        if (c.key === "name") s.name = String(c.value);
-        else if (c.key === "duration") {
-          s.duration = Number(c.value);
-          s.tracks = s.tracks.map((t) => ({
-            ...t,
-            start: Math.min(t.start, s.duration - 0.01),
-            end: Math.min(t.end, s.duration),
-            keys: t.keys.filter((k) => k <= s.duration),
-          }));
-        } else if (c.key === "fps") s.fps = Number(c.value);
-        else if (c.key === "background") s.background = String(c.value);
-        else throw new Error("Unknown setting");
-      });
-    case "replace_scene": {
-      if (typeof c.revision !== "string")
-        throw new Error("Expected revision is required");
-      const s = SceneSchema.parse(c.scene);
-      return store.edit((doc) => Object.assign(doc, s), c.revision);
-    }
-    case "undo":
-    case "redo":
-      return store.history(c.type);
-    case "open":
-      await store.open(String(c.id));
-      return state();
-    case "create":
-      await store.create(String(c.name || "Untitled"));
-      return state();
-    case "read_file": {
-      const content = await store.readFile(String(c.path));
-      return { content, hash: hash(content) };
-    }
-    case "write_file":
-      return store.writeFile(
-        String(c.path),
-        String(c.content),
-        c.hash as string | undefined,
-      );
-    case "list_files":
-      return Object.keys(await manifest(sceneDir()));
-    case "inspect":
-      await prepare();
-      return Promise.all(
-        sources.map(async (s) => ({
-          source: s.spec.id,
-          subjects: await s.inspect(),
-        })),
-      );
-    case "seek": {
-      const time = Number(c.time);
-      if (!Number.isFinite(time) || time < 0 || time > scene().duration)
-        throw new Error("Invalid time");
-      editor?.webContents.send("tilt:transport", { time, playing: false });
-      return { time };
-    }
-    case "play":
-    case "pause":
-      editor?.webContents.send("tilt:transport", {
-        playing: c.type === "play",
-      });
-      return { playing: c.type === "play" };
-    case "capture": {
-      if (!editor) throw new Error("Editor is not open");
-      const time = c.time === undefined ? currentFrame : Number(c.time);
-      if (!Number.isFinite(time) || time < 0 || time > scene().duration)
-        throw new Error("Invalid time");
-      const data = await deadline(
-        editor.webContents.executeJavaScript(
-          `window.__tiltCapture(${JSON.stringify(time)})`,
-        ),
-        60000,
-        "Frame capture",
-      );
-      const file = path.join(root, ".tilt", "captures", `${Date.now()}.png`);
-      await atomicWrite(file, Buffer.from(data.split(",")[1], "base64"));
-      return { path: file, time };
-    }
-    case "reveal":
-      shell.showItemInFolder(path.join(sceneDir(), "scene.json"));
-      return {};
-    case "reveal_job": {
-      const j = await jobs.get(String(c.id));
-      if (j.output) shell.showItemInFolder(j.output);
-      return {};
-    }
-    case "export": {
-      if (store.error) throw new Error("Fix the scene file before rendering");
-      const snapshot = structuredClone(scene());
-      const directory = sceneDir();
-      return jobs.submit(
-        snapshot,
-        directory,
-        () => compileScene(snapshot, directory),
-        String(c.requestId || randomBytes(16).toString("hex")),
-      );
-    }
-    case "jobs":
-      return jobs.list();
-    case "cancel":
-      return jobs.cancel(String(c.id));
-    case "resume":
-      return jobs.resume(String(c.id));
-    case "activity":
-      activity = String(c.activity);
-      await atomicWrite(
-        path.join(root, ".tilt", "activity.json"),
-        JSON.stringify({ activity, at: Date.now() }),
-      );
-      return {};
-    default:
-      throw new Error(`Unknown command: ${c.type}`);
-  }
+  throw new Error("Frozen workers are read only");
 }
 
 async function setupServer() {
@@ -340,83 +216,7 @@ async function runEditor() {
     app.quit();
     return;
   }
-  app.on("second-instance", () => {
-    editor?.show();
-    editor?.focus();
-  });
-  store = new SceneStore(root);
-  const list = await store.list();
-  if (!list.length) throw new Error("No valid scenes found");
-  await store.open(list.find((s) => s.id === "interface")?.id || list[0].id);
-  const http = await setupServer();
-  editor = new BrowserWindow(windowOptions(true));
-  editor.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
-  editor.webContents.on("will-navigate", (event) => event.preventDefault());
-  editor.webContents.on("console-message", (_event, level, message) => {
-    if (level >= 2) console.error("[renderer]", message);
-  });
-  store.on("change", () => editor?.webContents.send("tilt:change"));
-  Menu.setApplicationMenu(
-    Menu.buildFromTemplate([
-      {
-        label: "Tilt",
-        submenu: [{ role: "about" }, { type: "separator" }, { role: "quit" }],
-      },
-      {
-        label: "File",
-        submenu: [
-          {
-            label: "New Scene",
-            accelerator: "CmdOrCtrl+N",
-            click: () => void store.create("Untitled"),
-          },
-          {
-            label: "Reveal Scene",
-            accelerator: "CmdOrCtrl+Shift+R",
-            click: () =>
-              shell.showItemInFolder(path.join(sceneDir(), "scene.json")),
-          },
-        ],
-      },
-      {
-        label: "Edit",
-        submenu: [
-          {
-            label: "Undo",
-            accelerator: "CmdOrCtrl+Z",
-            click: () => void store.history("undo"),
-          },
-          {
-            label: "Redo",
-            accelerator: "CmdOrCtrl+Shift+Z",
-            click: () => void store.history("redo"),
-          },
-          { type: "separator" },
-          { role: "cut" },
-          { role: "copy" },
-          { role: "paste" },
-          { role: "selectAll" },
-        ],
-      },
-      {
-        label: "View",
-        submenu: [
-          { role: "reload" },
-          { role: "toggleDevTools" },
-          { role: "togglefullscreen" },
-        ],
-      },
-    ]),
-  );
-  await editor.loadURL(origin);
-  await jobs.reconcile();
-  editor.on("closed", () => {
-    editor = undefined;
-    store.watcher?.close();
-    sources.forEach((s) => s.dispose());
-    http.server.close();
-    app.quit();
-  });
+  await startRuntime(root, runtime, jobs, process.argv.includes("--browser"));
 }
 
 async function runCoordinator() {
@@ -708,5 +508,5 @@ app
     app.exit(1);
   });
 app.on("window-all-closed", () => {
-  if (!coordinator && !jobId) app.quit();
+  /* The project runtime outlives its viewers. */
 });

@@ -93,6 +93,21 @@ export type ProjectState = {
   path: string;
   error: string | null;
   jobs: RenderJob[];
+  history?: {
+    canUndo: boolean;
+    canRedo: boolean;
+    pendingEdit: { id: string; label: string; kind: string } | null;
+    entries: {
+      id: string;
+      revision: string;
+      label: string;
+      actor: string;
+      at: string;
+      current: boolean;
+    }[];
+  };
+  origin?: string;
+  view?: import("./context").ViewContext | null;
 };
 export type RenderJob = {
   version: 1;

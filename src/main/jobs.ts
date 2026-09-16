@@ -77,7 +77,8 @@ export class Jobs {
         await fs.cp(sceneDir, path.join(dir, "scene"), {
           recursive: true,
           filter: (s) =>
-            !s
+            !path
+              .relative(sceneDir, s)
               .split(path.sep)
               .some((n) => n.startsWith(".") || n === "node_modules"),
         });
@@ -162,6 +163,8 @@ export class Jobs {
   async resume(id: string) {
     const j = await this.get(id);
     if (j.phase === "complete") return j;
+    if (!j.runtime)
+      throw new Error("This snapshot was not completed. Submit a new render.");
     if (alive(j.pid)) throw new Error("Render is still running");
     if (j.electronVersion !== this.electronVersion)
       throw new Error("This job requires its original Electron version");
