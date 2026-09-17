@@ -3,7 +3,7 @@ import { frameForReceiver } from "../core/frame-transfer";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomBytes, randomUUID } from "node:crypto";
-import { app, BrowserWindow, Menu, shell } from "electron";
+import { app, BrowserWindow, Menu, nativeTheme, shell } from "electron";
 import { SceneSchema, type Command } from "../core/schema";
 import { withParameterValue } from "../core/parameters";
 import { SceneStore } from "./store";
@@ -398,7 +398,7 @@ export async function startRuntime(
       title: "Tilt",
       titleBarStyle: "hiddenInset",
       trafficLightPosition: { x: 18, y: 17 },
-      backgroundColor: "#191919",
+      backgroundColor: nativeTheme.shouldUseDarkColors ? "#181818" : "#ffffff",
       webPreferences: {
         contextIsolation: true,
         nodeIntegration: false,
@@ -407,6 +407,15 @@ export async function startRuntime(
       },
     });
     desktop.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+    const window = desktop;
+    const updateBackground = () => {
+      if (!window.isDestroyed())
+        window.setBackgroundColor(
+          nativeTheme.shouldUseDarkColors ? "#181818" : "#ffffff",
+        );
+    };
+    nativeTheme.on("updated", updateBackground);
+    window.once("closed", () => nativeTheme.off("updated", updateBackground));
     desktop.webContents.on("will-navigate", (event) => event.preventDefault());
     await desktop.loadURL(http.publicOrigin + "/?desktop=1");
     desktop.on("closed", () => {

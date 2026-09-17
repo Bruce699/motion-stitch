@@ -57,6 +57,8 @@ Choose **Perspective** or **Isometric** in the Camera parameter group. Isometric
 
 The sidebar is generated from `scene.json.parameters`. The shared vocabulary supports Dial Kit sliders/numbers, colors, toggles, dropdowns, segmented choices, XY pads, text and XYZ vectors, with optional groups and units. An agent can expose an input for a bespoke shader or transform by adding a declaration and reading it in `sample` through `controls.number/color/boolean/select/vector3/pad/text(key)`. No editor component or effect-specific plugin is required. Values use the same validation, persistence, history and export path as other scene edits.
 
+The editor automatically follows the device's light or dark theme using the supplied Codex palette, with no theme toggle or stored override.
+
 The controls and timeline styling are a selective, MIT-licensed [local Dial Kit fork](src/renderer/vendor/dialkit/UPSTREAM.md), rather than a dependency on its stores or playback engine.
 
 See [the control contract and recipes](docs/parameters.md) and [the agent skill](.agents/skills/parameter-controls/SKILL.md). The included scene groups its existing controls under Composition, Camera and Light field.

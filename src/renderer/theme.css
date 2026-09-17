@@ -1,0 +1,112 @@
+/* Selected resolved tokens from the supplied Codex style kit, build 26.908.70816.
+   codex.css SHA-256: af4b37e7bda54b27ffc89d61ed524a5371296676850784765870013204d2dd61.
+   Device preference is the only theme authority. See docs/design-system.md. */
+:root {
+  color-scheme: light;
+  --codex-color-surface: #ffffff;
+  --codex-color-surface-secondary: #f6f6f6;
+  --codex-color-surface-tertiary: rgb(255, 255, 255);
+  --codex-color-surface-elevated-secondary: rgb(255, 255, 255);
+  --codex-color-text: #1a1c1f;
+  --codex-color-text-secondary: color-mix(in srgb, #1a1c1f 65%, transparent);
+  --codex-color-text-tertiary: rgba(26, 28, 31, 0.495);
+  --codex-color-border: rgba(26, 28, 31, 0.078);
+  --codex-color-border-strong: rgba(26, 28, 31, 0.117);
+  --codex-color-ring: #339cff;
+  --codex-color-background-secondary-soft: rgba(26, 28, 31, 0.049);
+  --codex-color-background-secondary-soft-hover: rgba(26, 28, 31, 0.053);
+  --codex-color-background-secondary-soft-alpha-active: color-mix(
+    in oklab,
+    #1a1c1f 16%,
+    transparent
+  );
+  --codex-color-background-secondary-soft-alt: color-mix(
+    in oklab,
+    #1a1c1f 2%,
+    transparent
+  );
+  --codex-color-background-primary-solid: #1a1c1f;
+  --codex-color-background-primary-solid-hover: #303030;
+  --codex-color-text-primary-solid: rgb(255, 255, 255);
+  --codex-color-text-danger: #e02e2a;
+  --codex-shadow-md: 0px 2px 4px -1px #00000014;
+  --codex-shadow-xl: 0px 8px 16px -4px #0000001f;
+  --tilt-timeline-clip-overlay: rgba(0, 0, 0, 0.28);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --codex-color-surface: #181818;
+    --codex-color-surface-secondary: #141414;
+    --codex-color-surface-tertiary: rgb(40, 40, 40);
+    --codex-color-surface-elevated-secondary: rgb(45, 45, 45);
+    --codex-color-text: #dfdfdf;
+    --codex-color-text-secondary: color-mix(in srgb, #dfdfdf 65%, transparent);
+    --codex-color-text-tertiary: rgba(255, 255, 255, 0.498);
+    --codex-color-border: rgba(255, 255, 255, 0.084);
+    --codex-color-border-strong: rgba(255, 255, 255, 0.156);
+    --codex-color-ring: rgba(131, 195, 255, 0.76);
+    --codex-color-background-secondary-soft: rgba(255, 255, 255, 0.052);
+    --codex-color-background-secondary-soft-hover: rgba(255, 255, 255, 0.078);
+    --codex-color-background-secondary-soft-alpha-active: color-mix(
+      in oklab,
+      #dfdfdf 20%,
+      transparent
+    );
+    --codex-color-background-secondary-soft-alt: color-mix(
+      in oklab,
+      #dfdfdf 2%,
+      transparent
+    );
+    --codex-color-background-primary-solid: #dfdfdf;
+    --codex-color-background-primary-solid-hover: #ededed;
+    --codex-color-text-primary-solid: rgb(45, 45, 45);
+    --codex-color-text-danger: #ff6764;
+    --codex-shadow-md: 0px 2px 4px -1px #00000014;
+    --codex-shadow-xl: 0px 8px 16px -4px #0000001f;
+    --tilt-timeline-clip-overlay: transparent;
+  }
+}
+
+/* The existing controls and body-level portals share this semantic mapping.
+   Explicit legacy data-theme attributes cannot override the device palette. */
+.dialkit-root,
+.dialkit-root[data-theme] {
+  --dial-surface: var(--codex-color-background-secondary-soft);
+  --dial-surface-hover: var(--codex-color-background-secondary-soft-hover);
+  --dial-surface-active: var(
+    --codex-color-background-secondary-soft-alpha-active
+  );
+  --dial-surface-subtle: var(--codex-color-background-secondary-soft-alt);
+  --dial-text-root: var(--codex-color-text);
+  --dial-text-section: var(--codex-color-text-secondary);
+  --dial-text-label: var(--codex-color-text-secondary);
+  --dial-text-focus: var(--codex-color-text);
+  --dial-text-primary: var(--codex-color-text);
+  --dial-text-secondary: var(--codex-color-text-secondary);
+  --dial-text-tertiary: var(--codex-color-text-tertiary);
+  --dial-border: var(--codex-color-border);
+  --dial-border-hover: var(--codex-color-border-strong);
+  --dial-focus-ring: var(--codex-color-ring);
+  --dial-glass-bg: var(--codex-color-surface);
+  --dial-dropdown-bg: var(--codex-color-surface-elevated-secondary);
+  --dial-shadow: var(--codex-shadow-xl);
+  --dial-shadow-collapsed: var(--codex-shadow-md);
+  --dial-shadow-dropdown: var(--codex-shadow-xl);
+  --dial-timeline-clip-overlay: var(--tilt-timeline-clip-overlay);
+}
+.dialkit-color-popover input[aria-invalid="true"],
+.dialkit-color-value[aria-invalid="true"] {
+  color: var(--codex-color-text-danger);
+}
+.dialkit-timeline-playhead-flag {
+  border-color: var(--codex-color-border-strong);
+  background: var(--codex-color-background-primary-solid);
+  color: var(--codex-color-text-primary-solid);
+  box-shadow: var(--codex-shadow-md);
+}
+@media (forced-colors: active) {
+  :root {
+    --codex-color-ring: Highlight;
+  }
+}

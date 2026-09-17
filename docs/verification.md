@@ -116,3 +116,11 @@ Typecheck, build and all **37 behavioral tests** passed. Added coverage checks n
 In the actual Codex browser, `http://tilt.localhost:1355` loaded the complete canvas and accepted an acknowledged CLI seek to 4 seconds. Starting a second launcher reused the running process. After stopping and restarting, the internal port changed from 4756 to 4815 while the named browser URL stayed the same; reload restored the 4-second frame, readiness true and no error.
 
 The port-80 service installer reached the Mac administrator password prompt; installation was not completed because user authentication is required. Thus browser verification used the unprivileged `:1355` fallback. The no-port URL and service startup after reboot are not yet verified on this Mac. No certificate or DNS changes were made.
+
+## Device light and dark appearance (17 September 2026)
+
+The editor now follows `prefers-color-scheme` directly in CSS, including changes while open. Removed the dark default and URL override; no switch or persisted theme preference was added. A selected, source-hashed subset of the supplied Codex `codex.css` supplies both palettes and maps onto the existing Dial Kit controls. The native window's initial/empty background follows Electron's device theme notifications.
+
+Typecheck, production build and all 37 existing behavioral tests passed. In the actual Codex browser, light-mode computed colors were workspace `rgb(246,246,246)`, panel/popover white, text `rgb(26,28,31)` and blue focus `#339cff`. Changing the emulated device preference to dark without reloading changed the workspace to `rgb(20,20,20)`, panel to `rgb(24,24,24)`, popover to `rgb(45,45,45)` and text to `rgb(223,223,223)`. Settings stayed open through that switch and the playhead remained at 4 seconds. Both appearances were visually inspected, including focused settings, segmented controls, sliders, disabled actions and the timeline. Browser logs contained no warnings or errors. The emulation was cleared afterward so the delivered viewer follows the actual device again.
+
+The test changed only the browser's emulated preference, not the Mac's global appearance. Native OS theme switching was not manually exercised. No scene/source files were changed; imported UI and rendered content keep their own styling.

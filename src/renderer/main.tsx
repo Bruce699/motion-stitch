@@ -14,6 +14,7 @@ import type {
 import { SceneClock, LatestFrame } from "../core/motion";
 import { SceneEngine } from "./engine";
 import "./vendor/dialkit/theme.css";
+import "./theme.css";
 import { MotionConfig } from "motion/react";
 import { Timeline } from "./vendor/dialkit/Timeline";
 import { SegmentedControl } from "./vendor/dialkit/components/SegmentedControl";
@@ -25,11 +26,6 @@ import { bindNavigation } from "./navigation";
 import { ParameterPanel } from "./parameters";
 import { SceneHeader } from "./scene-header";
 
-// Embedding hosts can select the matching shell theme without touching scene files.
-document.body.dataset.theme = document.documentElement.dataset.theme =
-  new URLSearchParams(location.search).get("theme") === "light"
-    ? "light"
-    : "dark";
 const timecode = (t: number, fps: number) =>
   `${Math.floor(t / 60)
     .toString()

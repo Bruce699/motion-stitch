@@ -7,12 +7,8 @@
 }
 :root {
   font-synthesis: none;
-  color-scheme: dark;
   --inspector-width: 304px;
   --timeline-height: 250px;
-}
-:root[data-theme="light"] {
-  color-scheme: light;
 }
 * {
   box-sizing: border-box;
@@ -22,13 +18,10 @@ body {
   overflow: hidden;
 }
 .tilt-ui {
-  background: #181818;
+  background: var(--codex-color-surface-secondary);
   color: var(--dial-text-primary);
   font-size: 13px;
   line-height: 1.4;
-}
-.tilt-ui[data-theme="light"] {
-  background: #f0f0f0;
 }
 button,
 input,
@@ -163,12 +156,12 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 }
 .render-button {
   margin-left: 8px;
-  background: var(--dial-text-root);
-  color: var(--dial-glass-bg);
+  background: var(--codex-color-background-primary-solid);
+  color: var(--codex-color-text-primary-solid);
   border-radius: 999px;
 }
 .render-button:hover:not(:disabled) {
-  background: var(--dial-text-primary);
+  background: var(--codex-color-background-primary-solid-hover);
 }
 .ui-popover {
   background: var(--dial-dropdown-bg);
@@ -235,7 +228,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   container-type: size;
   box-shadow:
     0 0 0 1px var(--dial-border),
-    0 8px 32px #0002;
+    var(--codex-shadow-xl);
   overflow: hidden;
   background: var(--dial-glass-bg);
 }
@@ -688,7 +681,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   box-shadow: var(--dial-shadow-dropdown);
   z-index: 11;
   font-size: 13px;
-  color: #e99696;
+  color: var(--codex-color-text-danger);
 }
 .error-toast > div {
   flex: 1;
@@ -777,7 +770,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   border-radius: 9999px;
 }
 .job-error {
-  color: #e99696;
+  color: var(--codex-color-text-danger);
   font-size: 12px;
   margin-top: 10px;
   overflow-wrap: anywhere;
