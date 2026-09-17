@@ -106,7 +106,9 @@ export class SceneSession {
     }
     this.quality = quality;
     return {
-      url: `${this.origin}/modules/${path.basename(this.compiled)}`,
+      // A viewer may use the named route or direct loopback. Keep modules on
+      // that viewer's origin so its host-only session cookie applies.
+      url: `/modules/${path.basename(this.compiled)}`,
       scene: doc,
       revision,
       codeRevision,

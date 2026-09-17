@@ -4,20 +4,25 @@ Tilt is an agent-first motion workspace built around scenes. A scene is a folder
 
 ## Run
 
-Requires Node 22.12+ and FFmpeg/FFprobe on PATH. On macOS, `brew install ffmpeg` provides both.
+Requires Node 24+ and FFmpeg/FFprobe on PATH. On macOS, `brew install ffmpeg` provides both.
 
 ```sh
 npm ci
+npm run setup:url
 npm start
 ```
 
-This builds and opens the desktop viewer. To run without a desktop window:
+The one-time URL setup installs a loopback-only [Portless](https://github.com/vercel-labs/portless) proxy on port 80 and requires administrator approval. It starts again after reboot. It uses plain HTTP on `.localhost`, which browsers treat as a local secure context; no certificates, DNS changes or LAN access are needed. Remove this shared Portless service with `npm run remove:url` if it is no longer needed.
+
+`npm start` builds and opens the desktop viewer at **[tilt.localhost](http://tilt.localhost)**. To run without a desktop window:
 
 ```sh
 npm start -- --browser
 ```
 
-Open the printed localhost URL in Codex or any browser. The local Electron runtime supplies Chromium source capture, files, history and rendering to both viewers. It reuses its previous port when available. Closing a viewer leaves the runtime running; `npm run cli -- stop` stops it. `npm run cli -- desktop` opens the desktop viewer again. `Tilt.command` remains a double-click launcher. Restart after changing editor/runtime code. No account, model key, built-in agent or MCP server is required.
+Open `http://tilt.localhost` in Codex or any browser while Tilt is running. The address stays the same across restarts even when the internal port changes. The local Electron runtime supplies Chromium source capture, files, history and rendering to both viewers. Starting again reuses the running instance. Closing a viewer leaves the runtime running; `npm run cli -- stop` stops it. `npm run cli -- desktop` opens the desktop viewer again. `Tilt.command` remains a double-click launcher. Restart after changing editor/runtime code. No account, model key, built-in agent or MCP server is required.
+
+Without administrator access, `PORTLESS_PORT=1355 npm start -- --browser` uses `http://tilt.localhost:1355`; `npm start -- --direct --browser` skips Portless entirely. The CLI always uses its private loopback connection. Source capture and detached export workers keep their isolated local servers. The proxy starts at boot; Tilt itself still starts with `npm start` or `Tilt.command`.
 
 Drag in the Perspective camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In Isometric or 2D, dragging pans. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline has a full-scene overview, scrubbing and zoom (Option/Alt-drag or wheel; Shift-drag resets). Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. The right panel contains parameter controls and the shared camera controls. Render writes an MP4 to `exports/`.
 

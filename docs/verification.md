@@ -106,3 +106,13 @@ A complete **1-second 4K test export** (`28fd4bc2-2d52-42e9-bc53-5d84c23a929a`) 
 ## Measured performance review (17 September 2026)
 
 Compared Admin Next `262df518` with Tilt `f33ed8c` through three independent reviews. Adopted visibility-aware export priority and receiver-specific image transfer reuse. Typecheck, build, 35 behavioral tests, vanilla/React layer capture, and the new transfer integration pass. Repeated hidden-viewer exports reduced median worker time from 34.411 to 21.891 seconds with identical frames. At 3×/4×, cached-frame payloads dropped over 99.7% and sampling work fell 43–56%; changing-UI capture did not become faster. A complete eight-second before/after export produced 240 byte-identical frames and essentially unchanged total time. The actual Codex browser passed a fresh 7× preview/seek check, while a separate native 7× decode limitation was reproduced on the full baseline. Exact methods, raw-result paths, proof boundaries and deferred findings are in [the performance review](performance-review.md).
+
+## Stable local URL (17 September 2026)
+
+The repository is now `/Users/jaytel/Developer/tilt`. The standard launcher uses pinned Portless 0.15.6 with the explicit name `tilt`, plain HTTP and loopback-only `.localhost` routing. The intended address is `http://tilt.localhost`; one-time `npm run setup:url` installs the port-80 proxy as an OS service. Browser cookies, module loading and event streams accept only the configured public host or direct loopback host, with Origin checked against the host actually used. The CLI retains its private direct connection; renderer modules use the viewer's own origin.
+
+Typecheck, build and all **37 behavioral tests** passed. Added coverage checks named-host cookies/modules/streaming events, wrong-host and wrong-origin rejection, forwarded-header spoofing, direct CLI authentication, and failure rather than silent reassignment of an occupied proxy-assigned port. No scene/source files changed.
+
+In the actual Codex browser, `http://tilt.localhost:1355` loaded the complete canvas and accepted an acknowledged CLI seek to 4 seconds. Starting a second launcher reused the running process. After stopping and restarting, the internal port changed from 4756 to 4815 while the named browser URL stayed the same; reload restored the 4-second frame, readiness true and no error.
+
+The port-80 service installer reached the Mac administrator password prompt; installation was not completed because user authentication is required. Thus browser verification used the unprivileged `:1355` fallback. The no-port URL and service startup after reboot are not yet verified on this Mac. No certificate or DNS changes were made.

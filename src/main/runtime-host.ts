@@ -73,7 +73,7 @@ export async function startRuntime(
       error: s.error,
       jobs: await jobs.list(),
       history: s.journal.summary(),
-      origin: http.origin,
+      origin: http.publicOrigin,
       view: views.get(c.viewId as string | undefined) || null,
     };
   };
@@ -118,7 +118,7 @@ export async function startRuntime(
     if (c.type === "state") return state(c);
     if (c.type === "desktop") {
       await openDesktop();
-      return { origin: http.origin };
+      return { origin: http.publicOrigin };
     }
     if (c.type === "shutdown") {
       setTimeout(() => void stop().then(() => app.quit()), 100);
@@ -347,8 +347,16 @@ export async function startRuntime(
     const previous = await readJSON(path.join(root, ".tilt", "session.json"));
     port = Number(new URL(previous.origin).port);
   } catch {}
+  const publicOrigin = process.env.PORTLESS_URL;
+  if (publicOrigin) {
+    port = Number(process.env.PORT);
+    if (!Number.isInteger(port) || port < 1 || port > 65535)
+      throw new Error("Portless must supply a valid PORT");
+  }
   http = await serve({
     port,
+    strictPort: Boolean(publicOrigin),
+    publicOrigin,
     ui: path.join(runtime, "ui"),
     scene: () => path.join(root, "scenes", defaultId),
     modules: path.join(root, ".tilt", "modules"),
@@ -366,6 +374,7 @@ export async function startRuntime(
     sessionFile,
     JSON.stringify({
       origin: http.origin,
+      publicOrigin: http.publicOrigin,
       token,
       pid: process.pid,
       project: root,
@@ -399,7 +408,7 @@ export async function startRuntime(
     });
     desktop.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
     desktop.webContents.on("will-navigate", (event) => event.preventDefault());
-    await desktop.loadURL(http.origin + "/?desktop=1");
+    await desktop.loadURL(http.publicOrigin + "/?desktop=1");
     desktop.on("closed", () => {
       desktop = undefined;
       app.dock?.hide();
@@ -456,6 +465,6 @@ export async function startRuntime(
   });
   if (browserOnly) app.dock?.hide();
   else await openDesktop();
-  console.log(`Tilt is running at ${http.origin}`);
-  return { origin: http.origin, stop, command };
+  console.log(`Tilt is running at ${http.publicOrigin}`);
+  return { origin: http.publicOrigin, stop, command };
 }

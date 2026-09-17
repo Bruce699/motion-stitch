@@ -18,6 +18,8 @@ const types: Record<string, string> = {
 };
 export async function serve(options: {
   port?: number;
+  strictPort?: boolean;
+  publicOrigin?: string;
   ui: string;
   scene: () => string;
   modules: string;
@@ -25,14 +27,31 @@ export async function serve(options: {
   command: (cmd: Command) => Promise<unknown>;
   onDisconnect?: (id: string) => void;
 }) {
+  const publicURL = options.publicOrigin ? new URL(options.publicOrigin) : null;
+  if (
+    publicURL &&
+    (!["http:", "https:"].includes(publicURL.protocol) ||
+      publicURL.username ||
+      publicURL.password ||
+      publicURL.pathname !== "/" ||
+      publicURL.search ||
+      publicURL.hash)
+  )
+    throw new Error("Expected an HTTP(S) public origin without a path");
   const cookieName = "tilt_" + randomBytes(8).toString("hex");
   const cookieValue = randomBytes(32).toString("hex");
   const streams = new Map<string, http.ServerResponse>();
   let origin = "";
   const server = http.createServer(async (req, res) => {
     try {
-      if (req.headers.host !== new URL(origin).host)
-        throw new Error("Invalid host");
+      // Match a configured authority; never trust arbitrary forwarded headers.
+      const requestOrigin =
+        req.headers.host === new URL(origin).host
+          ? origin
+          : publicURL && req.headers.host === publicURL.host
+            ? publicURL.origin
+            : null;
+      if (!requestOrigin) throw new Error("Invalid host");
       const url = new URL(req.url || "/", origin);
       const bearer = req.headers.authorization === `Bearer ${options.token}`;
       const cookie = (req.headers.cookie || "")
@@ -40,7 +59,10 @@ export async function serve(options: {
         .some((c) => c.trim() === `${cookieName}=${cookieValue}`);
       const crossSite = req.headers["sec-fetch-site"] === "cross-site";
       if (req.method === "POST" && url.pathname === "/api") {
-        if (!bearer && (!cookie || req.headers.origin !== origin || crossSite))
+        if (
+          !bearer &&
+          (!cookie || req.headers.origin !== requestOrigin || crossSite)
+        )
           throw new Error("Unauthorized");
         if (!String(req.headers["content-type"]).startsWith("application/json"))
           throw new Error("Expected JSON");
@@ -65,7 +87,7 @@ export async function serve(options: {
         if (
           !cookie ||
           crossSite ||
-          (req.headers.origin && req.headers.origin !== origin)
+          (req.headers.origin && req.headers.origin !== requestOrigin)
         )
           throw new Error("Unauthorized");
         const id = url.searchParams.get("viewId") || "";
@@ -120,7 +142,7 @@ export async function serve(options: {
   });
   await new Promise<void>((resolve, reject) => {
     const error = (e: NodeJS.ErrnoException) => {
-      if (e.code === "EADDRINUSE" && options.port)
+      if (e.code === "EADDRINUSE" && options.port && !options.strictPort)
         server.listen(0, "127.0.0.1");
       else reject(e);
     };
@@ -139,6 +161,7 @@ export async function serve(options: {
   return {
     server,
     origin,
+    publicOrigin: publicURL?.origin || origin,
     send,
     broadcast: (event: string, data: unknown) => {
       for (const id of streams.keys()) send(id, event, data);
