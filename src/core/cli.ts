@@ -12,6 +12,7 @@ export const cliHelp = [
   "  begin <label> <revision> [--paths '[\"scene.ts\"]'] | apply <id> | discard <id>",
   "  history | undo | redo | open <sceneId> | create <name>",
   "  render [requestId] | jobs | cancel <jobId> | resume <jobId>",
+  '  review [\'{"times":[0,2],"focus":["ui/payment"]}\'] | review-status <id>',
   "  command '<JSON>' | desktop | stop",
   "Targets: --scene ID --view ID --actor ID; guarded edits: --revision REV",
   "Remote connection: TILT_URL + runtime-injected TILT_TOKEN. No local fallback.",
@@ -105,6 +106,8 @@ export function parseCLI(argv: string[]): {
       type: "capture",
       ...(args[0] !== undefined ? { time: Number(args[0]) } : {}),
     }),
+    review: () => ({ type: "review", ...(args[0] ? JSON.parse(args[0]) : {}) }),
+    "review-status": () => ({ type: "review_status", id: args[0] }),
     set: () => ({
       type: "set_parameter",
       key: args[0],

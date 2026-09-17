@@ -19,7 +19,7 @@ export const TrackSchema = z.object({
           sourceId: z.string(),
           layerId: z.string(),
         }),
-        z.object({ kind: z.literal("camera") }),
+        z.object({ kind: z.literal("camera"), id: z.string().optional() }),
         z.object({ kind: z.literal("object"), id: z.string().min(1) }),
       ]),
     )

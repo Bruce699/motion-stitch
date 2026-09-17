@@ -75,6 +75,15 @@ Selection, expanded timeline groups and the visible timeline range are inspectio
 
 After a local runtime restart, open viewers can refresh their session cookie and reconnect. An API command is retried once only when the server explicitly rejects it before execution. Ambiguous network failures and command errors are never replayed. Event-stream recovery uses three bounded attempts per outage; a prolonged outage may require reloading the tab.
 
+## Review without a viewer
+
+Use `review` / `tilt_review` to inspect authored output without selecting or moving a browser tab. One request returns ordered frames, semantic detail crops and sampled camera/source context; `compareTo` produces matched before/after evidence. Optional motion previews run asynchronously. MCP responses contain actual image blocks. See [native visual review](agent-review.md) for the contract, examples and proof boundaries.
+
+```sh
+npm run cli -- review '{"times":[0,2,5],"focus":["ui/payment"]}' --scene <scene-id>
+npm run cli -- review-status <review-id>
+```
+
 ## Coordinated editing
 
 Codex CLI/MCP calls use CODEX_THREAD_ID as their default actor identity. Other clients should set a stable TILT_ACTOR for each agent, or pass --actor consistently. The fallback CLI identity is based on its parent process; set an explicit identity for work spanning terminal sessions. These labels prevent accidental ownership conflicts; they are not an authentication boundary against trusted code impersonating an actor.

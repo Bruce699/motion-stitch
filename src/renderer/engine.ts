@@ -1,3 +1,9 @@
+import {
+  clipDocument,
+  sourceTime,
+  type CompositionGraph,
+} from "../core/compositions";
+import type { ParameterValues } from "../core/parameters";
 import * as THREE from "three";
 import { SurfaceResources } from "./surface-resources";
 import type { SourceStatus } from "../core/source-status";
@@ -26,7 +32,29 @@ import {
   type SourceQuality,
 } from "../core/quality";
 
+export type CompositionFrameSource = (
+  sceneId: string,
+  time: number,
+  revision?: string,
+  zoom?: number,
+  knownImages?: Record<string, string>,
+  overrides?: ParameterValues,
+) => Promise<CapturedFrame>;
+type CompositionBudget = { limit: number; nodes: Set<SceneEngine> };
 export class SceneEngine {
+  private budget: CompositionBudget;
+  cameraId?: string;
+  private graph?: CompositionGraph;
+  private frameSource?: CompositionFrameSource;
+  private clipMeshes: Record<
+    string,
+    THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>
+  > = {};
+  private children = new Map<
+    string,
+    { engine: SceneEngine; target: THREE.WebGLRenderTarget }
+  >();
+  private parameterOverrides?: ParameterValues;
   renderer: THREE.WebGLRenderer;
   world = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
@@ -61,6 +89,7 @@ export class SceneEngine {
   private depthOfField?: DepthOfField;
   private surfaceDepthOfField?: SurfaceDepthOfField;
   private focusPoint = new THREE.Vector3();
+  private reviewCamera?: THREE.PerspectiveCamera | THREE.OrthographicCamera;
   private serial: Promise<unknown> = Promise.resolve();
   private staticFrame?: CapturedFrame;
   private staticKey: string | null = null;
@@ -76,15 +105,31 @@ export class SceneEngine {
       revision?: string,
       captureZoom?: number,
       knownImages?: Record<string, string>,
+      overrides?: ParameterValues,
     ) => Promise<CapturedFrame>,
+    private shared?: {
+      renderer: THREE.WebGLRenderer;
+      target: THREE.WebGLRenderTarget;
+      budget?: CompositionBudget;
+    },
   ) {
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: false,
-      preserveDrawingBuffer: true,
-      powerPreference: "high-performance",
-    });
-    this.renderer.setPixelRatio(1);
+    this.budget = shared?.budget ?? {
+      limit:
+        (document.capture?.memoryBudgetMB ?? DEFAULT_SURFACE_BUDGET_MB) *
+        1024 *
+        1024,
+      nodes: new Set(),
+    };
+    this.budget.nodes.add(this);
+    this.renderer =
+      shared?.renderer ??
+      new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false,
+        preserveDrawingBuffer: true,
+        powerPreference: "high-performance",
+      });
+    if (!shared) this.renderer.setPixelRatio(1);
     const gl = this.renderer.getContext();
     this.outputSamples = Math.max(1, Number(gl.getParameter(gl.SAMPLES)) || 1);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -115,15 +160,13 @@ export class SceneEngine {
       this.renderer.capabilities.maxTextureSize,
       this.renderer.capabilities.getMaxAnisotropy(),
     );
-    this.resources.budgetBytes =
-      (document.capture?.memoryBudgetMB ?? DEFAULT_SURFACE_BUDGET_MB) *
-      1024 *
-      1024;
+    this.resources.budgetBytes = this.remainingBudget();
     try {
       this.resources.reserveRenderTargets(
         this.outputMemory(document.size.width, document.size.height),
       );
-      this.renderer.setSize(document.size.width, document.size.height, false);
+      if (!shared)
+        this.renderer.setSize(document.size.width, document.size.height, false);
     } catch (error) {
       this.dispose();
       throw error;
@@ -135,11 +178,20 @@ export class SceneEngine {
   }
   setPreviewViewport(width: number, height: number, dpr: number) {
     this.previewViewport = { width, height, dpr };
-    if (!this.frameBlocked) this.resize();
+    if (!this.frameBlocked || this.shared) this.resize();
   }
-  private outputMemory(width = this.canvas.width, height = this.canvas.height) {
+  private outputMemory(
+    width = this.shared?.target.width ?? this.canvas.width,
+    height = this.shared?.target.height ?? this.canvas.height,
+  ) {
     // Color+depth multisample storage and resolved/preserved RGBA output.
-    return width * height * (8 * this.outputSamples + 8);
+    return (
+      width *
+      height *
+      (this.shared
+        ? 12 * Math.max(1, this.shared.target.samples) + 12
+        : 8 * this.outputSamples + 8)
+    );
   }
   private effectMemory() {
     return (
@@ -160,7 +212,16 @@ export class SceneEngine {
     );
     const w = Math.round(width * scale),
       h = Math.round(height * scale);
-    if (this.canvas.width !== w || this.canvas.height !== h) {
+    if (this.shared) {
+      if (this.shared.target.width !== w || this.shared.target.height !== h) {
+        this.resources.budgetBytes = this.remainingBudget();
+        this.resources.reserveRenderTargets(
+          this.outputMemory(w, h) + this.effectMemory(),
+          this.outputMemory(w, h) + this.outputMemory() + this.effectMemory(),
+        );
+        this.shared.target.setSize(w, h);
+      }
+    } else if (this.canvas.width !== w || this.canvas.height !== h) {
       this.resources.reserveRenderTargets(
         this.outputMemory(w, h) + this.effectMemory(),
         this.outputMemory(w, h) + this.outputMemory() + this.effectMemory(),
@@ -170,7 +231,27 @@ export class SceneEngine {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
   }
-  async init(url: string) {
+  async init(
+    url: string,
+    graph?: CompositionGraph,
+    frameSource?: CompositionFrameSource,
+  ) {
+    this.graph = graph;
+    this.frameSource = frameSource;
+    for (const clip of this.document.clips ?? []) {
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(1, 1),
+        new THREE.MeshBasicMaterial({
+          transparent: true,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        }),
+      );
+      mesh.visible = false;
+      this.clipMeshes[clip.id] = mesh;
+      this.world.add(mesh);
+    }
+
     const module = await import(/* @vite-ignore */ url);
     if (typeof module.default !== "function")
       throw new Error("scene.ts must default-export a scene factory");
@@ -184,6 +265,7 @@ export class SceneEngine {
         this.cameraFrames.set(id, object);
       },
       surfaces: this.textures,
+      clips: this.clipMeshes,
       createLayeredSource: (id, options) => {
         const source = this.document.sources.find((s) => s.id === id);
         if (!source) throw new Error(`Unknown source ${id}`);
@@ -229,13 +311,27 @@ export class SceneEngine {
     const task = this.serial.then(async () => {
       if (this.disposed) return;
       const started = performance.now();
-      this.resources.budgetBytes =
-        (document.capture?.memoryBudgetMB ?? DEFAULT_SURFACE_BUDGET_MB) *
-        1024 *
-        1024;
-      const zoom =
-        this.inspection.zoom *
-        (this.mode === "camera" ? (document.camera?.zoom ?? 1) : 1);
+      if (!this.shared)
+        this.budget.limit =
+          (document.capture?.memoryBudgetMB ?? DEFAULT_SURFACE_BUDGET_MB) *
+          1024 *
+          1024;
+      this.resources.budgetBytes = this.remainingBudget();
+      const previewScale = this.previewViewport
+        ? Math.max(
+            1,
+            (this.previewViewport.width * this.previewViewport.dpr) /
+              document.size.width,
+            (this.previewViewport.height * this.previewViewport.dpr) /
+              document.size.height,
+          )
+        : 1;
+      const zoom = Math.min(
+        12,
+        previewScale *
+          this.inspection.zoom *
+          (this.mode === "camera" ? (document.camera?.zoom ?? 1) : 1),
+      );
       const contract = JSON.stringify([
         document.entry,
         document.sources,
@@ -264,6 +360,7 @@ export class SceneEngine {
               revision,
               zoom,
               this.resources.knownImages(),
+              this.parameterOverrides,
             ));
       const sourceMs = performance.now() - started;
       // Static reuse intentionally retains pixels while its absolute scene time advances.
@@ -303,14 +400,17 @@ export class SceneEngine {
         key === null
           ? undefined
           : { ...frame, images: {}, surfaces: undefined };
+      await this.sampleClips(time, document);
       await this.instance!.sample({
         time,
+        cameraId: this.cameraId ?? document.defaultCameraId ?? "main",
         frame: Math.round(time * document.fps),
         parameters: values(document),
         controls: parameterReader(document.parameters),
         document,
       });
       if (this.disposed || !present()) return;
+      this.resources.budgetBytes = this.remainingBudget();
       this.resize();
       this.renderer.setClearColor(document.background);
       const sceneMs = performance.now() - sceneStarted;
@@ -334,7 +434,15 @@ export class SceneEngine {
             }
           : source,
       );
-      this.quality = quality || [];
+      this.quality = [
+        ...(quality || []),
+        ...[...this.children].flatMap(([id, child]) =>
+          child.engine.quality.map((quality) => ({
+            ...quality,
+            sourceId: id + "/" + quality.sourceId,
+          })),
+        ),
+      ];
       this.layerFrames = layers || [];
       const renderStarted = performance.now();
       this.frameBlocked = false;
@@ -346,6 +454,27 @@ export class SceneEngine {
         sourceMs,
         ...resources,
         ...this.resources.memory,
+        ...(!this.shared
+          ? {
+              residentSurfaceBytes: [...this.budget.nodes].reduce(
+                (sum, node) => sum + node.resources.memory.residentSurfaceBytes,
+                0,
+              ),
+              sourceCaptureBytes: [...this.budget.nodes].reduce(
+                (sum, node) => sum + node.resources.memory.sourceCaptureBytes,
+                0,
+              ),
+              renderTargetBytes: [...this.budget.nodes].reduce(
+                (sum, node) => sum + node.resources.memory.renderTargetBytes,
+                0,
+              ),
+              residentManagedBytes: [...this.budget.nodes].reduce(
+                (sum, node) => sum + node.resources.memory.residentManagedBytes,
+                0,
+              ),
+              surfaceBudgetBytes: this.budget.limit,
+            }
+          : {}),
         sceneMs,
         renderSubmitMs: performance.now() - renderStarted,
         totalMs: performance.now() - requestedAt,
@@ -366,8 +495,122 @@ export class SceneEngine {
     this.serial = guarded.catch(() => {});
     return guarded;
   }
+  private remainingBudget() {
+    return Math.max(
+      0,
+      this.budget.limit -
+        [...this.budget.nodes]
+          .filter((node) => node !== this)
+          .reduce(
+            (sum, node) =>
+              sum + (node.resources?.memory.residentManagedBytes ?? 0),
+            0,
+          ),
+    );
+  }
+  private async sampleClips(time: number, document: SceneDocument) {
+    for (const [index, clip] of (document.clips ?? []).entries()) {
+      const mesh = this.clipMeshes[clip.id];
+      if (!mesh)
+        throw new Error("Composition structure changed; reload required");
+      // End-exclusive intervals make a cut choose exactly one side.
+      mesh.visible = time >= clip.start && time < clip.end;
+      if (!mesh.visible) {
+        const child = this.children.get(clip.id);
+        if (child) {
+          child.engine.dispose();
+          child.target.dispose();
+          this.children.delete(clip.id);
+          mesh.material.map = null;
+        }
+        continue;
+      }
+      const prepared = this.graph?.[clip.compositionId];
+      if (!prepared || !this.frameSource)
+        throw new Error("Missing prepared composition: " + clip.compositionId);
+      const doc = clipDocument(prepared.scene, clip, document);
+      let child = this.children.get(clip.id);
+      if (!child) {
+        const target = new THREE.WebGLRenderTarget(
+          doc.size.width,
+          doc.size.height,
+          {
+            type: THREE.HalfFloatType,
+            samples: Math.min(4, this.renderer.capabilities.maxSamples),
+          },
+        );
+        const engine = new SceneEngine(
+          doc,
+          (t, revision, zoom, known, overrides) =>
+            this.frameSource!(
+              clip.compositionId,
+              t,
+              revision,
+              zoom,
+              known,
+              overrides,
+            ),
+          { renderer: this.renderer, target, budget: this.budget },
+        );
+        child = { engine, target };
+        try {
+          await engine.init(prepared.url, this.graph, this.frameSource);
+        } catch (error) {
+          engine.dispose();
+          target.dispose();
+          throw error;
+        }
+        this.children.set(clip.id, child);
+      }
+      const outputWidth = this.shared?.target.width ?? this.canvas.width;
+      const outputHeight = this.shared?.target.height ?? this.canvas.height;
+      child.engine.setPreviewViewport(outputWidth, outputHeight, 1);
+      child.engine.cameraId =
+        clip.cameraId ?? prepared.scene.defaultCameraId ?? "main";
+      child.engine.parameterOverrides = Object.fromEntries(
+        (prepared.scene.exposedParameters ?? []).map((key) => [
+          key,
+          doc.parameters[key].value,
+        ]),
+      );
+      await child.engine.sample(
+        sourceTime(clip, time),
+        doc,
+        () => !this.disposed,
+        prepared.revision,
+      );
+      mesh.material.map = child.target.texture;
+      mesh.material.opacity = clip.opacity;
+      mesh.material.needsUpdate = true;
+      const height = 2 * 7 * Math.tan(THREE.MathUtils.degToRad(35 / 2));
+      const fit = Math.min(
+        height / doc.size.height,
+        (height * document.size.width) / document.size.height / doc.size.width,
+      );
+      mesh.scale.set(
+        doc.size.width * fit * clip.scale,
+        doc.size.height * fit * clip.scale,
+        1,
+      );
+      mesh.position.fromArray(clip.position);
+      mesh.renderOrder = index;
+    }
+  }
   renderView() {
     if (this.disposed || this.frameBlocked) return;
+    const target = this.renderer.getRenderTarget();
+    const color = this.renderer.getClearColor(new THREE.Color());
+    const alpha = this.renderer.getClearAlpha();
+    this.renderer.setRenderTarget(this.shared?.target ?? null);
+    this.renderer.setClearColor(this.document.background);
+    try {
+      this.renderCurrentView();
+    } finally {
+      this.renderer.setRenderTarget(target);
+      this.renderer.setClearColor(color, alpha);
+    }
+  }
+  private renderCurrentView() {
     const document = this.document;
     const v =
       this.mode === "source"
@@ -491,6 +734,8 @@ export class SceneEngine {
   private renderCamera(
     camera: THREE.PerspectiveCamera | THREE.OrthographicCamera,
   ) {
+    if (this.reviewCamera?.type === camera.type) this.reviewCamera.copy(camera as any);
+    else this.reviewCamera = camera.clone();
     const settings = this.document.camera?.depthOfField;
     if (!settings?.enabled) {
       this.releaseDepthOfField();
@@ -553,10 +798,52 @@ export class SceneEngine {
   describeLayers() {
     return this.presentedLayers;
   }
+  /** Sampled output geometry, independent of editor/viewer inspection metadata. */
+  reviewContext() {
+    const camera = this.reviewCamera;
+    if (!camera) throw new Error("No camera frame has been presented");
+    camera.updateMatrixWorld(true);
+    const w = this.canvas.width, h = this.canvas.height;
+    const projected = this.layeredSources.flatMap(source => source.ids.map(id => {
+      const node = source.get(id), mesh = node.mesh;
+      mesh.updateWorldMatrix(true, false);
+      mesh.geometry.computeBoundingBox();
+      const box = mesh.geometry.boundingBox!;
+      const points = [];
+      for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) {
+        points.push(new THREE.Vector3(x, y, 0).applyMatrix4(mesh.matrixWorld).project(camera));
+      }
+      const xs = points.map(p => (p.x + 1) * w / 2), ys = points.map(p => (1 - p.y) * h / 2);
+      const rect = { x: Math.min(...xs), y: Math.min(...ys), width: Math.max(...xs) - Math.min(...xs), height: Math.max(...ys) - Math.min(...ys) };
+      const inFront = points.every(p => p.z >= -1 && p.z <= 1);
+      let shown = mesh.material.opacity > 0;
+      for (let parent: THREE.Object3D | null = mesh; parent; parent = parent.parent) shown &&= parent.visible;
+      return { id: `${source.source.id}/${id}`, visible: shown && inFront,
+        bounds: shown && inFront ? rect : null,
+        clipped: shown && (!inFront || rect.x < 0 || rect.y < 0 || rect.x + rect.width > w || rect.y + rect.height > h) };
+    }));
+    const frame = this.cameraFrames.get(this.document.camera?.sourceId || this.document.sources[0]?.id) || this.referenceFrame;
+    const focus = frame.getWorldPosition(new THREE.Vector3());
+    return { camera: { projection: camera.type, position: camera.position.toArray(),
+      direction: camera.getWorldDirection(new THREE.Vector3()).toArray(),
+      quaternion: camera.quaternion.toArray(), zoom: camera.zoom,
+      fov: camera instanceof THREE.PerspectiveCamera ? camera.fov : undefined,
+      focusDistance: focusDistance(camera, focus, this.document.camera?.depthOfField?.focusPlane ?? 0),
+      depthOfField: this.document.camera?.depthOfField },
+      projected, layers: this.describeLayers(), sourceQuality: this.quality,
+      warnings: this.layerFrames.flatMap(f => f.warnings), metrics: this.metrics,
+      outputSize: { width: w, height: h } };
+  }
   dispose() {
     if (this.disposed) return;
     this.disposed = true;
+    this.budget.nodes.delete(this);
     this.preparedSource = undefined;
+    for (const child of this.children.values()) {
+      child.engine.dispose();
+      child.target.dispose();
+    }
+    this.children.clear();
     this.instance?.dispose?.();
     this.releaseDepthOfField();
     const geometries = new Set<THREE.BufferGeometry>();
@@ -572,7 +859,11 @@ export class SceneEngine {
           : [mesh.material]) {
           materials.add(m);
           for (const v of Object.values(m))
-            if (v instanceof THREE.Texture && !sourceTextures.has(v))
+            if (
+              v instanceof THREE.Texture &&
+              !sourceTextures.has(v) &&
+              !v.isRenderTargetTexture
+            )
               textures.add(v);
         }
       }
@@ -582,9 +873,9 @@ export class SceneEngine {
     textures.forEach((t) => t.dispose());
     this.resources.dispose();
     this.staticFrame = undefined;
-    this.renderer.dispose();
+    if (!this.shared) this.renderer.dispose();
     this.flatPlane.geometry.dispose();
     this.flatPlane.material.dispose();
-    this.renderer.forceContextLoss();
+    if (!this.shared) this.renderer.forceContextLoss();
   }
 }

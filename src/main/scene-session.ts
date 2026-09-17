@@ -4,6 +4,7 @@ import type { WebSource } from "./source";
 import { values, type SceneDocument, type SourceSpec } from "../core/schema";
 import type { SceneStore } from "./store";
 import { captureQuality, type SourceQuality } from "../core/quality";
+import { withParameterValue, type ParameterValues } from "../core/parameters";
 import { sourceFingerprint } from "./source-fingerprint";
 import { sampleSources } from "./frame-preparation";
 import type { SourceStatus } from "../core/source-status";
@@ -246,17 +247,31 @@ export class SceneSession {
   prepare() {
     return this.exclusive(() => this.ensure());
   }
-  frame(time: number, revision?: string, zoom = 1) {
+  frame(
+    time: number,
+    revision?: string,
+    zoom = 1,
+    overrides: ParameterValues = {},
+  ) {
     return this.exclusive(async () => {
       const prep = await this.ensure(zoom);
       if (revision && revision !== prep.revision)
         throw new Error(
           "Scene revision changed; waiting for the current preview",
         );
+      const parameters = values(prep.scene);
+      for (const [key, value] of Object.entries(overrides)) {
+        if (!prep.scene.exposedParameters?.includes(key))
+          throw new Error("Control is not exposed: " + key);
+        parameters[key] = withParameterValue(
+          prep.scene.parameters[key],
+          value,
+        ).value;
+      }
       const frame = await sampleSources(
         this.entries.map((entry) => entry.source),
         time,
-        values(prep.scene),
+        parameters,
         this.quality,
         prep.revision,
       );

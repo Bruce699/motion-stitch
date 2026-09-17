@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "id": "order-1401-small-things-3906f540",
+  "name": "Order 1401 \u2014 Small things",
+  "duration": 12,
+  "fps": 60,
+  "size": {
+    "width": 1920,
+    "height": 1080
+  },
+  "background": "#f8f8f8",
+  "entry": "scene.ts",
+  "capture": {
+    "density": 4
+  },
+  "camera": {
+    "projection": "perspective",
+    "preset": "front",
+    "side": "right",
+    "depthOfField": {
+      "enabled": true,
+      "focusPlane": 0,
+      "blur": 0.48
+    }
+  },
+  "sources": [
+    {
+      "id": "ui",
+      "kind": "web",
+      "entry": "admin-order/index.html",
+      "width": 1440,
+      "height": 1000,
+      "sampling": "static",
+      "layers": [
+        {
+          "id": "payment",
+          "selector": "[data-tilt-id=\"payment\"]",
+          "padding": 24
+        },
+        {
+          "id": "payment-surface",
+          "selector": "[data-tilt-id=\"payment-surface\"]",
+          "padding": 24
+        },
+        {
+          "id": "total",
+          "selector": "[data-tilt-id=\"payment-surface\"] > div > div:last-child",
+          "padding": 8
+        },
+        {
+          "id": "shop-cash",
+          "selector": "img[alt=\"Shop Cash\"]",
+          "padding": 8
+        },
+        {
+          "id": "mastercard",
+          "selector": "img[alt=\"Mastercard\"]",
+          "padding": 8
+        },
+        {
+          "id": "total-mark",
+          "selector": "[data-tilt-id=\"payment-surface\"] > div > div:last-child > span:first-child",
+          "padding": 8
+        },
+        {
+          "id": "amount",
+          "selector": "[data-tilt-id=\"payment-surface\"] > div > div:last-child > span:last-child",
+          "padding": 8
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "distance": {
+      "type": "number",
+      "label": "Lens distance",
+      "value": 2.05,
+      "min": 1.3,
+      "max": 3.5,
+      "step": 0.01,
+      "group": "Camera"
+    },
+    "lift": {
+      "type": "number",
+      "label": "Paper separation",
+      "value": 0.095,
+      "min": 0,
+      "max": 0.3,
+      "step": 0.005,
+      "group": "Composition"
+    }
+  },
+  "tracks": [
+    {
+      "id": "camera",
+      "label": "Macro journey",
+      "kind": "group",
+      "start": 0,
+      "end": 12,
+      "color": "#047efe",
+      "parameterKeys": [
+        "distance"
+      ],
+      "durationLabel": "Journey time"
+    },
+    {
+      "id": "insignia",
+      "label": "01 \u00b7 Payment marks",
+      "start": 0,
+      "end": 4,
+      "color": "#047efe",
+      "kind": "animation",
+      "parentId": "camera",
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ],
+      "parameterKeys": []
+    },
+    {
+      "id": "traverse",
+      "label": "02 \u00b7 Ink and hairlines",
+      "start": 4,
+      "end": 8,
+      "color": "#047efe",
+      "kind": "animation",
+      "parentId": "camera",
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ],
+      "parameterKeys": []
+    },
+    {
+      "id": "orbit",
+      "label": "03 \u00b7 The total",
+      "start": 8,
+      "end": 12,
+      "color": "#047efe",
+      "kind": "animation",
+      "parentId": "camera",
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ],
+      "parameterKeys": []
+    },
+    {
+      "id": "paper",
+      "label": "Paper and ink",
+      "kind": "group",
+      "start": 0,
+      "end": 12,
+      "color": "#00bca6",
+      "parameterKeys": [
+        "lift"
+      ]
+    },
+    {
+      "id": "paper-rise",
+      "label": "Float the surface",
+      "start": 0,
+      "end": 4,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "paper",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-surface"
+        }
+      ],
+      "parameterKeys": []
+    },
+    {
+      "id": "numerals",
+      "label": "Lift the numerals",
+      "start": 4,
+      "end": 7,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "paper",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "total"
+        }
+      ],
+      "parameterKeys": []
+    },
+    {
+      "id": "paper-settle",
+      "label": "Ease the separation",
+      "start": 8,
+      "end": 12,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "paper",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-surface"
+        }
+      ],
+      "parameterKeys": []
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import {
   commandCatalogue,
 } from "../core/commands";
 import { request, project, actorId } from "./client";
+import { reviewToolContent } from "../core/review";
 
 const server = new McpServer({ name: "tilt", version: "0.2.0" });
 for (const [type, definition] of Object.entries(agentCommands)) {
@@ -18,6 +19,10 @@ for (const [type, definition] of Object.entries(agentCommands)) {
     },
     async (args) => {
       try {
+        if (type === "review" || type === "review_status") {
+          const result = await request(parseAgentCommand({ type, ...args, ...(type === "review" ? { includeImages: true } : {}) }));
+          return { content: reviewToolContent(result) };
+        }
         return {
           content: [
             {

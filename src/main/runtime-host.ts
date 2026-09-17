@@ -17,6 +17,7 @@ import { SceneSession, compileScene } from "./scene-session";
 import { validatePackagedSource } from "./source-host";
 import { ViewRegistry } from "./views";
 import { Jobs } from "./jobs";
+import { Reviews } from "./review";
 import { serve } from "./server";
 import { atomicWrite, hash, manifest, readJSON } from "./files";
 import { ViewerExitCoordinator, viewerMutationCommands } from "./viewer-exit";
@@ -92,6 +93,7 @@ export async function startRuntime(
         views.get(c.viewId as string | undefined)?.sceneId ||
         defaultId,
     );
+  const reviews = new Reviews(root, runtime, getStore);
   const state = async (c: Command) => {
     const s = await getStore(sceneId(c));
     if (c.fresh) await s.sync();
@@ -309,6 +311,12 @@ export async function startRuntime(
     if (viewId && viewerMutationCommands.has(c.type)) viewerExits.assertOpen(viewId);
     const actor = String(c.actorId || viewId || "agent");
     switch (c.type) {
+      case "review": {
+        const { type, sceneId: _scene, viewId: _view, actorId: _actor, ...input } = c;
+        return reviews.review(s.id, input as any);
+      }
+      case "review_status":
+        return reviews.status(String(c.id), Boolean(c.includeImages), c.artifactIndices as number[] | undefined);
       case "prepare":
         return (await getSession(s.id)).prepare();
       case "frame": {
@@ -433,7 +441,7 @@ export async function startRuntime(
       case "create": {
         const created = await catalog.create(String(c.name || "Untitled"));
         http.broadcast("change", {});
-        return views.get(viewId)?.connected
+        return views.snapshot(viewId).active?.connected
           ? command({
               type: "open",
               id: created.id,
@@ -570,6 +578,7 @@ export async function startRuntime(
   async function stop() {
     if (stopping) return;
     stopping = true;
+    await reviews.dispose();
     http.close();
     await views.close();
     for (const p of stores.values()) (await p).watcher?.close();

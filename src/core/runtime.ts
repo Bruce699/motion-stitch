@@ -16,6 +16,8 @@ export type LayeredSurface = {
 };
 export type FrameContext = {
   time: number;
+  /** Selected view of this composition; all cameras follow source time. */
+  cameraId?: string;
   frame: number;
   parameters: ParameterValues;
   controls: ParameterReader;
@@ -28,6 +30,8 @@ export type SceneContext = {
   /** Register the UI plane for exact orthographic angles; layered sources register automatically. */
   registerCameraFrame: (sourceId: string, object: THREE.Object3D) => void;
   surfaces: Record<string, THREE.Texture>;
+  /** Rendered nested compositions, already positioned and timed by the runtime. */
+  clips?: Record<string, THREE.Mesh>;
   createLayeredSource: (
     sourceId: string,
     options: { width: number },

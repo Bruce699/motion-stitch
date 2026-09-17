@@ -350,7 +350,9 @@ diffuseColor*=vec4(tiltColor.a>0.00001?tiltColor.rgb/tiltColor.a:vec3(0.),tiltCo
   ) {
     this.focus.value = focus;
     this.strength.value = strength;
-    this.height.value = this.renderer.getDrawingBufferSize(this.viewport).y;
+    this.height.value =
+      this.renderer.getRenderTarget()?.height ??
+      this.renderer.getDrawingBufferSize(this.viewport).y;
     world.updateMatrixWorld(true);
     camera.updateMatrixWorld(true);
     const saved = this.surfaces.map((mesh) => ({

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ReviewOptions } from "./review";
 
 // One public command vocabulary for the runtime, CLI discovery and MCP.
 // Rendering/heartbeat messages are private runtime operations, not agent tools.
@@ -172,6 +173,18 @@ export const agentCommands = {
     "tilt_capture",
     "Pause and capture the selected viewer at an optional absolute time. Returns PNG and paired context locations for visual verification.",
     { time: time.optional() },
+  ),
+  review: command(
+    "tilt_review",
+    "Render a frozen composition without a viewer or moving its playhead. Returns labeled frames, before/after sheets and native-pixel detail crops. compareTo pins a prior review, times default to its times. focus uses sourceId/layerId. Optional motion renders asynchronously; use review_status. includeImages returns image bytes for vision clients.",
+    ReviewOptions,
+    true,
+  ),
+  review_status: command(
+    "tilt_review_status",
+    "Read a saved review and its motion preview status; never renders or moves a viewer.",
+    { id: z.string().uuid(), includeImages: z.boolean().default(false), artifactIndices: z.array(z.number().int().min(0)).min(1).max(4).optional() },
+    true,
   ),
   history: command(
     "tilt_history",

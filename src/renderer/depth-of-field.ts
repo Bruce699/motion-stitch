@@ -183,7 +183,9 @@ void main() {
   }
 
   estimateMemory() {
-    this.renderer.getDrawingBufferSize(this.size);
+    const output = this.renderer.getRenderTarget();
+    if (output) this.size.set(output.width, output.height);
+    else this.renderer.getDrawingBufferSize(this.size);
     const next = depthOfFieldMemory(
       this.size.x,
       this.size.y,
@@ -210,7 +212,9 @@ void main() {
     strength: number,
   ) {
     const renderer = this.renderer;
-    renderer.getDrawingBufferSize(this.size);
+    const output = renderer.getRenderTarget();
+    if (output) this.size.set(output.width, output.height);
+    else renderer.getDrawingBufferSize(this.size);
     const width = this.size.x,
       height = this.size.y;
     const allocation = depthOfFieldMemory(width, height, this.color.samples);

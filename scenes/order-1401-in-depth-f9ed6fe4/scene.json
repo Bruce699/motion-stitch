@@ -1,0 +1,440 @@
+{
+  "version": 1,
+  "id": "order-1401-in-depth-f9ed6fe4",
+  "name": "Order 1401 \u2014 In depth",
+  "duration": 14,
+  "fps": 60,
+  "size": {
+    "width": 3840,
+    "height": 2160
+  },
+  "background": "#090b0e",
+  "entry": "scene.ts",
+  "camera": {
+    "projection": "perspective",
+    "preset": "front",
+    "side": "right",
+    "depthOfField": {
+      "enabled": true,
+      "focusPlane": 0,
+      "blur": 0.1
+    }
+  },
+  "capture": {
+    "density": 3
+  },
+  "sources": [
+    {
+      "id": "ui",
+      "kind": "web",
+      "entry": "admin-order/index.html",
+      "width": 1440,
+      "height": 1000,
+      "sampling": "static",
+      "layers": [
+        {
+          "id": "fulfillment-0",
+          "selector": "[data-tilt-id=\"fulfillment-0\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "customer",
+          "selector": "[data-tilt-id=\"customer\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "payment",
+          "selector": "[data-tilt-id=\"payment\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "payment-surface",
+          "selector": "[data-tilt-id=\"payment-surface\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "risk",
+          "selector": "[data-tilt-id=\"risk\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "timeline",
+          "selector": "[data-tilt-id=\"timeline\"]",
+          "padding": 24,
+          "optional": false
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "separation": {
+      "type": "number",
+      "label": "Separation",
+      "value": 1,
+      "min": 0,
+      "max": 1.6,
+      "step": 0.01,
+      "group": "Layers"
+    },
+    "spread": {
+      "type": "number",
+      "label": "Spread",
+      "value": 1,
+      "min": 0,
+      "max": 1.5,
+      "step": 0.01,
+      "group": "Layers"
+    },
+    "detailLift": {
+      "type": "number",
+      "label": "Detail lift",
+      "value": 0.45,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.01,
+      "group": "Payment"
+    },
+    "travel": {
+      "type": "number",
+      "label": "Travel",
+      "value": 1,
+      "min": 0,
+      "max": 1.4,
+      "step": 0.01,
+      "group": "Camera"
+    },
+    "baseDim": {
+      "type": "number",
+      "label": "Background dim",
+      "value": 1,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "group": "Layers"
+    }
+  },
+  "tracks": [
+    {
+      "id": "unfold",
+      "label": "Unfold the order",
+      "kind": "group",
+      "start": 1.4,
+      "end": 6,
+      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [
+        "separation",
+        "spread",
+        "baseDim"
+      ]
+    },
+    {
+      "id": "unfold-payment",
+      "label": "Payment",
+      "kind": "animation",
+      "start": 1.4,
+      "end": 4.7,
+      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "unfold",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment"
+        }
+      ]
+    },
+    {
+      "id": "unfold-fulfillment-0",
+      "label": "Fulfillment",
+      "kind": "animation",
+      "start": 1.65,
+      "end": 4.96,
+      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "unfold",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "fulfillment-0"
+        }
+      ]
+    },
+    {
+      "id": "unfold-customer",
+      "label": "Customer",
+      "kind": "animation",
+      "start": 2.15,
+      "end": 5.48,
+      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "unfold",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "customer"
+        }
+      ]
+    },
+    {
+      "id": "unfold-risk",
+      "label": "Risk",
+      "kind": "animation",
+      "start": 2.4,
+      "end": 5.74,
+      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "unfold",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "risk"
+        }
+      ]
+    },
+    {
+      "id": "unfold-timeline",
+      "label": "Activity",
+      "kind": "animation",
+      "start": 2.65,
+      "end": 6.0,
+      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "unfold",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "timeline"
+        }
+      ]
+    },
+    {
+      "id": "detail",
+      "label": "Payment detail",
+      "kind": "animation",
+      "start": 4.8,
+      "end": 8.6,
+      "color": "#ff9800",
+      "keys": [],
+      "parameterKeys": [
+        "detailLift"
+      ],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-surface"
+        }
+      ]
+    },
+    {
+      "id": "return",
+      "label": "Reassemble",
+      "kind": "group",
+      "start": 9.1,
+      "end": 12.8,
+      "color": "#8c51fe",
+      "keys": [],
+      "parameterKeys": []
+    },
+    {
+      "id": "return-payment-surface",
+      "label": "Payment detail",
+      "kind": "animation",
+      "start": 9.1,
+      "end": 11.4,
+      "color": "#8c51fe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "return",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-surface"
+        }
+      ]
+    },
+    {
+      "id": "return-timeline",
+      "label": "Activity",
+      "kind": "animation",
+      "start": 9.23,
+      "end": 11.63,
+      "color": "#8c51fe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "return",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "timeline"
+        }
+      ]
+    },
+    {
+      "id": "return-risk",
+      "label": "Risk",
+      "kind": "animation",
+      "start": 9.36,
+      "end": 11.860000000000001,
+      "color": "#8c51fe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "return",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "risk"
+        }
+      ]
+    },
+    {
+      "id": "return-customer",
+      "label": "Customer",
+      "kind": "animation",
+      "start": 9.49,
+      "end": 12.09,
+      "color": "#8c51fe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "return",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "customer"
+        }
+      ]
+    },
+    {
+      "id": "return-fulfillment-0",
+      "label": "Fulfillment",
+      "kind": "animation",
+      "start": 9.75,
+      "end": 12.55,
+      "color": "#8c51fe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "return",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "fulfillment-0"
+        }
+      ]
+    },
+    {
+      "id": "return-payment",
+      "label": "Payment",
+      "kind": "animation",
+      "start": 9.879999999999999,
+      "end": 12.780000000000001,
+      "color": "#8c51fe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "return",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment"
+        }
+      ]
+    },
+    {
+      "id": "camera",
+      "label": "Camera journey",
+      "kind": "group",
+      "start": 0,
+      "end": 14,
+      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [
+        "travel"
+      ]
+    },
+    {
+      "id": "macro",
+      "label": "Trace the payment",
+      "kind": "animation",
+      "start": 0,
+      "end": 3.4,
+      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "camera",
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
+    },
+    {
+      "id": "reveal",
+      "label": "Reveal the layers",
+      "kind": "animation",
+      "start": 2.6,
+      "end": 7.8,
+      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "camera",
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
+    },
+    {
+      "id": "orbit",
+      "label": "Pass through depth",
+      "kind": "animation",
+      "start": 6.8,
+      "end": 10.5,
+      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "camera",
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
+    },
+    {
+      "id": "hero",
+      "label": "Frame the order",
+      "kind": "animation",
+      "start": 10,
+      "end": 13.5,
+      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
+      "parentId": "camera",
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
+    }
+  ]
+}

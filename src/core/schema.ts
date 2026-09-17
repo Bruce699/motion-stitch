@@ -1,3 +1,4 @@
+import { CompositionClipSchema, NamedCameraSchema } from "./compositions";
 import { TrackSchema } from "./tracks";
 import { z } from "zod";
 import { CameraSettingsSchema } from "./camera";
@@ -90,6 +91,11 @@ export const SceneSchema = z
     background: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     entry: localPath.default("scene.ts"),
     camera: CameraSettingsSchema.optional(),
+    cameraName: z.string().min(1).max(100).optional(),
+    cameras: z.array(NamedCameraSchema).optional(),
+    defaultCameraId: z.string().optional(),
+    clips: z.array(CompositionClipSchema).optional(),
+    exposedParameters: z.array(z.string()).optional(),
     capture: CaptureSettingsSchema.optional(),
     render: z
       .object({ encoding: z.enum(["pipelined", "checkpoint"]) })
@@ -121,6 +127,35 @@ export const SceneSchema = z
     tracks: z.array(TrackSchema).default([]),
   })
   .superRefine((s, ctx) => {
+    const fail = (message: string) => ctx.addIssue({ code: "custom", message });
+    const cameras = ["main", ...(s.cameras ?? []).map((c) => c.id)];
+    if (new Set(cameras).size !== cameras.length)
+      fail("Camera IDs must be unique");
+    if (s.defaultCameraId && !cameras.includes(s.defaultCameraId))
+      fail("Unknown output camera");
+    for (const camera of s.cameras ?? [])
+      if (
+        camera.settings.sourceId &&
+        !s.sources.some((source) => source.id === camera.settings.sourceId)
+      )
+        fail("Unknown camera source");
+    for (const key of s.exposedParameters ?? [])
+      if (!s.parameters[key]) fail("Unknown exposed parameter: " + key);
+    const ids = [
+      ...s.tracks.map((t) => t.id),
+      ...(s.clips ?? []).map((c) => c.id),
+    ];
+    if (new Set(ids).size !== ids.length)
+      fail("Clip and track IDs must be unique");
+    for (const clip of s.clips ?? []) {
+      if (clip.compositionId === s.id)
+        fail("A composition cannot contain itself");
+      if (clip.start >= clip.end || clip.end > s.duration)
+        fail("Clip timing must stay inside the composition");
+      for (const key of Object.values(clip.bindings))
+        if (!s.parameters[key]) fail("Unknown clip control binding: " + key);
+    }
+
     if (s.size.width * s.size.height > MAX_CANVAS_PIXELS)
       ctx.addIssue({
         code: "custom",
@@ -178,6 +213,12 @@ export const SceneSchema = z
       }
       for (const target of t.targets ?? []) {
         if (
+          target.kind === "camera" &&
+          target.id &&
+          !cameras.includes(target.id)
+        )
+          fail("target must name a declared camera");
+        if (
           target.kind === "layer" &&
           !s.sources.some(
             (source) =>
@@ -209,6 +250,9 @@ export type ProjectState = {
   path: string;
   error: string | null;
   jobs: RenderJob[];
+  dependencyRevision?: string;
+  compositions?: Record<string, SceneDocument>;
+  project?: { name: string; path: string };
   history?: {
     canUndo: boolean;
     canRedo: boolean;
