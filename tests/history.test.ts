@@ -9,7 +9,7 @@ import { ViewRegistry } from "../src/main/views";
 import { defaultInspection } from "../src/core/context";
 const seed = JSON.parse(
   await fs.readFile(
-    new URL("../scenes/interface/scene.json", import.meta.url),
+    new URL("./fixtures/scene.json", import.meta.url),
     "utf8",
   ),
 );
@@ -28,6 +28,30 @@ async function fixture() {
     clean: () => fs.rm(root, { recursive: true, force: true }),
   };
 }
+test("disconnected gestures preserve values and one undo step without closing other edits", async () => {
+  const { store, clean } = await fixture();
+  try {
+    const original = store.scene.name;
+    await store.begin("Rename gesture", "viewer-a", undefined, "gesture", ["scene.json"]);
+    await store.edit((scene) => { scene.name = "Kept value"; }, undefined, "viewer-a");
+    assert.equal(await store.finishGesture("viewer-b"), false);
+    assert.ok(store.journal.group);
+    assert.equal(await store.finishGesture("viewer-a"), true);
+    assert.equal(store.journal.group, undefined);
+    assert.equal(store.scene.name, "Kept value");
+    assert.equal(await store.finishGesture("viewer-a"), false);
+    await store.history("undo");
+    assert.equal(store.scene.name, original);
+    await store.history("redo");
+    assert.equal(store.scene.name, "Kept value");
+    const agent = await store.begin("Agent work", "viewer-a", undefined, "agent");
+    assert.equal(await store.finishGesture("viewer-a"), false);
+    assert.equal(store.journal.summary().pendingEdit?.id, agent.id);
+    await store.cancel(agent.id);
+  } finally {
+    await clean();
+  }
+});
 test("file history includes code, JSON and binary assets and survives reopening", async () => {
   const { root, dir, store, clean } = await fixture();
   let reopened: SceneStore | undefined;

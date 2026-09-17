@@ -20,4 +20,6 @@ Read `docs/layers.md` and the active source before editing. Use a file edit grou
 
 Layer bounds and padding always use CSS pixels; density changes only raster resolution. Use the shared settings in `docs/resolution.md`, and verify live density changes retain alignment. Do not multiply layer positions, geometry or crop padding by density.
 
-The canonical example is `scenes/interface`: navigation rises, its active item rises a little further, summary and task regions lift at different depths, then all settle. `parameters.depth` is scene-authored; it is not a built-in effect. Use the helper for any new scene rather than reproducing capture or alignment code.
+The canonical example is `scenes/interface`: order sections lift at different depths, then settle as a coordinated animation group. `parameters.depth` is scene-authored; it is not a built-in effect. Use the helper for any new scene rather than reproducing capture or alignment code.
+
+For authored layer motion, also read `docs/animation-groups.md`. Declare meaningful animation groups and target references, bind useful controls to those groups, and let expandable child intervals drive individual timing. Layer hierarchy describes spatial containment; animation hierarchy describes coordinated behavior. They need not match.

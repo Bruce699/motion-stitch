@@ -1,0 +1,45 @@
+@font-face {
+  font-family: 'Shopify Inter';
+  src: url('/fonts/ShopifyInterBeta.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-feature-settings:
+    'calt' on,
+    'ss03' on,
+    'cv09' on,
+    'cv02' on,
+    'cv03' on,
+    'cv04' on;
+  font-display: swap;
+}
+
+@theme {
+  /* Font families */
+  --font-sans: 'Shopify Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-script: 'Fuzzy Bubbles', ui-rounded, cursive;
+
+  /* Font weights */
+  --font-weight-book: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+
+  /* Font sizes */
+  --text-xs: 11px;
+  --text-xs--line-height: 14px;
+  --text-sm: 12px;
+  --text-sm--line-height: 18px;
+  --text-sm--letter-spacing: -0.5%;
+  --text-base: 13px;
+  --text-base--line-height: 20px;
+  --text-base--letter-spacing: -1%;
+  --text-lg: 15px;
+  --text-lg--line-height: 22px;
+  --text-xl: 17px;
+  --text-xl--line-height: 24px;
+  --text-2xl: 22px;
+  --text-2xl--line-height: 26px;
+  --text-3xl: 26px;
+  --text-3xl--line-height: 32px;
+  --text-4xl: 29px;
+  --text-4xl--line-height: 36px;
+}

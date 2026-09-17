@@ -23,14 +23,14 @@ async function main() {
   const errors: string[] = [];
   try {
     await fs.cp(
-      path.join(project, "scenes/interface/source"),
+      path.join(project, "tests/fixtures/transfer-source"),
       path.join(root, "source"),
       { recursive: true },
     );
     const scene = SceneSchema.parse(
       JSON.parse(
         await fs.readFile(
-          path.join(project, "scenes/interface/scene.json"),
+          path.join(project, "tests/fixtures/scene.json"),
           "utf8",
         ),
       ),

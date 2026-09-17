@@ -1,4 +1,7 @@
 import { Icon } from "../../icons";
+import { TimelineClip } from "./TimelineClip";
+import { trackRows, type TrackTiming } from "../../../core/tracks";
+import type { TimelineContext } from "../../../core/context";
 // Adapted from Dial Kit's DialTimeline.tsx (MIT). See UPSTREAM.md.
 // Tilt supplies the only clock. This component owns inspection, never animation values.
 import {
@@ -16,14 +19,21 @@ export type CueTrack = {
   start: number;
   end: number;
   keys: number[];
+  parentId?: string;
+  kind?: "animation" | "group";
 };
 type Props = {
   duration: number;
   time: number;
   fps: number;
   tracks: CueTrack[];
+  selectedId?: string;
+  onSelect: (id?: string) => void;
+  onTrackChange: (track: CueTrack, timing: TrackTiming) => Promise<unknown>;
   onSeek: (time: number) => void;
   onScrubEnd: () => void;
+  initialContext?: TimelineContext;
+  onContextChange?: (context: TimelineContext) => void;
 };
 const clamp = (n: number, min: number, max: number) =>
   Math.max(min, Math.min(max, n));
@@ -40,15 +50,21 @@ export function Timeline({
   time,
   fps,
   tracks,
+  selectedId,
+  onSelect,
+  onTrackChange,
   onSeek,
   onScrubEnd,
+  initialContext,
+  onContextChange,
 }: Props) {
   const ruler = useRef<HTMLDivElement>(null),
     scroller = useRef<HTMLDivElement>(null),
     body = useRef<HTMLDivElement>(null);
   const [laneWidth, setLaneWidth] = useState(0),
-    [zoom, setZoom] = useState(1),
-    [viewStart, setViewStart] = useState(0);
+    [zoom, setZoom] = useState(initialContext?.zoom || 1),
+    [viewStart, setViewStart] = useState(initialContext?.start || 0);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set(initialContext?.expandedTrackIds));
   const drag = useRef<{
     rect: DOMRect;
     start: number;
@@ -73,6 +89,9 @@ export function Timeline({
     Math.max(0, duration - visibleDuration),
   );
   const viewEnd = safeStart + visibleDuration;
+  useLayoutEffect(() => {
+    onContextChange?.({ start: safeStart, end: viewEnd, zoom, expandedTrackIds: [...expanded] });
+  }, [safeStart, viewEnd, zoom, expanded, onContextChange]);
   const pxPerSecond = laneWidth / visibleDuration;
   const maxZoom = Math.max(
     8,
@@ -331,35 +350,68 @@ export function Timeline({
               ))}
             </div>
           </div>
-          {tracks.map((track) => (
+          {trackRows(tracks, expanded).map(({ track, depth }) => (
             <div className="dialkit-timeline-row" key={track.id}>
-              <div className="dialkit-timeline-label" title={track.label}>
-                {track.label}
+              <div
+                className="dialkit-timeline-label timeline-track-label"
+                title={track.label}
+                style={{ paddingLeft: 12 + depth * 14 }}
+              >
+                {track.kind === "group" &&
+                  tracks.some((t) => t.parentId === track.id) && (
+                    <button
+                      className="timeline-group-toggle"
+                      aria-label={`${expanded.has(track.id) ? "Collapse" : "Expand"} ${track.label}`}
+                      aria-expanded={expanded.has(track.id)}
+                      onClick={() => {
+                        const next = new Set(expanded);
+                        if (next.has(track.id)) {
+                          next.delete(track.id);
+                          const descendants = new Set([track.id]);
+                          for (let size = -1; size !== descendants.size;) {
+                            size = descendants.size;
+                            for (const t of tracks)
+                              if (t.parentId && descendants.has(t.parentId))
+                                descendants.add(t.id);
+                          }
+                          if (selectedId && descendants.has(selectedId))
+                            onSelect(track.id);
+                        } else next.add(track.id);
+                        setExpanded(next);
+                      }}
+                    >
+                      <Icon name="chevron" size={12} />
+                    </button>
+                  )}
+                <button
+                  className="timeline-track-select"
+                  aria-label={`Select ${track.label}`}
+                  aria-pressed={selectedId === track.id}
+                  onClick={() => onSelect(track.id)}
+                >
+                  {track.label}
+                </button>
               </div>
               <div
                 className="dialkit-timeline-lane"
-                onPointerDown={(e) => begin(e)}
+                onPointerDown={(e) => {
+                  onSelect();
+                  begin(e);
+                }}
                 {...interaction}
               >
-                <div
-                  className="dialkit-timeline-clip"
-                  title={`${track.label}: ${track.start}s–${track.end}s`}
-                  style={{
-                    left: (track.start - safeStart) * pxPerSecond,
-                    width: (track.end - track.start) * pxPerSecond,
-                    background: track.color,
-                  }}
-                >
-                  {track.keys.map((key, i) => (
-                    <i
-                      className="timeline-cue"
-                      key={i}
-                      style={{
-                        left: `${((key - track.start) / (track.end - track.start)) * 100}%`,
-                      }}
-                    />
-                  ))}
-                </div>
+                <TimelineClip
+                  track={track}
+                  duration={duration}
+                  bounds={tracks.find((t) => t.id === track.parentId)}
+                  fps={fps}
+                  pxPerSecond={pxPerSecond}
+                  viewStart={safeStart}
+                  selected={selectedId === track.id}
+                  onSelect={() => onSelect(track.id)}
+                  onDeselect={() => onSelect()}
+                  onCommit={onTrackChange}
+                />
               </div>
             </div>
           ))}

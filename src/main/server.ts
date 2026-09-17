@@ -4,6 +4,13 @@ import http from "node:http";
 import { randomBytes } from "node:crypto";
 import type { Command } from "../core/schema";
 import { safePath } from "./files";
+import { encodeFrame, FRAME_CONTENT_TYPE } from "../core/frame-wire";
+import type { CapturedFrame } from "../core/layers";
+class UnauthorizedRequestError extends Error {
+  constructor() {
+    super("Unauthorized");
+  }
+}
 const types: Record<string, string> = {
   ".html": "text/html",
   ".js": "text/javascript",
@@ -26,6 +33,7 @@ export async function serve(options: {
   token: string;
   command: (cmd: Command) => Promise<unknown>;
   onDisconnect?: (id: string) => void;
+  agentContext?: (filter: { viewId?: string; sceneId?: string }) => unknown;
 }) {
   const publicURL = options.publicOrigin ? new URL(options.publicOrigin) : null;
   if (
@@ -41,6 +49,30 @@ export async function serve(options: {
   const cookieName = "tilt_" + randomBytes(8).toString("hex");
   const cookieValue = randomBytes(32).toString("hex");
   const streams = new Map<string, http.ServerResponse>();
+  // Observers never register as viewers or take ownership of the active view.
+  const observers = new Map<
+    http.ServerResponse,
+    { viewId?: string; sceneId?: string }
+  >();
+  const sendContext = (
+    res: http.ServerResponse,
+    filter: { viewId?: string; sceneId?: string },
+  ) => {
+    if (res.writableLength > 1024 * 1024) {
+      res.destroy();
+      return;
+    }
+    try {
+      res.write(
+        `event: context\ndata: ${JSON.stringify(options.agentContext?.(filter))}\n\n`,
+      );
+    } catch (error) {
+      res.write(
+        `event: error\ndata: ${JSON.stringify({ error: String(error) })}\n\n`,
+      );
+      res.end();
+    }
+  };
   let origin = "";
   const server = http.createServer(async (req, res) => {
     try {
@@ -63,7 +95,7 @@ export async function serve(options: {
           !bearer &&
           (!cookie || req.headers.origin !== requestOrigin || crossSite)
         )
-          throw new Error("Unauthorized");
+          throw new UnauthorizedRequestError();
         if (!String(req.headers["content-type"]).startsWith("application/json"))
           throw new Error("Expected JSON");
         const chunks: Buffer[] = [];
@@ -73,14 +105,55 @@ export async function serve(options: {
           if (size > 64 * 1024 * 1024) throw new Error("Request too large");
           chunks.push(chunk);
         }
-        const result = await options.command(
-          JSON.parse(Buffer.concat(chunks).toString()),
-        );
+        const command = JSON.parse(Buffer.concat(chunks).toString());
+        const result = await options.command(command);
+        if (
+          command.type === "frame" &&
+          command.includeContext === true &&
+          String(req.headers.accept).includes(FRAME_CONTENT_TYPE)
+        ) {
+          res.writeHead(200, {
+            "Content-Type": FRAME_CONTENT_TYPE,
+            "Cache-Control": "no-store",
+          });
+          res.end(Buffer.from(encodeFrame(result as CapturedFrame)));
+          return;
+        }
         res.writeHead(200, {
           "Content-Type": "application/json",
           "Cache-Control": "no-store",
         });
         res.end(JSON.stringify(result ?? null));
+        return;
+      }
+      if (req.method === "GET" && url.pathname === "/agent-events") {
+        if (
+          !bearer ||
+          crossSite ||
+          (req.headers.origin && req.headers.origin !== requestOrigin)
+        )
+          throw new UnauthorizedRequestError();
+        if (!options.agentContext)
+          throw new Error("Agent context is unavailable");
+        const filter = {
+          viewId: url.searchParams.get("viewId") || undefined,
+          sceneId: url.searchParams.get("sceneId") || undefined,
+        };
+        // Validate before sending headers, so stale targets fail as ordinary requests.
+        options.agentContext(filter);
+        res.writeHead(200, {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-store",
+          Connection: "keep-alive",
+          "X-Accel-Buffering": "no",
+        });
+        observers.set(res, filter);
+        sendContext(res, filter);
+        const heartbeat = setInterval(() => res.write(": heartbeat\n\n"), 2000);
+        req.on("close", () => {
+          clearInterval(heartbeat);
+          observers.delete(res);
+        });
         return;
       }
       if (req.method === "GET" && url.pathname === "/events") {
@@ -89,7 +162,7 @@ export async function serve(options: {
           crossSite ||
           (req.headers.origin && req.headers.origin !== requestOrigin)
         )
-          throw new Error("Unauthorized");
+          throw new UnauthorizedRequestError();
         const id = url.searchParams.get("viewId") || "";
         if (!/^[a-zA-Z0-9-]{1,80}$/.test(id)) throw new Error("Invalid viewer");
         streams.get(id)?.end();
@@ -113,7 +186,7 @@ export async function serve(options: {
       if (req.method !== "GET" || crossSite)
         throw new Error("Unsupported request");
       const entry = url.pathname === "/" || url.pathname === "/index.html";
-      if (!entry && !cookie && !bearer) throw new Error("Unauthorized");
+      if (!entry && !cookie && !bearer) throw new UnauthorizedRequestError();
       if (entry)
         res.setHeader(
           "Set-Cookie",
@@ -135,8 +208,17 @@ export async function serve(options: {
       res.end(await fs.readFile(file));
     } catch (e) {
       if (!res.headersSent) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: String(e) }));
+        const unauthorized = e instanceof UnauthorizedRequestError;
+        res.writeHead(unauthorized ? 401 : 400, {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
+        });
+        res.end(
+          JSON.stringify({
+            error: String(e),
+            ...(unauthorized ? { code: "UNAUTHORIZED" } : {}),
+          }),
+        );
       } else res.end();
     }
   });
@@ -163,11 +245,15 @@ export async function serve(options: {
     origin,
     publicOrigin: publicURL?.origin || origin,
     send,
+    notifyAgents: () => {
+      for (const [res, filter] of observers) sendContext(res, filter);
+    },
     broadcast: (event: string, data: unknown) => {
       for (const id of streams.keys()) send(id, event, data);
     },
     close: () => {
       for (const stream of streams.values()) stream.end();
+      for (const stream of observers.keys()) stream.end();
       server.close();
     },
   };

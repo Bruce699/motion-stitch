@@ -1,6 +1,6 @@
 import type { Inspection } from "../core/context";
 
-/** Inspection only: never mutates the authored scene camera. */
+/** Pointer navigation; its owner maps Camera gestures to saved scene settings. */
 export function bindNavigation(
   element: HTMLElement,
   get: () => {
@@ -9,7 +9,9 @@ export function bindNavigation(
     projection?: "perspective" | "orthographic";
   },
   change: (next: Inspection) => void,
+  finish: () => void = () => {},
 ) {
+  let wheelTimer: ReturnType<typeof setTimeout> | undefined;
   let gesture: {
     x: number;
     y: number;
@@ -26,7 +28,6 @@ export function bindNavigation(
       initial: { ...get().inspection },
       pan:
         get().mode === "source" ||
-        get().projection === "orthographic" ||
         e.button !== 0 ||
         e.shiftKey,
       id: e.pointerId,
@@ -49,10 +50,12 @@ export function bindNavigation(
     change(next);
   };
   const up = (e: PointerEvent) => {
+    if (!gesture || gesture.id !== e.pointerId) return;
     gesture = null;
     element.classList.remove("navigating");
     if (element.hasPointerCapture(e.pointerId))
       element.releasePointerCapture(e.pointerId);
+    finish();
   };
   const wheel = (e: WheelEvent) => {
     e.preventDefault();
@@ -65,11 +68,15 @@ export function bindNavigation(
         Math.min(12, v.zoom * Math.exp(-delta * (e.ctrlKey ? 0.012 : 0.002))),
       ),
     });
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(finish, 180);
   };
   const context = (e: Event) => e.preventDefault();
   const reset = () => {
     gesture = null;
     element.classList.remove("navigating");
+    clearTimeout(wheelTimer);
+    finish();
   };
   element.addEventListener("pointerdown", down);
   element.addEventListener("pointermove", move);
@@ -79,6 +86,7 @@ export function bindNavigation(
   element.addEventListener("contextmenu", context);
   window.addEventListener("blur", reset);
   return () => {
+    reset();
     element.removeEventListener("pointerdown", down);
     element.removeEventListener("pointermove", move);
     element.removeEventListener("pointerup", up);

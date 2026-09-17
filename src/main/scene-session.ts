@@ -1,10 +1,12 @@
 import path from "node:path";
 import { hash, atomicWrite, safePath } from "./files";
-import type { LayerFrame } from "../core/layers";
-import { WebSource } from "./source";
-import { values, type SceneDocument } from "../core/schema";
+import type { WebSource } from "./source";
+import { values, type SceneDocument, type SourceSpec } from "../core/schema";
 import type { SceneStore } from "./store";
 import { captureQuality, type SourceQuality } from "../core/quality";
+import { sourceFingerprint } from "./source-fingerprint";
+import { sampleSources } from "./frame-preparation";
+import type { SourceStatus } from "../core/source-status";
 
 export async function compileScene(
   root: string,
@@ -28,83 +30,210 @@ export async function compileScene(
   await atomicWrite(file, output);
   return file;
 }
+export type SessionSource = Pick<
+  WebSource,
+  "spec" | "currentRoute" | "ready" | "sample" | "inspect" | "route"
+> & { dispose(): void | Promise<void>; readonly diagnostics?: SourceStatus };
+export type SessionStore = Pick<
+  SceneStore,
+  | "root"
+  | "id"
+  | "scene"
+  | "revision"
+  | "codeRevision"
+  | "error"
+  | "previewDirectory"
+>;
+export interface SessionDependencies {
+  compile: typeof compileScene;
+  fingerprint: typeof sourceFingerprint;
+  createSource(
+    spec: SourceSpec,
+    origin: string,
+    prefix: string,
+    directory: string,
+    density: number,
+  ): SessionSource | Promise<SessionSource>;
+}
+const defaultDependencies: SessionDependencies = {
+  compile: compileScene,
+  fingerprint: sourceFingerprint,
+  async createSource(...args) {
+    const { WebSource } = await import("./source");
+    return new WebSource(...args);
+  },
+};
+type SourceEntry = { key: string; source: SessionSource };
+type DensityRequest = { key: string; zoom: number };
+
 export class SceneSession {
-  private key = "";
+  private compilationKey = "";
   private compiled = "";
-  private sources: WebSource[] = [];
+  private entries: SourceEntry[] = [];
   private quality: SourceQuality[] = [];
-  private qualityRevision = "";
-  private inspectionZoom = 1;
+  private densityRequests = new Map<string, DensityRequest>();
+  private snapshot?: { key: string; directory: string; fingerprints: string[] };
   private queue: Promise<unknown> = Promise.resolve();
+  private disposed = false;
+  private disposal?: Promise<void>;
+  private preparingSources = new Set<SessionSource>();
+  private retirements = new WeakMap<SessionSource, Promise<void>>();
+  private counters = { compilations: 0, sourceCreations: 0, sourceReuses: 0 };
   constructor(
-    public store: SceneStore,
+    public store: SessionStore,
     public origin: string,
+    private dependencies: SessionDependencies = defaultDependencies,
   ) {}
+  get diagnostics() {
+    return {
+      ...this.counters,
+      activeSources: this.entries.length,
+      sources: this.entries.flatMap((entry) =>
+        entry.source.diagnostics ? [entry.source.diagnostics] : [],
+      ),
+    };
+  }
   exclusive<T>(fn: () => Promise<T>): Promise<T> {
     const task = this.queue.then(fn, fn);
     this.queue = task.catch(() => {});
     return task;
   }
+  private retire(source: SessionSource) {
+    let pending = this.retirements.get(source);
+    if (!pending) {
+      try {
+        pending = Promise.resolve(source.dispose());
+      } catch (error) {
+        pending = Promise.reject(error);
+      }
+      this.retirements.set(source, pending);
+      void pending.catch(() => {});
+    }
+    return pending;
+  }
   private async ensure(zoom = 1) {
+    if (this.disposed) throw new Error("Scene session is disposed");
     if (this.store.error) throw new Error(this.store.error);
     const doc = this.store.scene;
     const revision = this.store.revision;
     const codeRevision = this.store.codeRevision;
-    const qualityRevision = JSON.stringify([
-      doc.size,
-      doc.capture,
-      doc.sources,
-      codeRevision,
-    ]);
-    if (qualityRevision !== this.qualityRevision) {
-      this.inspectionZoom = 1;
-      this.qualityRevision = qualityRevision;
-    }
-    // Retain the highest requested preview density until authored inputs change.
-    // This avoids rebuilding shared sources when viewers have different zooms.
-    this.inspectionZoom = Math.max(this.inspectionZoom, zoom);
-    const quality = doc.sources.map((spec) =>
-      captureQuality(doc.size, spec, doc.capture, this.inspectionZoom),
-    );
-    const key = JSON.stringify([
-      this.store.id,
-      doc.entry,
-      doc.sources,
-      codeRevision,
-      quality.map((q) => q.density),
-    ]);
-    if (key !== this.key) {
-      const directory = await this.store.previewDirectory();
-      const module = await compileScene(this.store.root, directory, doc);
-      const next = doc.sources.map(
-        (spec, i) =>
-          new WebSource(
-            spec,
-            this.origin,
-            "source",
-            directory,
-            quality[i].density,
-          ),
-      );
-      try {
-        await Promise.all(next.map((s) => s.ready()));
-      } catch (e) {
-        next.forEach((s) => s.dispose());
-        throw e;
-      }
-      if (revision !== this.store.revision) {
-        next.forEach((s) => s.dispose());
+    const sceneId = this.store.id;
+    const assertCurrent = () => {
+      if (this.disposed) throw new Error("Scene session is disposed");
+      if (revision !== this.store.revision || sceneId !== this.store.id)
         throw new Error(
           "Scene revision changed; waiting for the current preview",
         );
-      }
-      const old = this.sources;
-      this.sources = next;
-      this.compiled = module;
-      this.key = key;
-      old.forEach((s) => s.dispose());
+    };
+    // Camera/parameter gestures change scene.json, not nested app roots. Avoid
+    // materializing and hashing all assets on every gesture frame. A root entry
+    // can fetch scene.json, so it conservatively depends on the full revision.
+    const exposesDocument = doc.sources.some(
+      (spec) => spec.entry && path.dirname(spec.entry) === ".",
+    );
+    const snapshotKey = JSON.stringify([
+      sceneId,
+      codeRevision,
+      doc.sources,
+      exposesDocument ? revision : null,
+    ]);
+    let snapshot = this.snapshot;
+    if (snapshot?.key !== snapshotKey) {
+      const directory = await this.store.previewDirectory();
+      const fingerprints = await Promise.all(
+        doc.sources.map((spec) =>
+          this.dependencies.fingerprint(directory, spec),
+        ),
+      );
+      assertCurrent();
+      snapshot = { key: snapshotKey, directory, fingerprints };
     }
+    const nextDensity = new Map<string, DensityRequest>();
+    const quality = doc.sources.map((spec) => {
+      const key = JSON.stringify([sceneId, doc.size, doc.capture, spec]);
+      const previous = this.densityRequests.get(spec.id);
+      // Retain quality across choreography edits and independent viewer zooms.
+      const requested = Math.max(
+        1,
+        Number.isFinite(zoom) ? zoom : 1,
+        previous?.key === key ? previous.zoom : 1,
+      );
+      nextDensity.set(spec.id, { key, zoom: requested });
+      return captureQuality(doc.size, spec, doc.capture, requested);
+    });
+    // Arbitrary composition imports remain safe: any code revision recompiles,
+    // while browser lifetimes depend only on their own actual source roots.
+    const compilationKey = JSON.stringify([sceneId, doc.entry, codeRevision]);
+    let module = this.compiled;
+    if (compilationKey !== this.compilationKey) {
+      module = await this.dependencies.compile(
+        this.store.root,
+        snapshot.directory,
+        doc,
+      );
+      this.counters.compilations++;
+    }
+    assertCurrent();
+    const created: SessionSource[] = [];
+    const next: SourceEntry[] = [];
+    try {
+      for (const [i, spec] of doc.sources.entries()) {
+        const key = JSON.stringify([
+          sceneId,
+          snapshot.fingerprints[i],
+          quality[i].density,
+        ]);
+        const previous = this.entries.find(
+          (entry) =>
+            entry.key === key &&
+            !["failed", "disposed"].includes(
+              entry.source.diagnostics?.phase || "ready",
+            ),
+        );
+        if (previous) next.push(previous);
+        else {
+          const source = await this.dependencies.createSource(
+            spec,
+            this.origin,
+            "source",
+            snapshot.directory,
+            quality[i].density,
+          );
+          created.push(source);
+          this.preparingSources.add(source);
+          this.counters.sourceCreations++;
+          assertCurrent();
+          next.push({ key, source });
+        }
+      }
+      // Wait for every startup to finish before disposing a failed transaction;
+      // a late ready() must not allocate resources after cleanup.
+      const ready = await Promise.allSettled(
+        created.map((source) => source.ready()),
+      );
+      const failed = ready.find((result) => result.status === "rejected");
+      if (failed?.status === "rejected") throw failed.reason;
+      assertCurrent();
+    } catch (error) {
+      await Promise.allSettled(created.map((source) => this.retire(source)));
+      throw error;
+    } finally {
+      created.forEach((source) => this.preparingSources.delete(source));
+    }
+    const old = this.entries;
+    this.entries = next;
+    this.compiled = module;
+    this.compilationKey = compilationKey;
+    this.snapshot = snapshot;
+    this.densityRequests = nextDensity;
     this.quality = quality;
+    this.counters.sourceReuses += next.length - created.length;
+    await Promise.allSettled(
+      old
+        .filter((entry) => !next.includes(entry))
+        .map((entry) => this.retire(entry.source)),
+    );
+    assertCurrent();
     return {
       // A viewer may use the named route or direct loopback. Keep modules on
       // that viewer's origin so its host-only session cookie applies.
@@ -124,46 +253,52 @@ export class SceneSession {
         throw new Error(
           "Scene revision changed; waiting for the current preview",
         );
-      const images: Record<string, string> = {};
-      const imageVersions: Record<string, string> = {};
-      const layers: LayerFrame[] = [];
-      for (const s of this.sources) {
-        const frame = await s.sample(time, values(prep.scene));
-        Object.assign(images, frame.images);
-        Object.assign(imageVersions, frame.imageVersions);
-        layers.push(...(frame.layers || []));
-      }
+      const frame = await sampleSources(
+        this.entries.map((entry) => entry.source),
+        time,
+        values(prep.scene),
+        this.quality,
+        prep.revision,
+      );
+      if (this.disposed) throw new Error("Scene session is disposed");
       if (prep.revision !== this.store.revision)
         throw new Error(
           "Scene revision changed; waiting for the current preview",
         );
-      return {
-        images,
-        imageVersions,
-        layers,
-        quality: this.quality,
-        routes: this.sources.map((s) => ({
-          id: s.spec.id,
-          route: s.currentRoute,
-        })),
-      };
+      return frame;
     });
   }
   inspect() {
     return this.exclusive(async () => {
       await this.ensure();
       return Promise.all(
-        this.sources.map(async (s) => ({
+        this.entries.map(async ({ source: s }) => ({
           source: s.spec.id,
           route: await s.route(),
           subjects: await s.inspect(),
           layers: s.spec.layers,
+          status: s.diagnostics,
         })),
       );
     });
   }
   dispose() {
-    this.sources.forEach((s) => s.dispose());
-    this.sources = [];
+    if (this.disposal) return this.disposal;
+    this.disposed = true;
+    const pending = [
+      ...this.entries.map((entry) => entry.source),
+      ...this.preparingSources,
+    ].map((source) => this.retire(source));
+    const queue = this.queue;
+    this.entries = [];
+    this.snapshot = undefined;
+    this.densityRequests.clear();
+    this.disposal = (async () => {
+      await Promise.allSettled(pending);
+      // Factories already running can resolve after dispose was requested. The
+      // transaction retires those resources before its queued work completes.
+      await queue.catch(() => {});
+    })();
+    return this.disposal;
   }
 }

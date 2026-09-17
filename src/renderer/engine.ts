@@ -1,5 +1,14 @@
 import * as THREE from "three";
-import { applyIsometricCamera } from "./camera";
+import { SurfaceResources } from "./surface-resources";
+import type { SourceStatus } from "../core/source-status";
+import {
+  DEFAULT_SURFACE_BUDGET_MB,
+  type RenderMetrics,
+} from "../core/render-metrics";
+import { staticFrameKey } from "../core/static-frame";
+import { SurfaceDepthOfField } from "./surface-depth-of-field";
+import { DepthOfField, focusDistance } from "./depth-of-field";
+import { alignInspectionFront, applyIsometricCamera } from "./camera";
 import { clamp, lerp, ease, segment } from "../core/motion";
 import { values, type SceneDocument } from "../core/schema";
 import type { SceneFactory, SceneInstance } from "../core/runtime";
@@ -40,11 +49,26 @@ export class SceneEngine {
     new THREE.MeshBasicMaterial({ transparent: true }),
   );
   textures: Record<string, THREE.Texture> = {};
-  private lastImages: Record<string, string> = {};
-  private imageVersions: Record<string, string> = {};
+  private resources: SurfaceResources;
+  private outputSamples: number;
+  metrics?: RenderMetrics;
+  sourceStatus: SourceStatus[] = [];
   private instance?: SceneInstance;
   private disposed = false;
+  // Decoded textures and arbitrary scene code can change while a sample awaits.
+  // Inspection must never expose those incomplete changes on the last good canvas.
+  private frameBlocked = true;
+  private depthOfField?: DepthOfField;
+  private surfaceDepthOfField?: SurfaceDepthOfField;
+  private focusPoint = new THREE.Vector3();
   private serial: Promise<unknown> = Promise.resolve();
+  private staticFrame?: CapturedFrame;
+  private staticKey: string | null = null;
+  private preparedSource?: {
+    time: number;
+    contract: string;
+    frame: CapturedFrame;
+  };
   constructor(
     public document: SceneDocument,
     private source: (
@@ -61,7 +85,8 @@ export class SceneEngine {
       powerPreference: "high-performance",
     });
     this.renderer.setPixelRatio(1);
-    this.renderer.setSize(document.size.width, document.size.height, false);
+    const gl = this.renderer.getContext();
+    this.outputSamples = Math.max(1, Number(gl.getParameter(gl.SAMPLES)) || 1);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.debug.onShaderError = (gl, _program, vertex, fragment) => {
       throw new Error(
@@ -77,34 +102,50 @@ export class SceneEngine {
     this.camera.updateProjectionMatrix();
     this.flatCamera.position.z = 2;
     this.flatWorld.add(this.flatPlane);
-    for (const s of document.sources) {
-      for (const key of [
-        s.id,
-        ...(s.layers?.length
-          ? ["base", ...s.layers.map((l) => l.id)].map((id) =>
-              layerTextureKey(s.id, id),
-            )
-          : []),
-      ]) {
-        const t = new THREE.Texture();
-        t.colorSpace = THREE.SRGBColorSpace;
-        t.minFilter = THREE.LinearMipmapLinearFilter;
-        t.magFilter = THREE.LinearFilter;
-        t.generateMipmaps = true;
-        t.anisotropy = Math.min(
-          8,
-          this.renderer.capabilities.getMaxAnisotropy(),
-        );
-        this.textures[key] = t;
-      }
+    const keys = document.sources.flatMap((s) => [
+      s.id,
+      ...(s.layers?.length
+        ? ["base", ...s.layers.map((l) => l.id)].map((id) =>
+            layerTextureKey(s.id, id),
+          )
+        : []),
+    ]);
+    this.resources = new SurfaceResources(
+      keys,
+      this.renderer.capabilities.maxTextureSize,
+      this.renderer.capabilities.getMaxAnisotropy(),
+    );
+    this.resources.budgetBytes =
+      (document.capture?.memoryBudgetMB ?? DEFAULT_SURFACE_BUDGET_MB) *
+      1024 *
+      1024;
+    try {
+      this.resources.reserveRenderTargets(
+        this.outputMemory(document.size.width, document.size.height),
+      );
+      this.renderer.setSize(document.size.width, document.size.height, false);
+    } catch (error) {
+      this.dispose();
+      throw error;
     }
+    this.textures = this.resources.textures;
   }
   get canvas() {
     return this.renderer.domElement;
   }
   setPreviewViewport(width: number, height: number, dpr: number) {
     this.previewViewport = { width, height, dpr };
-    this.resize();
+    if (!this.frameBlocked) this.resize();
+  }
+  private outputMemory(width = this.canvas.width, height = this.canvas.height) {
+    // Color+depth multisample storage and resolved/preserved RGBA output.
+    return width * height * (8 * this.outputSamples + 8);
+  }
+  private effectMemory() {
+    return (
+      (this.depthOfField?.residentBytes ?? 0) +
+      (this.surfaceDepthOfField?.residentBytes ?? 0)
+    );
   }
   private resize() {
     const { width, height } = this.document.size;
@@ -119,8 +160,13 @@ export class SceneEngine {
     );
     const w = Math.round(width * scale),
       h = Math.round(height * scale);
-    if (this.canvas.width !== w || this.canvas.height !== h)
+    if (this.canvas.width !== w || this.canvas.height !== h) {
+      this.resources.reserveRenderTargets(
+        this.outputMemory(w, h) + this.effectMemory(),
+        this.outputMemory(w, h) + this.outputMemory() + this.effectMemory(),
+      );
       this.renderer.setSize(w, h, false);
+    }
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
   }
@@ -158,55 +204,91 @@ export class SceneEngine {
     present: () => boolean = () => true,
     revision?: string,
   ) {
+    return this.sampleFrame(time, document, present, revision, false);
+  }
+  /** A paused camera edit can reuse the already prepared browser state at that
+   * exact time. Authored scene code still receives every draft document, so it
+   * may react to camera settings just as it does during a regular sample.
+   */
+  sampleCamera(
+    time: number,
+    document = this.document,
+    present: () => boolean = () => true,
+    revision?: string,
+  ) {
+    return this.sampleFrame(time, document, present, revision, true);
+  }
+  private sampleFrame(
+    time: number,
+    document: SceneDocument,
+    present: () => boolean,
+    revision: string | undefined,
+    reusePreparedSource: boolean,
+  ) {
+    const requestedAt = performance.now();
     const task = this.serial.then(async () => {
       if (this.disposed) return;
-      const { images, imageVersions, routes, layers, quality } =
-        await this.source(time, revision, this.inspection.zoom, {
-          ...this.imageVersions,
-        });
-      for (const [id, version] of Object.entries(imageVersions || {})) {
-        if (!Object.hasOwn(images, id) && this.imageVersions[id] !== version)
-          throw new Error(`Source ${id} omitted an image this renderer needs`);
-      }
-      for (const [id, data] of Object.entries(images)) {
-        if (this.lastImages[id] === data) {
-          if (imageVersions?.[id]) this.imageVersions[id] = imageVersions[id];
-          else delete this.imageVersions[id];
-          continue;
-        }
-        const img = new Image();
-        img.src = data;
-        await img.decode();
-        if (this.disposed) return;
-        if (
-          Math.max(img.width, img.height) >
-          this.renderer.capabilities.maxTextureSize
-        )
-          throw new Error(
-            `Source ${id} exceeds this GPU's texture size. Reduce UI density.`,
-          );
-        if (this.textures[id]) {
-          const texture = this.textures[id];
-          const previous = texture.image as HTMLImageElement | undefined;
-          // WebGL texture storage is immutable in size. Reallocate the GPU
-          // resource while preserving the Texture object used by scene materials.
-          if (
-            previous &&
-            (previous.width !== img.width || previous.height !== img.height)
-          )
-            texture.dispose();
-          texture.image = img;
-          texture.needsUpdate = true;
-          this.lastImages[id] = data;
-          // Failed decodes never acknowledge a version. Each engine owns its
-          // accepted pixels; a new/rebuilt engine starts with an empty cache.
-          if (imageVersions?.[id]) this.imageVersions[id] = imageVersions[id];
-          else delete this.imageVersions[id];
-        }
-      }
+      const started = performance.now();
+      this.resources.budgetBytes =
+        (document.capture?.memoryBudgetMB ?? DEFAULT_SURFACE_BUDGET_MB) *
+        1024 *
+        1024;
+      const zoom =
+        this.inspection.zoom *
+        (this.mode === "camera" ? (document.camera?.zoom ?? 1) : 1);
+      const contract = JSON.stringify([
+        document.entry,
+        document.sources,
+        document.size,
+        document.capture,
+        zoom,
+      ]);
+      const prepared =
+        reusePreparedSource &&
+        !this.frameBlocked &&
+        this.preparedSource?.time === time &&
+        this.preparedSource.contract === contract
+          ? this.preparedSource.frame
+          : undefined;
+      // Any failed or explicitly invalidated preparation must reacquire source
+      // state before the camera shortcut can become eligible again.
+      this.preparedSource = undefined;
+      this.frameBlocked = true;
+      const key = staticFrameKey(document, zoom);
+      const frame =
+        prepared ??
+        (key !== null && key === this.staticKey && this.staticFrame
+          ? this.staticFrame
+          : await this.source(
+              time,
+              revision,
+              zoom,
+              this.resources.knownImages(),
+            ));
+      const sourceMs = performance.now() - started;
+      // Static reuse intentionally retains pixels while its absolute scene time advances.
+      const reusedStatic = frame === this.staticFrame;
+      const reusedSource = Boolean(prepared) || reusedStatic;
+      if (
+        !reusedSource &&
+        frame.sample &&
+        (frame.sample.time !== time ||
+          (revision &&
+            frame.sample.revision &&
+            frame.sample.revision !== revision))
+      )
+        throw new Error(
+          "Source frame does not match the requested time and revision",
+        );
+      const { routes, layers, quality } = frame;
+      this.resources.setSourceMemory(frame.sourceMemoryBytes ?? 0);
+      this.resources.reserveRenderTargets(
+        this.outputMemory() + this.effectMemory(),
+      );
+      const resources = await this.resources.accept(frame);
+      if (this.disposed) return;
+      const sceneStarted = performance.now();
       this.document = document;
-      this.resize();
-      this.renderer.setClearColor(document.background);
       for (const source of this.layeredSources) {
         const frame = layers?.find((f) => f.sourceId === source.source.id);
         if (!frame)
@@ -215,6 +297,12 @@ export class SceneEngine {
           );
         source.update(frame);
       }
+      this.staticKey = key;
+      // Keep metadata/acknowledgements, never an extra copy of encoded static pixels.
+      this.staticFrame =
+        key === null
+          ? undefined
+          : { ...frame, images: {}, surfaces: undefined };
       await this.instance!.sample({
         time,
         frame: Math.round(time * document.fps),
@@ -223,20 +311,79 @@ export class SceneEngine {
         document,
       });
       if (this.disposed || !present()) return;
+      this.resize();
+      this.renderer.setClearColor(document.background);
+      const sceneMs = performance.now() - sceneStarted;
       if (routes) this.sourceRoutes = routes;
+      this.sourceStatus = (frame.sourceStatus ?? []).map((source) =>
+        reusedSource
+          ? {
+              ...source,
+              requestedTime: time,
+              preparedTime: time,
+              reused: true,
+              captures: 0,
+              capturedBytes: 0,
+              timings: {
+                ...source.timings,
+                adapterMs: 0,
+                paintMs: 0,
+                captureMs: 0,
+                totalMs: 0,
+              },
+            }
+          : source,
+      );
       this.quality = quality || [];
       this.layerFrames = layers || [];
+      const renderStarted = performance.now();
+      this.frameBlocked = false;
       this.renderView();
+      this.metrics = {
+        time,
+        revision,
+        queueMs: started - requestedAt,
+        sourceMs,
+        ...resources,
+        ...this.resources.memory,
+        sceneMs,
+        renderSubmitMs: performance.now() - renderStarted,
+        totalMs: performance.now() - requestedAt,
+      };
       this.presentedLayers = this.layeredSources.flatMap((s) => s.describe());
+      this.preparedSource = {
+        time,
+        contract,
+        // SurfaceResources owns decoded pixels. Keep only layout, routes,
+        // versions and diagnostics; never retain another encoded image copy.
+        frame: { ...frame, images: {}, surfaces: undefined },
+      };
     });
-    this.serial = task.catch(() => {});
-    return task;
+    const guarded = task.catch((error) => {
+      this.frameBlocked = true;
+      throw error;
+    });
+    this.serial = guarded.catch(() => {});
+    return guarded;
   }
   renderView() {
-    if (this.disposed) return;
+    if (this.disposed || this.frameBlocked) return;
     const document = this.document;
-    const v = this.inspection;
+    const v =
+      this.mode === "source"
+        ? this.inspection
+        : {
+            ...this.inspection,
+            zoom: this.inspection.zoom * (document.camera?.zoom ?? 1),
+            panX: this.inspection.panX + (document.camera?.panX ?? 0),
+            panY: this.inspection.panY + (document.camera?.panY ?? 0),
+            orbitZ:
+              this.inspection.orbitZ +
+              ((document.camera?.roll ?? 0) * Math.PI) / 180,
+          };
     if (this.mode === "source") {
+      this.releaseDepthOfField();
+      this.resources.reserveRenderTargets(this.outputMemory());
       const source =
         document.sources.find((s) => s.id === this.sourceId) ||
         document.sources[0];
@@ -275,14 +422,42 @@ export class SceneEngine {
         frame,
         v,
       );
-      this.renderer.render(this.world, camera);
+      this.renderCamera(camera);
     } else {
       const camera = this.camera.clone();
-      const distance = Math.max(0.1, camera.position.length());
+      // Explicit saved angles use the same source-relative pose in both projections.
+      if (
+        document.camera &&
+        (document.camera.rotation !== undefined ||
+          document.camera.elevation !== undefined)
+      ) {
+        const frame =
+          this.cameraFrames.get(
+            document.camera.sourceId || document.sources[0]?.id,
+          ) || this.referenceFrame;
+        const pose = applyIsometricCamera(
+          this.isometricCamera,
+          this.camera,
+          document.camera,
+          frame,
+          defaultInspection(),
+        );
+        camera.position.copy(pose.position);
+        camera.quaternion.copy(pose.quaternion);
+      }
+      const authoredDistance = Math.max(0.1, camera.position.length());
       const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(
         camera.quaternion,
       );
-      const target = camera.position.clone().addScaledVector(forward, distance);
+      const frame =
+        this.cameraFrames.get(
+          document.camera?.sourceId || document.sources[0]?.id,
+        ) || this.referenceFrame;
+      const target =
+        v.alignment === "front"
+          ? alignInspectionFront(camera, frame)
+          : camera.position.clone().addScaledVector(forward, authoredDistance);
+      const distance = Math.max(0.1, camera.position.distanceTo(target));
       const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
       const right = new THREE.Vector3(1, 0, 0).applyQuaternion(
         camera.quaternion,
@@ -296,6 +471,8 @@ export class SceneEngine {
         .applyQuaternion(rotation)
         .divideScalar(v.zoom);
       camera.quaternion.premultiply(rotation);
+      // Roll around the resulting view axis, without changing the orbit pivot.
+      camera.rotateZ(v.orbitZ ?? 0);
       camera.position.copy(target).add(offset);
       const height =
         ((2 * distance) / v.zoom) *
@@ -308,18 +485,84 @@ export class SceneEngine {
         new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion),
         v.panY * height,
       );
-      this.renderer.render(this.world, camera);
+      this.renderCamera(camera);
     }
+  }
+  private renderCamera(
+    camera: THREE.PerspectiveCamera | THREE.OrthographicCamera,
+  ) {
+    const settings = this.document.camera?.depthOfField;
+    if (!settings?.enabled) {
+      this.releaseDepthOfField();
+      this.resources.reserveRenderTargets(this.outputMemory());
+      this.renderer.render(this.world, camera);
+      return;
+    }
+    if (settings.blur === 0) {
+      // Zero is still the exact direct-render path. Keep a warmed cache while
+      // enabled so crossing zero during a drag does not rebuild every pyramid.
+      this.resources.reserveRenderTargets(
+        this.outputMemory() + this.effectMemory(),
+      );
+      this.renderer.render(this.world, camera);
+      return;
+    }
+    const frame =
+      this.cameraFrames.get(
+        this.document.camera?.sourceId || this.document.sources[0]?.id,
+      ) || this.referenceFrame;
+    frame.getWorldPosition(this.focusPoint);
+    const distance = focusDistance(
+      camera,
+      this.focusPoint,
+      settings.focusPlane,
+    );
+    this.surfaceDepthOfField ??= new SurfaceDepthOfField(this.renderer);
+    if (this.surfaceDepthOfField.supports(this.world)) {
+      this.depthOfField?.dispose();
+      this.depthOfField = undefined;
+      const memory = this.surfaceDepthOfField.estimateMemory();
+      this.resources.reserveRenderTargets(
+        this.outputMemory() + memory.nextResidentBytes,
+        this.outputMemory() + memory.peakBytes,
+      );
+      this.surfaceDepthOfField.render(
+        this.world,
+        camera,
+        distance,
+        settings.blur,
+      );
+      return;
+    }
+    this.surfaceDepthOfField?.dispose();
+    this.surfaceDepthOfField = undefined;
+    this.depthOfField ??= new DepthOfField(this.renderer);
+    const memory = this.depthOfField.estimateMemory();
+    this.resources.reserveRenderTargets(
+      this.outputMemory() + memory.nextResidentBytes,
+      this.outputMemory() + memory.peakBytes,
+    );
+    this.depthOfField.render(this.world, camera, distance, settings.blur);
+  }
+  private releaseDepthOfField() {
+    this.depthOfField?.dispose();
+    this.depthOfField = undefined;
+    this.surfaceDepthOfField?.dispose();
+    this.surfaceDepthOfField = undefined;
   }
   describeLayers() {
     return this.presentedLayers;
   }
   dispose() {
+    if (this.disposed) return;
     this.disposed = true;
+    this.preparedSource = undefined;
     this.instance?.dispose?.();
+    this.releaseDepthOfField();
     const geometries = new Set<THREE.BufferGeometry>();
     const materials = new Set<THREE.Material>();
-    const textures = new Set<THREE.Texture>(Object.values(this.textures));
+    const sourceTextures = new Set(Object.values(this.textures));
+    const textures = new Set<THREE.Texture>();
     this.world.traverse((o) => {
       const mesh = o as THREE.Mesh;
       if (mesh.geometry) geometries.add(mesh.geometry);
@@ -329,13 +572,16 @@ export class SceneEngine {
           : [mesh.material]) {
           materials.add(m);
           for (const v of Object.values(m))
-            if (v instanceof THREE.Texture) textures.add(v);
+            if (v instanceof THREE.Texture && !sourceTextures.has(v))
+              textures.add(v);
         }
       }
     });
     geometries.forEach((g) => g.dispose());
     materials.forEach((m) => m.dispose());
     textures.forEach((t) => t.dispose());
+    this.resources.dispose();
+    this.staticFrame = undefined;
     this.renderer.dispose();
     this.flatPlane.geometry.dispose();
     this.flatPlane.material.dispose();

@@ -113,7 +113,7 @@ test("all control values persist, undo, redo and reopen without type coercion", 
   const directory = path.join(root, "scenes", "interface");
   const seed = JSON.parse(
     await fs.readFile(
-      new URL("../scenes/interface/scene.json", import.meta.url),
+      new URL("./fixtures/scene.json", import.meta.url),
       "utf8",
     ),
   );

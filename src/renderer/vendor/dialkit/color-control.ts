@@ -150,7 +150,13 @@ export function mountColorControl(
       if (!inline) close();
       return;
     }
-    const root = inline ? host : (getDialKitPortalRoot(host) ?? host);
+    // Keep nested pickers inside their owning dialog for focus/outside dismissal.
+    // The browser top layer still lets the fixed popup escape clipped ancestors.
+    const root = inline
+      ? host
+      : (host.closest<HTMLElement>("[data-dialkit-popover-root]") ??
+        getDialKitPortalRoot(host) ??
+        host);
     popup = element("div", "dialkit-color-popover");
     popup.dataset.presentation = presentation;
     popup.style.position = inline ? "static" : "fixed";

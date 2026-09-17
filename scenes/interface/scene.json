@@ -1,125 +1,358 @@
 {
   "version": 1,
   "id": "interface",
-  "name": "Interface study",
+  "name": "Order #1401",
   "duration": 8,
-  "fps": 30,
+  "fps": 60,
   "size": {
     "width": 1440,
     "height": 900
   },
-  "background": "#e3e1dc",
+  "background": "#040403",
   "entry": "scene.ts",
+  "camera": {
+    "projection": "orthographic",
+    "preset": "diagonal15",
+    "side": "right",
+    "rotation": -25,
+    "elevation": 40,
+    "roll": 0,
+    "zoom": 3.6649509091432133,
+    "panX": 0.489654396645402,
+    "panY": 0.04871367669689497,
+    "depthOfField": {
+      "enabled": true,
+      "focusPlane": 0.38,
+      "blur": 0.41
+    }
+  },
+  "capture": {
+    "density": "auto"
+  },
   "sources": [
     {
       "id": "ui",
       "kind": "web",
-      "entry": "source/index.html",
-      "width": 1000,
-      "height": 640,
-      "sampling": "controlled",
+      "entry": "admin-order/index.html",
+      "width": 1440,
+      "height": 1000,
+      "sampling": "static",
       "layers": [
         {
-          "id": "navigation",
-          "label": "Navigation",
-          "selector": "[data-tilt-id=\"navigation\"]",
-          "padding": 8
+          "id": "note",
+          "selector": "[data-tilt-id=\"note\"]",
+          "padding": 24,
+          "optional": false
         },
         {
-          "id": "active-item",
-          "label": "Active item",
-          "selector": ".nav-item.active",
-          "padding": 8
+          "id": "fulfillment-0",
+          "selector": "[data-tilt-id=\"fulfillment-0\"]",
+          "padding": 24,
+          "optional": false
         },
         {
-          "id": "summary",
-          "label": "Summary",
-          "selector": "[data-tilt-id=\"summary\"]",
-          "padding": 8
+          "id": "customer",
+          "selector": "[data-tilt-id=\"customer\"]",
+          "padding": 24,
+          "optional": false
         },
         {
-          "id": "tasks",
-          "label": "Tasks",
-          "selector": "[data-tilt-id=\"task-list\"]",
-          "padding": 8
+          "id": "payment",
+          "selector": "[data-tilt-id=\"payment\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "payment-surface",
+          "selector": "[data-tilt-id=\"payment-surface\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "risk",
+          "selector": "[data-tilt-id=\"risk\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "timeline",
+          "selector": "[data-tilt-id=\"timeline\"]",
+          "padding": 24,
+          "optional": false
+        },
+        {
+          "id": "composer",
+          "selector": "[data-tilt-id=\"composer\"]",
+          "padding": 32,
+          "optional": false
         }
       ]
     }
   ],
   "parameters": {
-    "tilt": {
-      "label": "Tilt",
-      "value": 0.33,
-      "min": 0,
-      "max": 0.8,
-      "step": 0.01,
-      "group": "Composition"
-    },
     "distance": {
       "label": "Camera distance",
-      "value": 6.5,
+      "group": "Camera",
       "min": 6.5,
       "max": 12,
       "step": 0.1,
-      "group": "Camera"
+      "type": "number",
+      "value": 9,
+      "control": "slider"
     },
-    "lift": {
-      "label": "Lift",
-      "value": 0.21,
-      "min": 0,
-      "max": 0.8,
+    "position": {
+      "label": "Position",
+      "group": "Composition",
+      "min": -10,
+      "max": 10,
       "step": 0.01,
-      "group": "Composition"
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
     },
-    "atmosphere": {
-      "label": "Atmosphere",
-      "value": 0.41,
+    "rotation": {
+      "label": "Rotation",
+      "group": "Composition",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "scale": {
+      "label": "Scale",
+      "group": "Composition",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "opacity": {
+      "label": "Opacity",
+      "group": "Composition",
       "min": 0,
       "max": 1,
       "step": 0.01,
-      "group": "Light field"
+      "type": "number",
+      "value": 1,
+      "control": "slider"
     },
     "depth": {
-      "label": "Layer depth",
-      "value": 1.15,
+      "label": "Lift",
+      "group": "Animation",
       "min": 0,
       "max": 2,
+      "step": 0.05,
+      "type": "number",
+      "value": 0.8,
+      "control": "slider"
+    },
+    "driftX": {
+      "label": "Drift right",
+      "group": "Camera",
+      "min": -0.5,
+      "max": 0.5,
       "step": 0.01,
-      "group": "Composition"
+      "type": "number",
+      "value": 0.16,
+      "control": "slider"
+    },
+    "driftY": {
+      "label": "Drift down",
+      "group": "Camera",
+      "min": -0.5,
+      "max": 0.5,
+      "step": 0.01,
+      "type": "number",
+      "value": 0.28,
+      "control": "slider"
     }
   },
   "tracks": [
     {
-      "id": "ui",
-      "label": "Interface",
+      "id": "cards-settle",
+      "label": "Cards settle",
       "color": "#94b7a6",
       "start": 0,
-      "end": 8,
-      "keys": [0.6, 2.1, 3.3, 4.8]
+      "end": 6,
+      "keys": [],
+      "parameterKeys": [
+        "depth"
+      ],
+      "kind": "group",
+      "durationLabel": "Settle time"
     },
     {
-      "id": "depth",
-      "label": "Layers",
-      "color": "#8ab8cc",
-      "start": 1.4,
-      "end": 7.6,
-      "keys": [1.4, 3.4, 5.8, 7.6]
-    },
-    {
-      "id": "camera",
-      "label": "Camera",
-      "color": "#b2a2d3",
+      "id": "settle-note",
+      "label": "Note",
+      "color": "#94b7a6",
       "start": 0,
-      "end": 8,
-      "keys": [0, 2.8, 5.5, 8]
+      "end": 3.12,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "cards-settle",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "note"
+        }
+      ]
     },
     {
-      "id": "field",
-      "label": "Light field",
-      "color": "#c6b18b",
+      "id": "settle-fulfillment-0",
+      "label": "Fulfillment",
+      "color": "#94b7a6",
+      "start": 0.41142857142857137,
+      "end": 3.5314285714285716,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "cards-settle",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "fulfillment-0"
+        }
+      ]
+    },
+    {
+      "id": "settle-customer",
+      "label": "Customer",
+      "color": "#94b7a6",
+      "start": 0.8228571428571427,
+      "end": 3.942857142857143,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "cards-settle",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "customer"
+        }
+      ]
+    },
+    {
+      "id": "settle-payment",
+      "label": "Payment",
+      "color": "#94b7a6",
+      "start": 1.2342857142857142,
+      "end": 4.354285714285714,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "cards-settle",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment"
+        }
+      ]
+    },
+    {
+      "id": "settle-risk",
+      "label": "Risk",
+      "color": "#94b7a6",
+      "start": 1.6457142857142855,
+      "end": 4.765714285714285,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "cards-settle",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "risk"
+        }
+      ]
+    },
+    {
+      "id": "settle-timeline",
+      "label": "Timeline",
+      "color": "#94b7a6",
+      "start": 2.057142857142857,
+      "end": 5.177142857142857,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "cards-settle",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "timeline"
+        }
+      ]
+    },
+    {
+      "id": "settle-payment-surface",
+      "label": "Payment surface",
+      "color": "#94b7a6",
+      "start": 2.4685714285714284,
+      "end": 5.588571428571429,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "cards-settle",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-surface"
+        }
+      ]
+    },
+    {
+      "id": "settle-composer",
+      "label": "Composer",
+      "color": "#94b7a6",
+      "start": 2.88,
+      "end": 6,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "cards-settle",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "composer"
+        }
+      ]
+    },
+    {
+      "id": "camera-drift",
+      "label": "Camera drift",
+      "color": "#a7a9ce",
       "start": 0,
-      "end": 8,
-      "keys": [0, 8]
+      "end": 6,
+      "keys": [],
+      "parameterKeys": [
+        "driftX",
+        "driftY"
+      ],
+      "kind": "animation",
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
     }
   ]
 }

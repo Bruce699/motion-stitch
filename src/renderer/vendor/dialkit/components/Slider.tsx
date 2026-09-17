@@ -16,6 +16,8 @@ interface SliderProps {
   min?: number;
   max?: number;
   step?: number;
+  /** Snap the visual fill and clicks to each step instead of magnetic deciles. */
+  discrete?: boolean;
   unit?: string;
   onInteractionStart?: () => void;
   onInteractionEnd?: () => void;
@@ -33,6 +35,7 @@ export function Slider({
   min = 0,
   max = 1,
   step = 0.01,
+  discrete = false,
   unit,
   onInteractionStart,
   onInteractionEnd,
@@ -172,7 +175,10 @@ export function Slider({
           }
         }
 
-        const newValue = positionToValue(e.clientX);
+        const rawValue = positionToValue(e.clientX);
+        const newValue = discrete
+          ? roundValue(rawValue, step, min, max)
+          : rawValue;
         const newPct = percentFromValue(newValue);
         if (animRef.current) {
           animRef.current.stop();
@@ -193,6 +199,7 @@ export function Slider({
       min,
       max,
       step,
+      discrete,
     ],
   );
 
@@ -206,7 +213,7 @@ export function Slider({
         const rawValue = positionToValue(e.clientX);
         const discreteSteps = (max - min) / step;
         const snappedValue =
-          discreteSteps <= 10
+          discrete || discreteSteps <= 10
             ? Math.max(
                 min,
                 Math.min(max, min + Math.round((rawValue - min) / step) * step),
@@ -256,6 +263,7 @@ export function Slider({
       min,
       max,
       step,
+      discrete,
       fillPercent,
       rubberStretchPx,
       onInteractionEnd,
@@ -391,7 +399,7 @@ export function Slider({
   // (like step=2 on a 0–10 range → 5 steps) from continuous ones.
   const discreteSteps = (max - min) / step;
   const hashMarks =
-    discreteSteps <= 10
+    (discrete && discreteSteps <= 100) || discreteSteps <= 10
       ? Array.from({ length: discreteSteps - 1 }, (_, i) => {
           const pct = (((i + 1) * step) / (max - min)) * 100;
           return (

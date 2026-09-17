@@ -3,7 +3,11 @@ import { watch, type FSWatcher } from "node:fs";
 import path from "node:path";
 import { EventEmitter } from "node:events";
 import { randomUUID } from "node:crypto";
-import { SceneSchema, type SceneDocument } from "../core/schema";
+import {
+  DEFAULT_FRAME_RATE,
+  SceneSchema,
+  type SceneDocument,
+} from "../core/schema";
 import { atomicWrite, hash, readJSON, safePath } from "./files";
 import { SceneHistory } from "./history";
 
@@ -167,8 +171,12 @@ export class SceneStore extends EventEmitter {
       return this.scene;
     });
   }
-  async history(direction: "undo" | "redo") {
+  async history(direction: "undo" | "redo", expected?: string) {
     return this.exclusive(async () => {
+      if (expected && expected !== this.journal.revision)
+        throw new Error(
+          "Revision conflict. Read state before changing history.",
+        );
       await this.journal.move(direction);
       await this.refresh(false);
       return this.scene;
@@ -193,8 +201,17 @@ export class SceneStore extends EventEmitter {
       return group;
     });
   }
-  async apply(id: string) {
+  private assertEditOwner(id: string, actor?: string) {
+    const group = this.journal.group;
+    if (!group || group.id !== id) throw new Error("Edit group does not match");
+    if (actor !== undefined && group.actor !== actor)
+      throw new Error(
+        `Edit ${id} belongs to ${group.actor}. Use its original actor identity; do not adopt another agent's edit.`,
+      );
+  }
+  async apply(id: string, actor?: string) {
     return this.exclusive(async () => {
+      this.assertEditOwner(id, actor);
       const doc = SceneSchema.parse(
         await readJSON(path.join(this.directory, "scene.json")),
       );
@@ -204,8 +221,24 @@ export class SceneStore extends EventEmitter {
       return { revision: this.revision };
     });
   }
-  async cancel(id: string) {
+  /** Preserve the last valid value when its viewer closes mid-gesture. */
+  async finishGesture(actor: string) {
     return this.exclusive(async () => {
+      const group = this.journal.group;
+      if (!group || group.kind !== "gesture" || group.actor !== actor)
+        return false;
+      const doc = SceneSchema.parse(
+        await readJSON(path.join(this.directory, "scene.json")),
+      );
+      if (doc.id !== this.id) throw new Error("Scene ID must match its folder");
+      await this.journal.apply(group.id);
+      await this.refresh(false);
+      return true;
+    });
+  }
+  async cancel(id: string, actor?: string) {
+    return this.exclusive(async () => {
+      this.assertEditOwner(id, actor);
       await this.journal.cancel(id);
       await this.refresh(false);
       return { revision: this.revision };
@@ -214,12 +247,40 @@ export class SceneStore extends EventEmitter {
   async readFile(relative: string) {
     return fs.readFile(await safePath(this.directory, relative), "utf8");
   }
-  async writeFile(relative: string, content: string, expectedHash?: string) {
+  async writeFile(
+    relative: string,
+    content: string,
+    expectedHash?: string | null,
+    actor = "agent",
+  ) {
     return this.exclusive(async () => {
       const file = await safePath(this.directory, relative, true);
-      if (expectedHash && hash(await fs.readFile(file)) !== expectedHash)
+      const group = this.journal.group;
+      if (group && (group.actor !== actor || group.kind !== "agent"))
+        throw new Error(
+          `Scene has an open edit owned by ${group.actor}: ${group.id}`,
+        );
+      const normalized = path.relative(await fs.realpath(this.directory), file);
+      if (group?.paths && !group.paths.includes(normalized))
+        throw new Error(
+          "File is outside the declared edit paths: " + normalized,
+        );
+      let current: Buffer | undefined;
+      try {
+        current = await fs.readFile(file);
+      } catch (error: any) {
+        if (error.code !== "ENOENT") throw error;
+      }
+      if (expectedHash === null && current !== undefined)
+        throw new Error("File already exists; read it and supply its hash");
+      if (
+        typeof expectedHash === "string" &&
+        (!current || hash(current) !== expectedHash)
+      )
         throw new Error("File changed; read it before writing again");
+      if (!group) await this.journal.observe();
       await atomicWrite(file, content);
+      if (!group) await this.journal.observe("Write " + normalized, actor);
       await this.refresh();
       return { path: relative, hash: hash(content) };
     });
@@ -243,6 +304,7 @@ export class SceneStore extends EventEmitter {
     const doc = SceneSchema.parse(await readJSON(path.join(dir, "scene.json")));
     doc.id = slug;
     doc.name = name;
+    doc.fps = DEFAULT_FRAME_RATE;
     await atomicWrite(
       path.join(dir, "scene.json"),
       JSON.stringify(doc, null, 2) + "\n",

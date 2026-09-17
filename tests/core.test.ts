@@ -10,7 +10,7 @@ import { safePath, atomicWrite } from "../src/main/files";
 
 const seed = JSON.parse(
   await fs.readFile(
-    new URL("../scenes/interface/scene.json", import.meta.url),
+    new URL("./fixtures/scene.json", import.meta.url),
     "utf8",
   ),
 );
@@ -66,6 +66,30 @@ test("play intent survives preparation but pause cancels it without a time jump"
   c.seek(5);
   c.seek(1);
   assert.equal(c.time, 1);
+});
+test("scenes default to 60 fps even when the starter is set to 30; only 30 and 60 are valid", async () => {
+  assert.equal(SceneSchema.parse({ ...seed, fps: undefined }).fps, 60);
+  for (const fps of [30, 60])
+    assert.equal(SceneSchema.safeParse({ ...seed, fps }).success, true);
+  for (const fps of [24, 25, 59.94, 120])
+    assert.equal(SceneSchema.safeParse({ ...seed, fps }).success, false);
+  const f = await fixture();
+  try {
+    await f.store.edit((doc) => {
+      doc.fps = 30;
+    });
+    const created = await f.store.create("New scene");
+    const doc = JSON.parse(
+      await fs.readFile(
+        path.join(f.root, "scenes", created.id, "scene.json"),
+        "utf8",
+      ),
+    );
+    assert.equal(doc.fps, 60);
+    assert.equal(f.store.scene.fps, 30);
+  } finally {
+    await f.clean();
+  }
 });
 test("rapid seeks discard superseded work and only present the last pending frame", async () => {
   const sampled: number[] = [];

@@ -6,6 +6,8 @@ export const MAX_CAPTURE_EDGE = 8192;
 export const MAX_CAPTURE_PIXELS = 32 * 1024 * 1024;
 export const CaptureSettingsSchema = z
   .object({
+    /** Explicit budget for Tilt-owned decoded source images and GPU textures. */
+    memoryBudgetMB: z.number().int().min(64).max(8192).optional(),
     density: z
       .union([z.literal("auto"), z.number().int().min(1).max(8)])
       .default("auto"),
@@ -64,9 +66,8 @@ export function captureQuality(
 }
 
 export const CANVAS_PRESETS = [
-  { label: "720p", width: 1280, height: 720 },
-  { label: "1080p", width: 1920, height: 1080 },
+  { label: "1080", width: 1920, height: 1080 },
   { label: "4K", width: 3840, height: 2160 },
-  { label: "Portrait", width: 1080, height: 1920 },
   { label: "Square", width: 2160, height: 2160 },
+  { label: "9:16", width: 1080, height: 1920 },
 ];

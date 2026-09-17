@@ -68,3 +68,36 @@ Typecheck, production build, **35 behavioral tests**, and the vanilla/React nati
 The standalone Electron compositor could not complete its first 7× full-frame sample, before receiver acknowledgements were exercised. Each PNG decoded independently, but changing their order moved the failure to a later image after several large decodes. The full source and base alone are each 7000×4480 pixels (about 251 MB combined when decoded to RGBA). This points to cumulative decoded-image pressure in that native renderer, rather than malformed capture pixels; a specific Chromium budget has not been proven.
 
 The benchmark therefore verifies 3× and 4×, with 7× still selectable for reproduction. This does not reduce the product's saved density or substitute smaller textures. It is an observed pre-existing limit and is not fixed by transport deduplication. The current successful Codex-browser 7× check above is a different rendering environment and does not prove that a fresh native compositor/export can retain those same layered textures.
+
+## Depth of field and continuous scrubbing — 17 September 2026
+
+The second review reproduced a failure missed by the earlier transfer benchmark. The imported Admin adapter's controlled sample waited for two browser paints even when it returned unchanged pixels. Continuous input then invalidated every in-flight frame. In a five-second 120 Hz forward/reverse scrub, both DOF Off and On received 601 inputs and produced **zero intermediate scene renders**, finally displaying after input stopped. Median sample latency was about **33.3 ms**.
+
+The static Admin interface now declares the existing `static` contract. The shared renderer caches prepared static frames across camera/time samples and invalidates them for changed capture/source inputs. The shared scheduler retains one in-flight sample and one latest pending request, but permits completed work to display during continuous input. Explicit invalidation remains separate. No camera values, animation timings, source dimensions or density limits changed for this fix.
+
+UI depth of field now filters each source texture's color and coverage before composition. Cached Gaussian levels and padded bounds preserve blurred glyph shapes at overlaps and avoid rebuilding blur during camera-only frames. This applies across ordinary textured UI planes. The general custom-shader/3D fallback remains approximate; these results do not establish universal 3D lens quality or performance.
+
+### Measurements and evidence
+
+Same Apple M2 Max / Electron 41.10.7 environment. Scene revision `535bbc68390e252aec5a7ead3b5449e584bbce5313cc9ecf8a593b611c53db27`, 1440×900 output, effective 4× source density (5760×4000), saved focus 1.11 and blur 0.14. Full-density originals remain available; there is no scrub-only resolution reduction.
+
+| Measurement | DOF off | DOF on |
+| --- | ---: | ---: |
+| Actual-scene scrub, 1636×1023 canvas | 120.36 renders/s | 120.30 renders/s |
+| 95th-percentile sample time | 0.40 ms | 0.50 ms |
+| GPU time, 1636×1023 | 0.126 ms | 0.265 ms |
+| GPU time, 1440×900 | 0.054 ms | 0.127 ms |
+| GPU time, 3840×2160 | 0.309 ms | 0.749 ms |
+
+The real-source harness uses the production SceneEngine and scheduler, feeds absolute times at requestAnimationFrame cadence, and counts completed render submissions. GPU measurements use `EXT_disjoint_timer_query_webgl2`, averaging 60 warm renders and rejecting invalid queries. They measure GPU workload, not whole-editor latency. Preparing blur on first enable took **49–67 ms** across measured runs; initial browser capture/image preparation is outside steady-state scrubbing. Camera-only scrubbing made **zero source requests**. Subsequent output-size changes requested updated capture metadata without additional pixel captures.
+
+The separate **full React editor** test drives the real timeline handler for three five-second DOF-on runs with reversals. Default-framebuffer draw cadence measured **119.84, 119.98 and 119.98 renders/s** at 1629×1018. The 95th-percentile intervals were 9.2–9.3 ms; the maximum was 10.5 ms. Every run finished with requested and presented times equal and no console errors. This measures canvas rendering in native Chromium, not a physical monitor. One DOF-off warm-up trial overlapped another GPU test and had a 103 ms outlier; the other off trials sustained about 120 renders/s. The report retains every result.
+
+- Original failure and frozen fixture: `.tilt/checks/scrubbing/before/report.json`.
+- Current real scene and exact 4K GPU timings: `.tilt/checks/scrubbing/gpu-4k/report.json`.
+- Full-editor trials and screenshot: `.tilt/checks/editor-scrubbing/verified/report.json` and `editor.png`.
+- Pixel regression: `.tilt/checks/depth-of-field/report.json` and `surface-*.png`. Composite error against independently rendered foreground/background is **0.052/255** per channel; uncovered text has **zero** error. Coverage expands beyond glyph shapes, focused text stays crisp over a blurred background, tilted layer order is preserved, transforms/focus/resize reuse cached levels, changed pixels rebuild them, and disabling releases effect textures. General shader-fallback checks remain separate.
+
+The actual Codex browser at `https://tilt.video/` was reloaded and checked with forward/reverse ruler drags, then restored to user time 3.478895063. Paired capture/context: `.tilt/captures/b43a9b87-c71e-47d3-a6a6-4fdc334fac5a.{png,json}`. It reported ready, no error, a 1444×903 Retina canvas and unchanged saved camera. The existing composer blend-dependency warning is unchanged.
+
+The complete scene exported **480 frames at 1440×900, 60 fps, eight seconds**, through frozen runtime `bc7c2b45bfcd8a58edef`, job `0d2dc327-66b9-4bb0-b8f1-4b9015db2c5e`. Worker completion took **13.877 seconds**, including metadata/full-decode verification. This establishes end-to-end export, not a controlled before/after export speed comparison. Output: `exports/interface-0d2dc327.mp4`.

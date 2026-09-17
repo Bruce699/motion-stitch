@@ -22,5 +22,13 @@ export function frameForReceiver(
     if (!version || !Object.hasOwn(known, id) || known[id] !== version)
       images[id] = data;
   }
-  return { ...frame, images };
+  const surfaces =
+    frame.surfaces &&
+    Object.fromEntries(
+      Object.entries(frame.surfaces).filter(([id]) => {
+        const version = frame.imageVersions?.[id];
+        return !version || !Object.hasOwn(known, id) || known[id] !== version;
+      }),
+    );
+  return { ...frame, images, ...(surfaces ? { surfaces } : {}) };
 }

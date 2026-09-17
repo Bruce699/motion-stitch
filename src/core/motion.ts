@@ -43,18 +43,22 @@ export class SceneClock {
 /** One in-flight render. Rapid seeks replace the pending request, never queue a backlog. */
 export class LatestFrame<T> {
   private generation = 0;
+  private epoch = 0;
   private running = false;
-  private pending: { value: T; generation: number } | null = null;
+  private pending: { value: T; generation: number; epoch: number } | null =
+    null;
   constructor(
     private render: (value: T, isCurrent: () => boolean) => Promise<void>,
     private onError: (error: unknown) => void,
+    private presentCompleted = false,
   ) {}
   request(value: T) {
-    this.pending = { value, generation: ++this.generation };
+    this.pending = { value, generation: ++this.generation, epoch: this.epoch };
     if (!this.running) void this.drain();
   }
   invalidate() {
     this.generation++;
+    this.epoch++;
     this.pending = null;
   }
   private async drain() {
@@ -63,7 +67,15 @@ export class LatestFrame<T> {
       const p = this.pending;
       this.pending = null;
       try {
-        await this.render(p.value, () => p.generation === this.generation);
+        // A slower controlled source must still present completed frames while
+        // scrubbing. New times replace the pending sample; explicit invalidation
+        // (reload/capture/scene replacement) also rejects the in-flight sample.
+        await this.render(
+          p.value,
+          () =>
+            p.epoch === this.epoch &&
+            (this.presentCompleted || p.generation === this.generation),
+        );
       } catch (e) {
         if (p.generation === this.generation) this.onError(e);
       }

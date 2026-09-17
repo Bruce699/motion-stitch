@@ -7,7 +7,7 @@ import { LayeredSource } from "../src/renderer/layered-source";
 import type { LayerFrame } from "../src/core/layers";
 const seed = JSON.parse(
   await fs.readFile(
-    new URL("../scenes/interface/scene.json", import.meta.url),
+    new URL("./fixtures/scene.json", import.meta.url),
     "utf8",
   ),
 );

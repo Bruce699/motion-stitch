@@ -20,7 +20,7 @@ async function main() {
     );
     const seed = JSON.parse(
       await fs.readFile(
-        path.join(process.cwd(), "scenes/interface/scene.json"),
+        path.join(process.cwd(), "tests/fixtures/scene.json"),
         "utf8",
       ),
     );

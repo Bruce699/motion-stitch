@@ -1,5 +1,11 @@
 import type { Command } from "../core/schema";
 import type { ViewRequest } from "../core/context";
+import { decodeFrame, FRAME_CONTENT_TYPE } from "../core/frame-wire";
+import {
+  createRuntimeConnection,
+  connectRuntimeEvents,
+} from "./runtime-connection";
+import { createPageExitPersistence, type PageExitProvider } from "./page-exit";
 
 const worker = new URLSearchParams(location.search).has("render");
 export const viewId = crypto.randomUUID();
@@ -12,14 +18,34 @@ export const savedView = (() => {
 })();
 const changes = new Set<() => void>();
 const requests = new Set<(request: ViewRequest) => void>();
+const connection = createRuntimeConnection();
+let closeEvents = () => {};
+const pageExit = createPageExitPersistence({
+  viewId,
+  // A keepalive mutation is never replayed, including after ambiguous failure.
+  send: (init) => fetch("/api", init),
+  close: () => closeEvents(),
+});
+export const registerPageExit = (provider: PageExitProvider) =>
+  pageExit.register(provider);
 export async function call<T = any>(command: Command): Promise<T> {
   if (worker) return window.tilt.invoke<T>(command);
-  const response = await fetch("/api", {
+  const response = await connection.request({
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(command.type === "frame" && command.includeContext
+        ? { Accept: FRAME_CONTENT_TYPE }
+        : {}),
+    },
     body: JSON.stringify({ ...command, viewId }),
     credentials: "same-origin",
   });
+  if (
+    response.ok &&
+    response.headers.get("content-type")?.split(";")[0] === FRAME_CONTENT_TYPE
+  )
+    return decodeFrame(await response.arrayBuffer()) as T;
   const result = await response.json();
   if (!response.ok)
     throw new Error(result.error || "Tilt runtime disconnected");
@@ -38,16 +64,26 @@ export const onRequest = (callback: (request: ViewRequest) => void) => {
   };
 };
 if (!worker) {
-  const events = new EventSource("/events?viewId=" + viewId);
-  events.addEventListener("connected", () => {
+  const changed = () => {
     for (const callback of changes) callback();
+  };
+  closeEvents = connectRuntimeEvents({
+    url: "/events?viewId=" + viewId,
+    recover: connection.recover,
+    listeners: {
+      connected: changed,
+      change: changed,
+      request: (event) => {
+        const request = JSON.parse((event as MessageEvent).data);
+        for (const callback of requests) callback(request);
+      },
+    },
   });
-  events.addEventListener("change", () => {
-    for (const callback of changes) callback();
+  window.addEventListener("pagehide", () => {
+    void pageExit.finish().catch(() => {});
   });
-  events.addEventListener("request", (event) => {
-    const request = JSON.parse((event as MessageEvent).data);
-    for (const callback of requests) callback(request);
+  // A back/forward-cache restore cannot reuse the terminal viewer identity.
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) location.reload();
   });
-  window.addEventListener("pagehide", () => events.close());
 }

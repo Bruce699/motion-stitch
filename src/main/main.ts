@@ -18,8 +18,11 @@ import {
   type SceneDocument,
   type RenderJob,
 } from "../core/schema";
-import type { CapturedFrame } from "../core/layers";
 import { frameForReceiver } from "../core/frame-transfer";
+import { sampleSources } from "./frame-preparation";
+import { compileScene as compileSceneModule } from "./scene-session";
+import { validatePackagedSource } from "./source-host";
+import { PNGEncoder, mp4EncodingArguments } from "./png-encoder";
 import { startRuntime } from "./runtime-host";
 import { Jobs } from "./jobs";
 import { WebSource, deadline } from "./source";
@@ -80,29 +83,18 @@ async function compileScene(
   document: SceneDocument = scene(),
   directory = sceneDir(),
 ) {
-  const { build } = await import("esbuild");
-  const entry = await safePath(directory, document.entry);
-  const result = await build({
-    entryPoints: [entry],
-    bundle: true,
-    write: false,
-    format: "esm",
-    platform: "browser",
-    target: "es2022",
-    sourcemap: "inline",
-    logLevel: "silent",
-    nodePaths: [path.join(root, "node_modules")],
-  });
-  const output = result.outputFiles[0].contents;
-  const file = path.join(moduleDir, hash(Buffer.from(output)) + ".js");
-  await atomicWrite(file, Buffer.from(output));
-  return file;
+  return compileSceneModule(root, directory, document);
 }
 async function prepare() {
   const s = scene();
   const directory = sceneDir();
   const key = JSON.stringify([s.id, s.entry, s.sources, 0]);
-  if (key === preparedKey)
+  if (
+    key === preparedKey &&
+    sources.every(
+      (source) => !["failed", "disposed"].includes(source.diagnostics.phase),
+    )
+  )
     return { url: `${origin}/modules/${path.basename(compiled)}`, scene: s };
   if (preparing) {
     await preparing;
@@ -123,12 +115,16 @@ async function prepare() {
         ),
     );
     try {
-      await Promise.all(next.map((source) => source.ready()));
+      const results = await Promise.allSettled(
+        next.map((source) => source.ready()),
+      );
+      const failed = results.find((result) => result.status === "rejected");
+      if (failed?.status === "rejected") throw failed.reason;
     } catch (e) {
-      next.forEach((s) => s.dispose());
+      await Promise.all(next.map((s) => s.dispose()));
       throw e;
     }
-    sources.forEach((s) => s.dispose());
+    await Promise.all(sources.map((s) => s.dispose()));
     sources = next;
     compiled = module;
     preparedKey = key;
@@ -142,23 +138,15 @@ async function prepare() {
 }
 async function sample(time: number) {
   await prepare();
-  const result: CapturedFrame = {
-    images: {},
-    imageVersions: {},
-    layers: [],
-    routes: [],
-    quality: scene().sources.map((spec) =>
+  return sampleSources(
+    sources,
+    time,
+    values(scene()),
+    scene().sources.map((spec) =>
       captureQuality(scene().size, spec, scene().capture),
     ),
-  };
-  for (const source of sources) {
-    const frame = await source.sample(time, values(scene()));
-    Object.assign(result.images, frame.images);
-    Object.assign(result.imageVersions!, frame.imageVersions);
-    result.layers!.push(...(frame.layers || []));
-    result.routes!.push(...(frame.routes || []));
-  }
-  return result;
+    "frozen",
+  );
 }
 async function state() {
   return {
@@ -267,6 +255,9 @@ async function runCoordinator() {
         .reverse();
       if (!list.length) break;
       const job = list[0];
+      // Claim the queued run before spawning. A later queued state can then only
+      // be a fresh resume request and must survive this worker's cleanup/exit.
+      job.phase = "capturing";
       job.pid = process.pid;
       await jobs.update(job);
       const log = await fs.open(
@@ -293,7 +284,9 @@ async function runCoordinator() {
       });
       await log.close();
       const latest = await jobs.get(job.id);
-      if (!["complete", "cancelled", "failed"].includes(latest.phase)) {
+      if (
+        !["complete", "cancelled", "failed", "queued"].includes(latest.phase)
+      ) {
         latest.phase = "interrupted";
         latest.error = `Worker exited (${code}). Resume to continue from saved frames.`;
         latest.pid = undefined;
@@ -341,6 +334,8 @@ async function runWorker() {
   const started = Date.now();
   const job = await jobs.get(jobId!);
   const dir = path.join(jobs.directory, job.id);
+  let encoder: PNGEncoder | undefined;
+  let cancelEncoder: ReturnType<typeof setInterval> | undefined;
   const cancelled = async () => {
     try {
       await fs.access(path.join(dir, "cancel"));
@@ -361,6 +356,8 @@ async function runWorker() {
     frozen = SceneSchema.parse(
       await readJSON(path.join(frozenDirectory, "scene.json")),
     );
+    for (const spec of frozen.sources)
+      await validatePackagedSource(spec, frozenDirectory);
     await fs.mkdir(moduleDir, { recursive: true });
     await fs.copyFile(
       path.join(dir, "scene.js"),
@@ -391,6 +388,17 @@ async function runWorker() {
     );
     const frames = path.join(dir, "frames");
     await fs.mkdir(frames, { recursive: true });
+    const temp = path.join(dir, "output.partial.mp4");
+    if ((frozen.render?.encoding ?? "pipelined") === "pipelined") {
+      encoder = new PNGEncoder(job.fps, job.total, temp);
+      cancelEncoder = setInterval(() => {
+        void cancelled()
+          .then((cancel) => {
+            if (cancel) void encoder?.abort();
+          })
+          .catch(() => {});
+      }, 250);
+    }
     for (let i = 0; i < job.total; i++) {
       if (await cancelled()) throw new Error("Cancelled");
       try {
@@ -409,8 +417,10 @@ async function runWorker() {
       }
       const file = path.join(frames, String(i).padStart(6, "0") + ".png");
       let valid = false;
+      let png: Buffer | undefined;
       try {
-        const im = nativeImage.createFromBuffer(await fs.readFile(file));
+        png = await fs.readFile(file);
+        const im = nativeImage.createFromBuffer(png);
         const size = im.getSize();
         valid = size.width === job.width && size.height === job.height;
       } catch {}
@@ -425,46 +435,41 @@ async function runWorker() {
               60000,
               "Frame render",
             );
-            await atomicWrite(file, Buffer.from(data.split(",")[1], "base64"));
+            png = Buffer.from(data.split(",")[1], "base64");
+            const image = nativeImage.createFromBuffer(png);
+            const size = image.getSize();
+            if (size.width !== job.width || size.height !== job.height)
+              throw new Error("Rendered frame has unexpected dimensions");
+            await atomicWrite(file, png);
             rendered = true;
           } catch (e) {
             if (attempt === 2) throw e;
           }
         }
       }
+      if (encoder) await encoder.write(png!);
       job.frame = i + 1;
       await jobs.update(job);
     }
     if (await cancelled()) throw new Error("Cancelled");
     job.phase = "encoding";
     await jobs.update(job);
-    const temp = path.join(dir, "output.partial.mp4");
-    await processTool(
-      "ffmpeg",
-      [
-        "-y",
-        "-v",
-        "error",
-        "-framerate",
-        String(job.fps),
-        "-i",
-        path.join(frames, "%06d.png"),
-        "-frames:v",
-        String(job.total),
-        "-c:v",
-        "libx264",
-        "-preset",
-        "medium",
-        "-crf",
-        "18",
-        "-pix_fmt",
-        "yuv420p",
-        "-movflags",
-        "+faststart",
-        temp,
-      ],
-      cancelled,
-    );
+    if (encoder) await encoder.finish();
+    else
+      await processTool(
+        "ffmpeg",
+        [
+          "-y",
+          "-v",
+          "error",
+          "-framerate",
+          String(job.fps),
+          "-i",
+          path.join(frames, "%06d.png"),
+          ...mp4EncodingArguments(job.total, temp),
+        ],
+        cancelled,
+      );
     const probe = JSON.parse(
       await processTool(
         "ffprobe",
@@ -486,7 +491,11 @@ async function runWorker() {
     if (
       probe.width !== job.width ||
       probe.height !== job.height ||
-      Number(probe.nb_read_frames) !== job.total
+      Number(probe.nb_read_frames) !== job.total ||
+      (() => {
+        const [n, d] = String(probe.r_frame_rate).split("/").map(Number);
+        return n / d !== job.fps;
+      })()
     )
       throw new Error("Encoded video failed frame verification");
     await processTool(
@@ -515,7 +524,9 @@ async function runWorker() {
     await jobs.update(job);
     console.error(e);
   } finally {
-    sources.forEach((s) => s.dispose());
+    clearInterval(cancelEncoder);
+    await encoder?.abort();
+    await Promise.all(sources.map((s) => s.dispose()));
     editor?.destroy();
     app.quit();
   }

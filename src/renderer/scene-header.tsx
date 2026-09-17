@@ -1,3 +1,4 @@
+import { FRAME_RATES } from "../core/schema";
 import { Icon } from "./icons";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SceneDocument } from "../core/schema";
@@ -170,6 +171,7 @@ export function SceneHeader({
         <div
           ref={panel}
           id="scene-settings"
+          data-dialkit-popover-root
           className="ui-popover settings-popover"
           role="dialog"
           aria-label="Scene settings"
@@ -299,24 +301,20 @@ export function SceneHeader({
                 value={scene.fps}
                 onChange={(e) => void onSetting("fps", Number(e.target.value))}
               >
-                {[...new Set([24, 25, 30, 60, 120, scene.fps])]
-                  .sort((a, b) => a - b)
-                  .map((fps) => (
-                    <option key={fps} value={fps}>
-                      {fps} fps
-                    </option>
-                  ))}
+                {FRAME_RATES.map((fps) => (
+                  <option key={fps} value={fps}>
+                    {fps} fps
+                  </option>
+                ))}
               </select>
             </label>
           </div>
-          <div className="control-row">
-            <span>Background</span>
-            <ColorValue
-              label="Background"
-              value={scene.background}
-              onCommit={(value) => void onSetting("background", value)}
-            />
-          </div>
+          <ColorValue
+            label="Background"
+            sceneId={scene.id}
+            value={scene.background}
+            onCommit={(value) => void onSetting("background", value)}
+          />
         </div>
       )}
     </div>

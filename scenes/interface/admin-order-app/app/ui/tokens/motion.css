@@ -1,0 +1,8 @@
+@theme {
+  --ease-out: cubic-bezier(0.2, 0.8, 0, 1);
+  --ease-out-duration: 400ms;
+}
+
+@utility ease-out {
+  --default-transition-duration: var(--ease-out-duration, var(--tw-base));
+}

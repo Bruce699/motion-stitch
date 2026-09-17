@@ -204,13 +204,6 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   border-left: 1px solid var(--dial-border);
   margin: 0 4px;
 }
-.zoom-readout {
-  min-width: 40px;
-  margin-left: 4px;
-  font-size: 12px;
-  font-family: "Geist Mono", monospace;
-  font-variant-numeric: tabular-nums;
-}
 .canvas-area {
   min-height: 0;
   flex: 1;
@@ -226,9 +219,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   max-height: 100%;
   flex-shrink: 0;
   container-type: size;
-  box-shadow:
-    0 0 0 1px var(--dial-border),
-    var(--codex-shadow-xl);
+  outline: 1px solid var(--dial-border);
   overflow: hidden;
   background: var(--dial-glass-bg);
 }
@@ -294,22 +285,16 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   scrollbar-width: thin;
   scrollbar-color: var(--dial-text-tertiary) transparent;
 }
-.inspector-heading {
-  height: 44px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  color: var(--dial-text-root);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
+
 .parameter-group {
   min-width: 0;
   margin: 0;
   padding: 12px;
   border: 0;
   border-top: 1px solid var(--dial-border);
+}
+.inspector > .parameter-group:first-child {
+  border-top: 0;
 }
 .parameter-group legend {
   float: left;
@@ -319,18 +304,19 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   font-size: 13px;
   font-weight: 500;
 }
-.parameter-group legend + .parameter-control,
-.parameter-group legend + .camera-controls {
+.parameter-group legend + * {
   clear: both;
 }
 .parameter-group:disabled {
   opacity: 0.4;
 }
-.parameter-control {
+.parameter-control,
+.parameter-group > .dialkit-labeled-control {
   margin-bottom: var(--dial-row-gap);
   min-width: 0;
 }
-.parameter-control:last-child {
+.parameter-control:last-child,
+.parameter-group > .dialkit-labeled-control:last-child {
   margin-bottom: 0;
 }
 .dialkit-slider-label {
@@ -583,7 +569,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   min-height: 0;
   flex: 1;
   padding: 0 12px 10px;
-  --dial-timeline-label-w: 96px;
+  --dial-timeline-label-w: 160px;
   --dial-timeline-header-h: 0px;
 }
 .timeline-overview-row {
@@ -908,7 +894,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   gap: 6px;
   margin-bottom: 6px;
 }
-.camera-controls .dialkit-segmented {
+.camera-controls > .dialkit-segmented {
   width: 100%;
 }
 
@@ -932,3 +918,178 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .capture-sizes output {
   display: block;
 }
+
+.canvas-area {
+  position: relative;
+}
+.camera-reset {
+  display: block;
+  margin: 0 auto 4px;
+  font-size: 11px;
+}
+.camera-gizmo {
+  width: 128px;
+  margin: 8px auto 0;
+  padding: 8px 4px 4px;
+  user-select: none;
+  touch-action: none;
+}
+.camera-gizmo[data-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.camera-gizmo svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.camera-gizmo-axis {
+  cursor: ew-resize;
+  outline: none;
+  color: var(--dial-text-tertiary);
+}
+.camera-gizmo-axis[aria-label="Rotate X"] {
+  cursor: ns-resize;
+}
+.gizmo-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+.gizmo-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 12;
+}
+.camera-gizmo-axis text {
+  fill: currentColor;
+  font:
+    10px "Geist Mono",
+    monospace;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: var(--dial-glass-bg);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+.camera-gizmo-axis[data-active="true"],
+.camera-gizmo-axis:focus-visible {
+  color: var(--dial-focus-ring);
+}
+.camera-gizmo-axis[data-active="true"] .gizmo-ring {
+  stroke-width: 2.5;
+}
+.camera-gizmo-axis:focus-visible .gizmo-ring {
+  stroke-dasharray: 3 3;
+}
+.gizmo-center {
+  fill: var(--dial-text-tertiary);
+  pointer-events: none;
+}
+
+/* Shell dimensions belong to the resize groups, separate from scene framing. */
+.app {
+  display: block;
+  overflow: hidden;
+}
+.editor-panels {
+  height: 100%;
+  width: 100%;
+}
+.editor-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+.editor-rows {
+  flex: 1;
+  min-height: 0;
+}
+.editor-main .titlebar {
+  height: 48px;
+  flex-shrink: 0;
+  padding: 0 12px;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.editor-main .document-title {
+  justify-content: center;
+}
+.header-view-controls {
+  color: var(--dial-text-label);
+}
+.editor-panels .workspace,
+.editor-panels .timeline,
+.editor-panels .inspector {
+  height: 100%;
+}
+.editor-panels .inspector {
+  border: 0;
+}
+
+.editor-panels .timeline {
+  border: 0;
+}
+.resize-handle {
+  position: relative;
+  background: var(--dial-border);
+  touch-action: none;
+  z-index: 11;
+}
+.resize-sidebar {
+  width: 1px;
+}
+.resize-timeline {
+  height: 1px;
+}
+.resize-handle::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+}
+.resize-handle:hover,
+.resize-handle:focus-visible,
+.resize-handle[data-separator="active"] {
+  background: var(--dial-focus-ring);
+  outline: none;
+}
+.resize-handle:focus-visible::after {
+  outline: 1px solid var(--dial-focus-ring);
+}
+.jobs-panel {
+  max-height: min(500px, calc(100dvh - 64px));
+  z-index: 30;
+}
+@media (max-width: 900px) {
+  .editor-main .titlebar {
+    gap: 4px;
+    padding: 0 8px;
+  }
+  .editor-main .title-name {
+    max-width: 120px;
+  }
+}
+
+/* Timeline selection stays contextual in the inspector. */
+.contextual-parameters { border-top: 1px solid var(--dial-border, #e9e9e9); margin-top: 8px; }
+.contextual-parameters legend { display: flex; align-items: center; width: 100%; justify-content: space-between; }
+.context-dismiss { border: 0; background: none; color: inherit; opacity: .55; display: grid; place-items: center; padding: 4px; cursor: pointer; }
+.context-dismiss:hover { opacity: 1; }
+.tilt-timeline .dialkit-timeline-clip { touch-action: none; cursor: grab; min-width: 3px; }
+.tilt-timeline .dialkit-timeline-clip-handle { width: 12px; z-index: 2; }
+.tilt-timeline .dialkit-timeline-clip-handle::after { content: ''; position: absolute; width: 2px; height: 12px; top: 50%; left: 5px; transform: translateY(-50%); border-radius: 2px; background: currentColor; opacity: .3; pointer-events: none; }
+.tilt-timeline .dialkit-timeline-clip-handle:hover::after, .tilt-timeline .dialkit-timeline-clip-handle:focus-visible::after { opacity: .8; }
+/* The playhead must not steal a clip edge's drag at the same time. */
+.tilt-timeline .dialkit-timeline-playhead-control { pointer-events: none; }
+.tilt-timeline .dialkit-timeline-playhead-flag { pointer-events: auto; touch-action: none; }
+/* Animation hierarchy uses the same compact timeline labels. */
+.timeline-track-label { display: flex; align-items: center; gap: 4px; }
+.timeline-track-label button { color: inherit; border: 0; background: transparent; cursor: pointer; padding: 0; }
+.timeline-track-label .timeline-group-toggle { flex: 0 0 18px; display: grid; place-items: center; height: 24px; }
+.timeline-group-toggle[aria-expanded="false"] i { transform: rotate(-90deg); }
+.timeline-track-select { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; font: inherit; }
+.timeline-track-select[aria-pressed="true"] { color: var(--dial-text-primary); }
+.timeline-track-label button:focus-visible { outline: 2px solid var(--dial-text-secondary); outline-offset: 2px; }

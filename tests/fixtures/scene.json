@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "id": "interface",
+  "name": "Interface study",
+  "duration": 8,
+  "fps": 30,
+  "size": {
+    "width": 1440,
+    "height": 900
+  },
+  "background": "#e3e1dc",
+  "entry": "scene.ts",
+  "sources": [
+    {
+      "id": "ui",
+      "kind": "web",
+      "entry": "source/index.html",
+      "width": 1000,
+      "height": 640,
+      "sampling": "controlled",
+      "layers": [
+        {
+          "id": "navigation",
+          "label": "Navigation",
+          "selector": "[data-tilt-id=\"navigation\"]",
+          "padding": 8
+        },
+        {
+          "id": "active-item",
+          "label": "Active item",
+          "selector": ".nav-item.active",
+          "padding": 8
+        },
+        {
+          "id": "summary",
+          "label": "Summary",
+          "selector": "[data-tilt-id=\"summary\"]",
+          "padding": 8
+        },
+        {
+          "id": "tasks",
+          "label": "Tasks",
+          "selector": "[data-tilt-id=\"task-list\"]",
+          "padding": 8
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "tilt": {
+      "label": "Tilt",
+      "value": 0.33,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.01,
+      "group": "Composition"
+    },
+    "distance": {
+      "label": "Camera distance",
+      "value": 6.5,
+      "min": 6.5,
+      "max": 12,
+      "step": 0.1,
+      "group": "Camera"
+    },
+    "lift": {
+      "label": "Lift",
+      "value": 0.21,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.01,
+      "group": "Composition"
+    },
+    "atmosphere": {
+      "label": "Atmosphere",
+      "value": 0.41,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "group": "Light field"
+    },
+    "depth": {
+      "label": "Layer depth",
+      "value": 1.15,
+      "min": 0,
+      "max": 2,
+      "step": 0.01,
+      "group": "Composition"
+    }
+  },
+  "tracks": [
+    {
+      "id": "ui",
+      "label": "Interface",
+      "color": "#94b7a6",
+      "start": 0,
+      "end": 8,
+      "keys": [0.6, 2.1, 3.3, 4.8]
+    },
+    {
+      "id": "depth",
+      "label": "Layers",
+      "color": "#8ab8cc",
+      "start": 1.4,
+      "end": 7.6,
+      "keys": [1.4, 3.4, 5.8, 7.6]
+    },
+    {
+      "id": "camera",
+      "label": "Camera",
+      "color": "#b2a2d3",
+      "start": 0,
+      "end": 8,
+      "keys": [0, 2.8, 5.5, 8]
+    },
+    {
+      "id": "field",
+      "label": "Light field",
+      "color": "#c6b18b",
+      "start": 0,
+      "end": 8,
+      "keys": [0, 8]
+    }
+  ]
+}

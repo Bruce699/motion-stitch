@@ -14,12 +14,18 @@ This is a local source fork, not a `dialkit` package dependency. The underlying 
 
 ## Deliberate adaptations
 
+- Timeline inspection reports its visible range, zoom and expanded groups to the shared viewer context. Reload restores that per-tab observation; it never changes authored timing.
+
+- Timeline groups are collapsed by default, with accessible expand/select buttons and indented child rows. Tilt's `parentId` contract drives the hierarchy; group timing edits retime the subtree through the runtime. Child gestures clamp to their parent. Selection exposes shared controls and a named duration in the inspector. Expansion is temporary UI state; creative timing remains file-backed.
+
 - No DialStore, TimelineStore, localStorage, preset/version system, or second playback clock. `parameters.tsx` binds controls to validated file edits. All control writes share a queue. Drags and text focus sessions close one history group; history shortcuts wait for queued writes.
 - Slider, pad, color and text expose interaction start/end hooks. React 19 refs are explicitly initialized. Slider external updates stop old fill animation; reduced-motion preferences disable spring settling. Keyboard numeric entry rejects non-finite/partial numbers.
+- Slider supports explicit discrete steps: tick marks, clicks and drag fill use the declared stops instead of magnetic deciles. Orthographic Rotation and Elevation use 5° steps without changing existing saved angles until an edit.
 - Original Dial Kit icon paths were removed. Dropdown chevrons and timeline zoom buttons use Tilt's shared Hugeicons CDN component.
 - Segmented controls accept an accessible label and remeasure on resize. Existing keyboard, focus, portal positioning, pad axis locking and color parsing helpers are retained.
+- Scene settings reuse the same color control, including grouped gesture history. Nested pickers remain inside their owning dialog for focus and outside-click dismissal, while the browser top layer avoids clipping.
 - Tilt colors persist as opaque six-digit sRGB hex. The color picker retains its perceptual plane and hue control but omits alpha and output format modes. Other pasted color formats are normalized to the scene contract. Color popovers allow the editor's undo shortcut to bubble.
-- The timeline receives `time`, `duration`, `fps`, cue tracks and seek callbacks. It has no animation value store. Clip bars and diamonds are read-only cue metadata; dragging them seeks. Editable timing would need a shared authored timing contract before adding resize handles.
+- The timeline receives `time`, `duration`, `fps`, cue tracks and seek callbacks. It has no animation value store. Clip pointer capture, move/edge drag modes and selection follow upstream TimelineClip. Tilt snaps edits to frames and commits through `set_track` once per gesture; Escape cancels. Contextual controls live in the right inspector instead of an upstream popover. `tracks[].parameterKeys` binds the existing scene parameter vocabulary; scene code owns executable timing.
 - Shell layout, responsive rules, XYZ fields and scene settings live outside this folder in Tilt. The fork is scoped under `.dialkit-root`. Light/dark themes and local font loading do not affect scene pixels.
 
 Geist Mono is bundled at `../../fonts/geist-mono-latin.woff2`, sourced from `@fontsource-variable/geist-mono@5.3.0` (`files/geist-mono-latin-wght-normal.woff2`). Its SIL Open Font License is preserved beside it as `OFL.txt`; no network font request is required.

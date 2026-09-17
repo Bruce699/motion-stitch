@@ -1,12 +1,16 @@
 import { z } from "zod";
 import { CameraSettingsSchema } from "./camera";
 import { SourceQualitySchema } from "./quality";
+import { RenderMetricsSchema } from "./render-metrics";
+import { SourceStatusSchema } from "./source-status";
 export const InspectionSchema = z.object({
   zoom: z.number().min(0.1).max(12),
   panX: z.number().finite(),
   panY: z.number().finite(),
   orbitX: z.number().finite(),
   orbitY: z.number().finite(),
+  orbitZ: z.number().finite().default(0),
+  alignment: z.literal("front").optional(),
 });
 export type Inspection = z.infer<typeof InspectionSchema>;
 export const defaultInspection = (): Inspection => ({
@@ -15,16 +19,45 @@ export const defaultInspection = (): Inspection => ({
   panY: 0,
   orbitX: 0,
   orbitY: 0,
+  orbitZ: 0,
 });
+export const TimelineContextSchema = z
+  .object({
+    start: z.number().finite().min(0),
+    end: z.number().finite().min(0),
+    zoom: z.number().finite().min(1),
+    expandedTrackIds: z.array(z.string()).default([]),
+  })
+  .refine((value) => value.end >= value.start, "Timeline range is reversed");
+export type TimelineContext = z.infer<typeof TimelineContextSchema>;
 export const ViewStateSchema = z.object({
   sceneId: z.string().regex(/^[a-z0-9-]+$/),
   name: z.string().max(80).default("Browser"),
   requestedTime: z.number().finite().min(0),
   presentedTime: z.number().finite().min(0),
   playing: z.boolean(),
+  duration: z.number().finite().min(0).optional(),
+  fps: z.number().finite().positive().optional(),
+  timeline: TimelineContextSchema.optional(),
+  selectedTracks: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string(),
+        kind: z.string(),
+        start: z.number(),
+        end: z.number(),
+        parentId: z.string().optional(),
+        parameterKeys: z.array(z.string()),
+        targets: z.array(z.record(z.string(), z.unknown())),
+      }),
+    )
+    .default([]),
   mode: z.enum(["source", "camera"]),
   camera: CameraSettingsSchema.optional(),
   sourceQuality: z.array(SourceQualitySchema).optional(),
+  renderMetrics: RenderMetricsSchema.optional(),
+  sourceStatus: z.array(SourceStatusSchema).optional(),
   outputSize: z.object({ width: z.number(), height: z.number() }).optional(),
   previewSize: z.object({ width: z.number(), height: z.number() }).optional(),
   sourceId: z.string().nullable().default(null),
@@ -81,4 +114,8 @@ export type ViewRequest = {
   time?: number;
   mode?: "source" | "camera";
   sourceId?: string;
+  sceneId?: string;
+  trackId?: string | null;
+  revision?: string;
+  timeoutMs?: number;
 };

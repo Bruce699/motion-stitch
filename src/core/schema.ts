@@ -1,3 +1,4 @@
+import { TrackSchema } from "./tracks";
 import { z } from "zod";
 import { CameraSettingsSchema } from "./camera";
 import {
@@ -7,6 +8,9 @@ import {
 } from "./quality";
 import { ParameterSchema } from "./parameters";
 export { ParameterSchema } from "./parameters";
+
+export const FRAME_RATES = [30, 60] as const;
+export const DEFAULT_FRAME_RATE = 60;
 
 const localPath = z
   .string()
@@ -26,13 +30,59 @@ export const LayerSpecSchema = z.object({
   optional: z.boolean().default(false),
 });
 export type LayerSpec = z.infer<typeof LayerSpecSchema>;
+/** The command runs as trusted scene code; the imported browser remains sandboxed. */
+export const SourceServerSchema = z.object({
+  executable: z
+    .string()
+    .min(1)
+    .max(500)
+    .refine(
+      (value) =>
+        !value.startsWith("/") &&
+        !value.includes("\\") &&
+        !value.split("/").some((part) => part === ".." || part === ""),
+      "Use a command name or an executable inside the server directory",
+    ),
+  args: z.array(z.string().max(4096)).max(64).default([]),
+  cwd: localPath,
+  url: z
+    .string()
+    .min(1)
+    .max(2048)
+    .refine((value) => {
+      try {
+        if (!/^http:\/\/127\.0\.0\.1:\{port\}(?:\/|$)/.test(value))
+          return false;
+        if ((value.match(/\{port\}/g) ?? []).length !== 1) return false;
+        const url = new URL(value.replace("{port}", "12345"));
+        return (
+          url.protocol === "http:" &&
+          url.hostname === "127.0.0.1" &&
+          url.port === "12345" &&
+          !url.username &&
+          !url.password &&
+          !url.hash
+        );
+      } catch {
+        return false;
+      }
+    }, "Use http://127.0.0.1:{port}/ followed by the app route"),
+  export: z.literal("packaged").optional(),
+});
+export type SourceServer = z.infer<typeof SourceServerSchema>;
 export const SceneSchema = z
   .object({
     version: z.literal(1),
     id: z.string().regex(/^[a-z0-9-]+$/),
     name: z.string().min(1).max(100),
     duration: z.number().min(0.1).max(600),
-    fps: z.number().int().min(1).max(120),
+    fps: z
+      .number()
+      .refine(
+        (fps) => FRAME_RATES.some((rate) => rate === fps),
+        "Frame rate must be 30 or 60",
+      )
+      .default(DEFAULT_FRAME_RATE),
     size: z.object({
       width: z.number().int().min(64).max(MAX_CANVAS_EDGE),
       height: z.number().int().min(64).max(MAX_CANVAS_EDGE),
@@ -41,6 +91,10 @@ export const SceneSchema = z
     entry: localPath.default("scene.ts"),
     camera: CameraSettingsSchema.optional(),
     capture: CaptureSettingsSchema.optional(),
+    render: z
+      .object({ encoding: z.enum(["pipelined", "checkpoint"]) })
+      .strict()
+      .optional(),
     sources: z
       .array(
         z
@@ -49,30 +103,22 @@ export const SceneSchema = z
             kind: z.literal("web"),
             entry: localPath.optional(),
             url: z.string().url().optional(),
+            server: SourceServerSchema.optional(),
+            readyTimeoutMs: z.number().int().min(100).max(120000).optional(),
+            sampleTimeoutMs: z.number().int().min(100).max(120000).optional(),
             width: z.number().int().min(64).max(4096),
             height: z.number().int().min(64).max(4096),
             sampling: z.enum(["static", "controlled"]).default("static"),
             layers: z.array(LayerSpecSchema).max(32).default([]),
           })
           .refine(
-            (s) => Boolean(s.entry) !== Boolean(s.url),
-            "Specify either entry or url",
+            (s) => [s.entry, s.url, s.server].filter(Boolean).length === 1,
+            "Specify exactly one of entry, url or server",
           ),
       )
       .max(8),
     parameters: z.record(z.string().regex(/^[a-zA-Z][\w-]*$/), ParameterSchema),
-    tracks: z
-      .array(
-        z.object({
-          id: z.string(),
-          label: z.string(),
-          color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
-          start: z.number().min(0),
-          end: z.number().min(0),
-          keys: z.array(z.number().min(0)).default([]),
-        }),
-      )
-      .default([]),
+    tracks: z.array(TrackSchema).default([]),
   })
   .superRefine((s, ctx) => {
     if (s.size.width * s.size.height > MAX_CANVAS_PIXELS)
@@ -102,6 +148,46 @@ export const SceneSchema = z
         code: "custom",
         message: "Output dimensions must be even for MP4 encoding",
       });
+    if (new Set(s.tracks.map((t) => t.id)).size !== s.tracks.length)
+      ctx.addIssue({ code: "custom", message: "Track IDs must be unique" });
+    for (const t of s.tracks)
+      if (t.parameterKeys.some((key) => !s.parameters[key]))
+        ctx.addIssue({
+          code: "custom",
+          message: `Track ${t.id} references an unknown parameter`,
+        });
+    for (const t of s.tracks) {
+      const fail = (message: string) =>
+        ctx.addIssue({ code: "custom", message: `Track ${t.id}: ${message}` });
+      if (t.parentId) {
+        const parent = s.tracks.find((p) => p.id === t.parentId);
+        if (!parent || parent.kind !== "group")
+          fail("parent must name a group");
+        else if (t.start < parent.start || t.end > parent.end)
+          fail("timing must stay inside its group");
+        const seen = new Set([t.id]);
+        let next = parent;
+        while (next) {
+          if (seen.has(next.id)) {
+            fail("group hierarchy cannot contain a cycle");
+            break;
+          }
+          seen.add(next.id);
+          next = s.tracks.find((p) => p.id === next!.parentId);
+        }
+      }
+      for (const target of t.targets ?? []) {
+        if (
+          target.kind === "layer" &&
+          !s.sources.some(
+            (source) =>
+              source.id === target.sourceId &&
+              source.layers.some((layer) => layer.id === target.layerId),
+          )
+        )
+          fail("target must name a declared source layer");
+      }
+    }
     for (const t of s.tracks)
       if (
         t.start >= t.end ||

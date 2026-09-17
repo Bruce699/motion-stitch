@@ -1,4 +1,6 @@
+import { Icon } from "./icons";
 import { CameraControls } from "./camera-controls";
+import type { LensPreview } from "./camera-gesture";
 import type { CameraSettings } from "../core/camera";
 import type { SceneDocument } from "../core/schema";
 import React, { useEffect, useRef, useState } from "react";
@@ -79,53 +81,56 @@ export function NumberValue({
 export function ColorValue({
   label,
   value,
+  sceneId,
   onCommit,
 }: {
   label: string;
   value: string;
+  sceneId: string;
   onCommit: (value: string) => void;
 }) {
-  const [draft, setDraft] = useState(value);
-  const focused = useRef(false),
-    cancelled = useRef(false);
-  useEffect(() => {
-    if (!focused.current) setDraft(value);
-  }, [value]);
+  const active = useRef(false);
+  const group = useRef<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const enqueue = (operation: () => Promise<unknown>) => {
+    void queueControlEdit(operation).catch((error) => setError(String(error)));
+  };
+  const begin = () => {
+    if (active.current) return;
+    active.current = true;
+    setError(null);
+    enqueue(async () => {
+      const edit = await call({
+        type: "edit_begin",
+        sceneId,
+        label,
+        kind: "gesture",
+        paths: ["scene.json"],
+      });
+      group.current = edit.id;
+    });
+  };
+  const finish = () => {
+    if (!active.current) return;
+    active.current = false;
+    enqueue(async () => {
+      if (!group.current) return;
+      await call({ type: "edit_apply", sceneId, id: group.current });
+      group.current = null;
+    });
+  };
+  useEffect(() => () => finish(), []);
   return (
-    <div className="color-value">
-      <input
-        type="color"
-        aria-label={label + " picker"}
+    <>
+      <ColorControl
+        label={label}
         value={value}
-        onChange={(e) => onCommit(e.target.value)}
+        onChange={onCommit}
+        onInteractionStart={begin}
+        onInteractionEnd={finish}
       />
-      <input
-        type="text"
-        aria-label={label}
-        value={draft}
-        maxLength={7}
-        spellCheck={false}
-        onFocus={() => {
-          focused.current = true;
-          cancelled.current = false;
-        }}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={() => {
-          focused.current = false;
-          if (!cancelled.current && /^#[0-9a-fA-F]{6}$/.test(draft)) {
-            if (draft !== value) onCommit(draft);
-          } else setDraft(value);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.currentTarget.blur();
-          if (e.key === "Escape") {
-            cancelled.current = true;
-            setDraft(value);
-            e.currentTarget.blur();
-          }
-        }}
-      />
-    </div>
+      {error && <span role="alert">{error}</span>}
+    </>
   );
 }
 
@@ -321,26 +326,126 @@ function ParameterControl({
 }
 
 export function ParameterPanel({
+  mode,
   parameters,
+  tracks,
+  selectedId,
+  duration,
+  fps,
+  onDeselect,
   camera,
+  cameraGizmo,
+  lensPreview,
   sources,
   sceneId,
   reportError,
   disabled,
 }: {
+  mode: "source" | "camera";
   parameters: Record<string, Parameter>;
+  tracks: SceneDocument["tracks"];
+  selectedId?: string;
+  duration: number;
+  fps: number;
+  onDeselect: () => void;
   camera?: CameraSettings;
+  cameraGizmo?: React.ReactNode;
+  lensPreview?: LensPreview;
   sources: SceneDocument["sources"];
   sceneId: string;
   reportError: (error: unknown) => void;
   disabled: boolean;
 }) {
-  const groups = parameterGroups(parameters);
-  if (!groups.some((group) => group.name === "Camera"))
+  const selected = tracks.find((track) => track.id === selectedId);
+  const parent = tracks.find((track) => track.id === selected?.parentId);
+  const contextualKeys = new Set(
+    tracks.flatMap((track) => track.parameterKeys),
+  );
+  const groups = parameterGroups(
+    Object.fromEntries(
+      Object.entries(parameters).filter(
+        ([key, parameter]) =>
+          !contextualKeys.has(key) &&
+          (mode === "camera" || parameter.group !== "Camera"),
+      ),
+    ),
+  );
+  const timing = (edge: "start" | "end", value: number) => {
+    if (!selected) return;
+    void queueControlEdit(async () => {
+      await call({
+        type: "set_track",
+        id: selected.id,
+        base: { start: selected.start, end: selected.end },
+        timing: { start: selected.start, end: selected.end, [edge]: value },
+      });
+    }).catch(reportError);
+  };
+  if (mode === "camera" && !groups.some((group) => group.name === "Camera"))
     groups.unshift({ name: "Camera", entries: [] });
   return (
     <aside className="inspector" aria-label="Parameters">
-      <div className="inspector-heading">Parameters</div>
+      {selected && (
+        <fieldset
+          className="parameter-group contextual-parameters"
+          disabled={disabled}
+          inert={disabled}
+        >
+          <legend>
+            {selected.label}
+            <button
+              className="context-dismiss"
+              onClick={onDeselect}
+              aria-label="Deselect animation"
+            >
+              <Icon name="close" />
+            </button>
+          </legend>
+          <label className="dialkit-labeled-control number-control">
+            <span className="dialkit-labeled-control-label">Start</span>
+            <span className="number-value">
+              <NumberValue
+                label="Start"
+                value={selected.start}
+                min={parent?.start ?? 0}
+                max={selected.end - 1 / fps}
+                step={1 / fps}
+                onCommit={(value) => timing("start", value)}
+              />
+              <span>s</span>
+            </span>
+          </label>
+          <label className="dialkit-labeled-control number-control">
+            <span className="dialkit-labeled-control-label">
+              {selected.durationLabel ?? "Duration"}
+            </span>
+            <span className="number-value">
+              <NumberValue
+                label={selected.durationLabel ?? "Duration"}
+                value={selected.end - selected.start}
+                min={1 / fps}
+                max={(parent?.end ?? duration) - selected.start}
+                step={1 / fps}
+                onCommit={(value) => timing("end", selected.start + value)}
+              />
+              <span>s</span>
+            </span>
+          </label>
+          {selected.parameterKeys.map(
+            (key) =>
+              parameters[key] &&
+              (mode === "camera" || parameters[key].group !== "Camera") && (
+                <ParameterControl
+                  key={sceneId + key}
+                  name={key}
+                  parameter={parameters[key]}
+                  sceneId={sceneId}
+                  reportError={reportError}
+                />
+              ),
+          )}
+        </fieldset>
+      )}
       {groups.map((group) => (
         <fieldset
           className="parameter-group"
@@ -355,6 +460,7 @@ export function ParameterPanel({
               sources={sources}
               sceneId={sceneId}
               reportError={reportError}
+              lensPreview={lensPreview}
             />
           )}
           {group.entries.map(({ key, parameter }) => (
@@ -366,6 +472,7 @@ export function ParameterPanel({
               reportError={reportError}
             />
           ))}
+          {group.name === "Camera" && cameraGizmo}
         </fieldset>
       ))}
     </aside>

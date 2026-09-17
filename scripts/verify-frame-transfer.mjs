@@ -26,7 +26,7 @@ await Promise.all([
     target: "es2022",
   }),
   build({
-    entryPoints: ["scenes/interface/scene.ts"],
+    entryPoints: ["tests/fixtures/transfer-scene.ts"],
     outfile: path.join(output, "modules/scene.js"),
     bundle: true,
     platform: "browser",

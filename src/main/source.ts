@@ -8,11 +8,17 @@ import { safePath } from "./files";
 import { randomUUID } from "node:crypto";
 import { MAX_CAPTURE_EDGE, MAX_CAPTURE_PIXELS } from "../core/quality";
 import { planDOMLayers, isolationCSS } from "./dom-layers";
+import { ManagedSourceHost } from "./source-host";
+import type { SourceStatus } from "../core/source-status";
 import {
   layerTextureKey,
   type CapturedFrame,
   type LayerFrame,
 } from "../core/layers";
+
+export class SourceTimeoutError extends Error {
+  override name = "SourceTimeoutError";
+}
 
 export function deadline<T>(
   promise: Promise<T>,
@@ -23,7 +29,10 @@ export function deadline<T>(
   return Promise.race([
     promise,
     new Promise<T>((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`${label} timed out`)), ms);
+      timer = setTimeout(
+        () => reject(new SourceTimeoutError(`${label} timed out`)),
+        ms,
+      );
     }),
   ]).finally(() => clearTimeout(timer));
 }
@@ -36,6 +45,11 @@ export class WebSource {
   private lastFrame?: CapturedFrame;
   private layerMarker = "data-tilt-capture-" + randomUUID();
   private server?: http.Server;
+  private managedHost?: ManagedSourceHost;
+  private status: SourceStatus;
+  get diagnostics(): SourceStatus {
+    return structuredClone(this.status);
+  }
   constructor(
     public spec: SourceSpec,
     private origin: string,
@@ -43,6 +57,15 @@ export class WebSource {
     private directory: string,
     public readonly density = 1,
   ) {
+    this.status = {
+      sourceId: spec.id,
+      phase: "created",
+      adapter: null,
+      reused: false,
+      timings: {},
+      captures: 0,
+      capturedBytes: 0,
+    };
     if (
       !Number.isInteger(density) ||
       density < 1 ||
@@ -80,8 +103,63 @@ export class WebSource {
     );
   }
   async ready() {
+    try {
+      await this.prepare();
+      this.status.phase = "ready";
+    } catch (error) {
+      this.status.error ??= {
+        stage: this.status.phase,
+        message: String((error as Error).message ?? error),
+      };
+      await this.dispose();
+      this.status.phase = "failed";
+      throw new Error(`Source ${this.spec.id}: ${this.status.error.message}`, {
+        cause: error,
+      });
+    }
+  }
+  private async measure<T>(
+    key: keyof SourceStatus["timings"],
+    label: string,
+    fn: () => Promise<T>,
+    timeoutMs?: number,
+  ) {
+    const started = performance.now();
+    try {
+      return await (timeoutMs
+        ? deadline(fn(), timeoutMs, `Source ${this.spec.id} ${label}`)
+        : fn());
+    } catch (error) {
+      this.status.error = {
+        stage: label,
+        message: String((error as Error).message ?? error),
+      };
+      throw error;
+    } finally {
+      this.status.timings[key] =
+        (this.status.timings[key] ?? 0) + performance.now() - started;
+    }
+  }
+  private evaluate(script: string, label: string) {
+    return deadline(
+      this.window.webContents.executeJavaScript(script),
+      this.spec.sampleTimeoutMs ?? 15000,
+      `Source ${this.spec.id} ${label}`,
+    );
+  }
+  private async prepare() {
+    this.status.phase = "hosting";
     let url =
       this.spec.url || `${this.origin}/${this.prefix}/${this.spec.entry}`;
+    if (this.spec.server) {
+      this.managedHost = new ManagedSourceHost(
+        this.spec.server,
+        this.directory,
+      );
+      url = await this.measure("hostMs", "server startup", () =>
+        this.managedHost!.start(this.spec.readyTimeoutMs ?? 30000),
+      );
+    }
     if (this.spec.entry) {
       const entry = await safePath(this.directory, this.spec.entry);
       const root = path.dirname(entry);
@@ -123,9 +201,10 @@ export class WebSource {
           res.end("Not found");
         }
       });
-      await new Promise<void>((resolve) =>
-        this.server!.listen(0, "127.0.0.1", resolve),
-      );
+      await new Promise<void>((resolve, reject) => {
+        this.server!.once("error", reject);
+        this.server!.listen(0, "127.0.0.1", resolve);
+      });
       url = `http://127.0.0.1:${(this.server.address() as { port: number }).port}/${path.basename(entry)}`;
     }
     if (this.spec.url) {
@@ -133,7 +212,13 @@ export class WebSource {
       if (!["http:", "https:"].includes(u.protocol))
         throw new Error("Sources must use HTTP or HTTPS");
     }
-    await deadline(this.window.loadURL(url), 30000, "Source load");
+    this.status.phase = "loading";
+    await this.measure(
+      "loadMs",
+      "page load",
+      () => this.window.loadURL(url),
+      this.spec.readyTimeoutMs ?? 30000,
+    );
     const debuggerAPI = this.window.webContents.debugger;
     debuggerAPI.attach("1.3");
     await debuggerAPI.sendCommand("Emulation.setDeviceMetricsOverride", {
@@ -154,31 +239,77 @@ export class WebSource {
           .join("\n"),
         { cssOrigin: "user" },
       );
-    await deadline(
-      this.window.webContents.executeJavaScript(
-        `(async()=>{await document.fonts.ready;await Promise.all([...document.images].map(i=>i.complete?(i.naturalWidth?Promise.resolve():Promise.reject(new Error('Image failed: '+i.src))):i.decode()));if(window.tiltSource?.ready)await window.tiltSource.ready();return true;})()`,
-      ),
-      30000,
-      "Source assets",
+    this.status.adapter = await this.measure(
+      "readyMs",
+      "adapter readiness and assets",
+      () =>
+        this.window.webContents.executeJavaScript(
+          `(async()=>{const controlled=${JSON.stringify(this.spec.sampling)}==='controlled';if(controlled)while(typeof window.tiltSource?.sample!=='function')await new Promise(r=>setTimeout(r,10));if(window.tiltSource?.ready)await window.tiltSource.ready();await document.fonts.ready;await Promise.all([...document.images].map(i=>i.complete?(i.naturalWidth?Promise.resolve():Promise.reject(new Error('Image failed: '+i.src))):i.decode()));return {ready:typeof window.tiltSource?.ready==='function',sample:typeof window.tiltSource?.sample==='function'};})()`,
+        ),
+      this.spec.readyTimeoutMs ?? 30000,
     );
   }
   async sample(
     time: number,
     parameters: ParameterValues,
   ): Promise<CapturedFrame> {
-    if (this.spec.sampling === "static" && this.lastFrame)
+    const started = performance.now();
+    this.status.requestedTime = time;
+    this.status.phase = "sampling";
+    this.status.reused = false;
+    this.status.error = undefined;
+    this.status.timings = {
+      hostMs: this.status.timings.hostMs,
+      loadMs: this.status.timings.loadMs,
+      readyMs: this.status.timings.readyMs,
+    };
+    this.status.captures = 0;
+    this.status.capturedBytes = 0;
+    try {
+      this.managedHost?.assertRunning();
+      const result = await this.sampleFrame(time, parameters);
+      this.status.preparedTime = time;
+      this.status.phase = "ready";
+      return result;
+    } catch (error) {
+      this.status.error ??= {
+        stage: "frame preparation",
+        message: String((error as Error).message ?? error),
+      };
+      // Only unfinished timed-out work can mutate the page after rejection.
+      // Settled capture/selector errors preserve the page and restored layers so
+      // a caller can retry the same source after a transient failure.
+      if (error instanceof SourceTimeoutError) await this.dispose();
+      this.status.phase = "failed";
+      throw new Error(`Source ${this.spec.id}: ${this.status.error.message}`, {
+        cause: error,
+      });
+    } finally {
+      this.status.timings.totalMs = performance.now() - started;
+    }
+  }
+  private async sampleFrame(
+    time: number,
+    parameters: ParameterValues,
+  ): Promise<CapturedFrame> {
+    if (this.spec.sampling === "static" && this.lastFrame) {
+      this.status.reused = true;
       return this.lastFrame;
+    }
     const payload = JSON.stringify({ time, parameters });
-    const result = await deadline(
-      this.window.webContents.executeJavaScript(
-        `(async()=>{const f=${payload};if(${JSON.stringify(this.spec.sampling)}==='controlled'&&typeof window.tiltSource?.sample!=='function')throw new Error('Controlled source must implement window.tiltSource.sample');const result=await window.tiltSource?.sample?.(f);for(const a of document.getAnimations()){a.pause();a.currentTime=f.time*1000;}return {revision:result?.revision??f.time,route:location.pathname+location.search+location.hash};})()`,
-      ),
-      15000,
-      "Source sample",
+    const result = await this.measure(
+      "adapterMs",
+      "sample adapter",
+      () =>
+        this.window.webContents.executeJavaScript(
+          `(async()=>{const f=${payload};if(${JSON.stringify(this.spec.sampling)}==='controlled'&&typeof window.tiltSource?.sample!=='function')throw new Error('Controlled source must implement window.tiltSource.sample');const result=await window.tiltSource?.sample?.(f);for(const a of document.getAnimations()){a.pause();a.currentTime=f.time*1000;}return {revision:result?.revision??f.time,route:location.pathname+location.search+location.hash};})()`,
+        ),
+      this.spec.sampleTimeoutMs ?? 15000,
     );
     const key = result.revision;
     this.currentRoute = result.route;
     if (key === this.lastKey && this.lastFrame) {
+      this.status.reused = true;
       this.lastFrame.routes = [{ id: this.spec.id, route: this.currentRoute }];
       return this.lastFrame;
     }
@@ -190,8 +321,9 @@ export class WebSource {
     if (this.spec.layers?.length) {
       const marker = this.layerMarker;
       try {
-        const planned = await this.window.webContents.executeJavaScript(
+        const planned = await this.evaluate(
           `(()=>{try{return {plan:(${planDOMLayers.toString()})(${JSON.stringify(this.spec.layers)},${JSON.stringify(marker)},${this.spec.width},${this.spec.height})};}catch(error){return {error:String(error?.message||error)};}})()`,
+          "layer planning",
         );
         if (planned.error) throw new Error(planned.error);
         const plan = planned.plan;
@@ -217,11 +349,13 @@ export class WebSource {
           },
         ];
       } finally {
-        await this.window.webContents.executeJavaScript(
+        await this.evaluate(
           `document.documentElement.removeAttribute(${JSON.stringify(marker + "-pass")})`,
+          "layer cleanup",
         );
-        await this.window.webContents.executeJavaScript(
+        await this.evaluate(
           "window.__tiltRestoreLayers?.()",
+          "layer restoration",
         );
       }
     }
@@ -238,18 +372,21 @@ export class WebSource {
     return this.lastFrame;
   }
   private async layerPass(id: string) {
-    await this.window.webContents.executeJavaScript(
+    await this.evaluate(
       `document.documentElement.setAttribute(${JSON.stringify(this.layerMarker + "-pass")},${JSON.stringify(id)})`,
+      "layer visibility",
     );
     await this.paint();
   }
   private paint() {
-    return deadline(
-      this.window.webContents.executeJavaScript(
-        "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))",
-      ),
-      15000,
-      "Source paint",
+    return this.measure(
+      "paintMs",
+      "browser paint",
+      () =>
+        this.window.webContents.executeJavaScript(
+          "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))",
+        ),
+      this.spec.sampleTimeoutMs ?? 15000,
     );
   }
   private async capture(rect?: {
@@ -260,25 +397,29 @@ export class WebSource {
   }) {
     // Chromium's surface capture respects the explicit DPR. Electron 41's
     // capturePage can still return host-display pixels despite the OSR DPR.
-    const result = await deadline(
-      this.window.webContents.debugger.sendCommand("Page.captureScreenshot", {
-        format: "png",
-        fromSurface: true,
-        captureBeyondViewport: false,
-        clip: {
-          ...(rect ?? {
-            x: 0,
-            y: 0,
-            width: this.spec.width,
-            height: this.spec.height,
-          }),
-          scale: 1,
-        },
-      }),
-      15000,
-      "Source capture",
+    const result = await this.measure(
+      "captureMs",
+      "pixel capture",
+      () =>
+        this.window.webContents.debugger.sendCommand("Page.captureScreenshot", {
+          format: "png",
+          fromSurface: true,
+          captureBeyondViewport: false,
+          clip: {
+            ...(rect ?? {
+              x: 0,
+              y: 0,
+              width: this.spec.width,
+              height: this.spec.height,
+            }),
+            scale: 1,
+          },
+        }),
+      this.spec.sampleTimeoutMs ?? 15000,
     );
     const png = Buffer.from(result.data, "base64");
+    this.status.captures++;
+    this.status.capturedBytes += png.byteLength;
     if (png.length < 24) throw new Error("Source returned an empty frame");
     const expectedWidth = (rect?.width ?? this.spec.width) * this.density;
     const expectedHeight = (rect?.height ?? this.spec.height) * this.density;
@@ -293,17 +434,21 @@ export class WebSource {
   }
 
   async inspect() {
-    return this.window.webContents.executeJavaScript(
+    return this.evaluate(
       `[...document.querySelectorAll('[data-tilt-id]')].map(el=>{const r=el.getBoundingClientRect();return {id:el.getAttribute('data-tilt-id'),tag:el.tagName,text:el.textContent?.trim().slice(0,120),bounds:{x:r.x,y:r.y,width:r.width,height:r.height}}})`,
+      "inspection",
     );
   }
   async route() {
-    return this.window.webContents.executeJavaScript(
+    return this.evaluate(
       "location.pathname + location.search + location.hash",
+      "route inspection",
     );
   }
-  dispose() {
+  async dispose() {
+    this.status.phase = "disposed";
     if (!this.window.isDestroyed()) this.window.destroy();
     this.server?.close();
+    await this.managedHost?.dispose();
   }
 }

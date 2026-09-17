@@ -1,0 +1,111 @@
+@source not './ui/skills';
+@source not '../.agents/skills/design-system';
+@source not '../docs/design-system';
+
+@import 'tailwindcss';
+
+@import './ui/tokens/border.css';
+@import './ui/tokens/color.css';
+@import './ui/tokens/motion.css';
+@import './ui/tokens/shadow.css';
+@import './ui/tokens/spacing.css';
+@import './ui/tokens/typography.css';
+
+@custom-variant base {
+  @layer base {
+    @slot;
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+    min-width: 0;
+    min-height: 0;
+    corner-shape: superellipse(1.333);
+    scrollbar-color: gray transparent;
+    scrollbar-width: thin;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
+@utility text-primary {
+  color: var(--text-primary);
+}
+
+@utility text-secondary {
+  color: var(--text-secondary);
+}
+
+@utility text-tertiary {
+  color: var(--text-tertiary);
+}
+
+@utility focus-outline {
+  &:focus-visible {
+    outline-style: solid;
+    outline-width: 1px;
+    outline-offset: 2px;
+    outline-color: var(--color-blue-800);
+  }
+}
+
+@utility border {
+  background-clip: padding-box;
+}
+
+@utility border-* {
+  background-clip: padding-box;
+}
+
+@utility rounded-inherit {
+  border-radius: inherit;
+}
+
+@utility flex-center {
+  align-items: center;
+  justify-content: center;
+}
+
+@utility corner-shape-unset {
+  corner-shape: unset;
+}
+
+.rounded-full::after,
+.rounded-full::before,
+.rounded-full {
+  corner-shape: unset;
+}
+
+.bg-clip-text {
+  color: transparent;
+}

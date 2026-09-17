@@ -7,10 +7,11 @@ export const project = path.resolve(
 export const portless = path.join(project, "node_modules/portless/dist/cli.js");
 export const proxyEnvironment = {
   ...process.env,
-  PORTLESS_HTTPS: "0",
-  PORTLESS_PORT: process.env.PORTLESS_PORT || "80",
-  PORTLESS_TLD: "localhost",
+  PORTLESS_HTTPS: "1",
+  PORTLESS_PORT: process.env.PORTLESS_PORT || "443",
+  PORTLESS_TLD: "video",
+  PORTLESS_SYNC_HOSTS: "1",
   PORTLESS_LAN: "0",
   PORTLESS_WILDCARD: "0",
 };
-export const viewerURL = `http://tilt.localhost${proxyEnvironment.PORTLESS_PORT === "80" ? "" : ":" + proxyEnvironment.PORTLESS_PORT}`;
+export const viewerURL = `https://tilt.video${proxyEnvironment.PORTLESS_PORT === "443" ? "" : ":" + proxyEnvironment.PORTLESS_PORT}`;

@@ -4,6 +4,7 @@ import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import type { RenderJob, SceneDocument } from "../core/schema";
 import { alive, atomicWrite, hash, manifest, readJSON } from "./files";
+import { validatePackagedSource } from "./source-host";
 
 export class Jobs {
   private submissions: Promise<unknown> = Promise.resolve();
@@ -51,6 +52,8 @@ export class Jobs {
         throw new Error(
           "Export needs local source files. Copy the app’s production build into the scene and set source.entry. A live URL cannot be frozen reliably.",
         );
+      for (const source of scene.sources)
+        await validatePackagedSource(source, sceneDir);
       const job: RenderJob = {
         version: 1,
         id: randomUUID(),

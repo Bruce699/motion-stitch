@@ -25,10 +25,12 @@ test("browser API requires its own origin and cookie; CLI uses a separate token"
         headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify({ type: "state" }),
       });
-    assert.equal((await send({})).status, 400);
+    const unauthorized = await send({});
+    assert.equal(unauthorized.status, 401);
+    assert.equal((await unauthorized.json()).code, "UNAUTHORIZED");
     assert.equal(
       (await send({ Cookie: cookie, Origin: "https://untrusted.test" })).status,
-      400,
+      401,
     );
     assert.equal(
       (await send({ Cookie: cookie, Origin: server.origin })).status,
@@ -136,7 +138,7 @@ test("named viewer routes keep cookies, modules and events on their own origin",
     ]) {
       assert.equal(
         (await request("/api", { ...post, Origin: origin }, "POST")).status,
-        400,
+        401,
       );
     }
     assert.equal(
@@ -147,7 +149,7 @@ test("named viewer routes keep cookies, modules and events on their own origin",
           "POST",
         )
       ).status,
-      400,
+      401,
     );
     assert.equal(
       (
@@ -160,7 +162,7 @@ test("named viewer routes keep cookies, modules and events on their own origin",
           "POST",
         )
       ).status,
-      400,
+      401,
     );
     const events = await request("/events?viewId=route-test", authenticated);
     assert.equal(events.status, 200);
@@ -172,7 +174,7 @@ test("named viewer routes keep cookies, modules and events on their own origin",
           Origin: "http://other.localhost",
         })
       ).status,
-      400,
+      401,
     );
     assert.equal(
       (
