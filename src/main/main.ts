@@ -19,6 +19,7 @@ import {
   type RenderJob,
 } from "../core/schema";
 import type { CapturedFrame } from "../core/layers";
+import { frameForReceiver } from "../core/frame-transfer";
 import { startRuntime } from "./runtime-host";
 import { Jobs } from "./jobs";
 import { WebSource, deadline } from "./source";
@@ -143,6 +144,7 @@ async function sample(time: number) {
   await prepare();
   const result: CapturedFrame = {
     images: {},
+    imageVersions: {},
     layers: [],
     routes: [],
     quality: scene().sources.map((spec) =>
@@ -152,6 +154,7 @@ async function sample(time: number) {
   for (const source of sources) {
     const frame = await source.sample(time, values(scene()));
     Object.assign(result.images, frame.images);
+    Object.assign(result.imageVersions!, frame.imageVersions);
     result.layers!.push(...(frame.layers || []));
     result.routes!.push(...(frame.routes || []));
   }
@@ -179,7 +182,9 @@ async function command(c: Command): Promise<any> {
       throw new Error("Invalid time");
     currentFrame = time;
     const result = await sample(time);
-    return c.includeContext ? result : result.images;
+    return c.includeContext
+      ? frameForReceiver(result, c.knownImages)
+      : result.images;
   }
   throw new Error("Frozen workers are read only");
 }

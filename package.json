@@ -12,7 +12,8 @@
     "test": "tsx --test tests/*.test.ts",
     "agent": "node dist/agent.cjs",
     "cli": "node dist/cli.cjs",
-    "test:layers": "node scripts/verify-layer-capture.mjs"
+    "test:layers": "node scripts/verify-layer-capture.mjs",
+    "test:transfer": "node scripts/verify-frame-transfer.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",

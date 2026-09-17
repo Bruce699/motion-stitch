@@ -19,6 +19,8 @@ export type LayerFrame = {
 };
 export type CapturedFrame = {
   images: Record<string, string>;
+  /** Opaque identities for these captured pixels, scoped to each texture key. */
+  imageVersions?: Record<string, string>;
   quality?: SourceQuality[];
   layers?: LayerFrame[];
   routes?: { id: string; route: string }[];

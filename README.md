@@ -99,7 +99,10 @@ This is a working prototype, not a finished NLE. Browser-to-GPU transfer current
 npm run typecheck
 npm test
 npm run test:layers
+npm run test:transfer
 npm run build
 ```
 
 See [docs/architecture.md](docs/architecture.md) for contracts and [docs/verification.md](docs/verification.md) for measured checks and remaining limits.
+
+The [Admin Next performance review](docs/performance-review.md) records the selected optimizations, identical-output checks, measurements and changes deliberately left out. The transfer benchmark is an isolated native integration test, not a displayed-FPS benchmark.

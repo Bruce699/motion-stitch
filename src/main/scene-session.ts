@@ -123,10 +123,12 @@ export class SceneSession {
           "Scene revision changed; waiting for the current preview",
         );
       const images: Record<string, string> = {};
+      const imageVersions: Record<string, string> = {};
       const layers: LayerFrame[] = [];
       for (const s of this.sources) {
         const frame = await s.sample(time, values(prep.scene));
         Object.assign(images, frame.images);
+        Object.assign(imageVersions, frame.imageVersions);
         layers.push(...(frame.layers || []));
       }
       if (prep.revision !== this.store.revision)
@@ -135,6 +137,7 @@ export class SceneSession {
         );
       return {
         images,
+        imageVersions,
         layers,
         quality: this.quality,
         routes: this.sources.map((s) => ({

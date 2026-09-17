@@ -2,6 +2,7 @@ import { defaultCamera } from "../core/camera";
 import type { SourceQuality } from "../core/quality";
 import { Icon, type IconName } from "./icons";
 import { flushControlEdits, queueControlEdit } from "./control-edits";
+import { createRenderActivity } from "./activity";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type {
@@ -107,6 +108,7 @@ function App() {
     contextRetries = useRef(0);
   const request = useRef<LatestFrame<number> | null>(null);
   const interacted = useRef(false);
+  const activity = useRef<ReturnType<typeof createRenderActivity> | null>(null);
   const contextQueue = useRef<Promise<unknown>>(Promise.resolve());
   const lastPublished = useRef({ json: "", at: 0 });
   const invoke = async (cmd: Command) => {
@@ -261,7 +263,7 @@ function App() {
     setTime(next);
     request.current?.request(next);
     interacted.current = true;
-    void call({ type: "activity", activity: "scrub" }).catch(() => {});
+    activity.current?.scrub();
   }
   function toggle() {
     clock.current.playing ? clock.current.pause() : clock.current.play();
@@ -320,15 +322,18 @@ function App() {
           codeRevision: number;
         }>({ type: "prepare", sceneId: s.id });
         if (disposed || n !== generation.current) return;
-        candidate = new SceneEngine(prep.scene, (t, revision, captureZoom) =>
-          call({
-            type: "frame",
-            sceneId: s.id,
-            time: t,
-            revision,
-            captureZoom,
-            includeContext: true,
-          }),
+        candidate = new SceneEngine(
+          prep.scene,
+          (t, revision, captureZoom, knownImages) =>
+            call({
+              type: "frame",
+              sceneId: s.id,
+              time: t,
+              revision,
+              captureZoom,
+              knownImages,
+              includeContext: true,
+            }),
         );
         await candidate.init(prep.url);
         const t = Math.min(clock.current.time, s.duration);
@@ -453,15 +458,26 @@ function App() {
     };
   }, []);
   useEffect(() => {
-    void call({ type: "activity", activity: playing ? "play" : "idle" }).catch(
-      () => {},
+    const reporter = createRenderActivity(
+      (activity) => call({ type: "activity", activity }),
+      {
+        hidden: () => document.hidden,
+        playing: () => clock.current.playing,
+        onVisibilityChange(listener) {
+          document.addEventListener("visibilitychange", listener);
+          return () =>
+            document.removeEventListener("visibilitychange", listener);
+        },
+      },
     );
-    if (!playing) return;
-    const timer = setInterval(
-      () => void call({ type: "activity", activity: "play" }).catch(() => {}),
-      1000,
-    );
-    return () => clearInterval(timer);
+    activity.current = reporter;
+    return () => {
+      activity.current = null;
+      reporter.dispose();
+    };
+  }, []);
+  useEffect(() => {
+    activity.current?.playbackChanged();
   }, [playing]);
   useEffect(
     () =>
@@ -764,7 +780,7 @@ function App() {
           fps={s?.fps || 30}
           tracks={s?.tracks || []}
           onSeek={seek}
-          onScrubEnd={() => void call({ type: "activity", activity: "idle" })}
+          onScrubEnd={() => activity.current?.endScrub()}
         />
       </section>
       {error && (
@@ -879,8 +895,8 @@ if (new URLSearchParams(location.search).has("render")) {
     const prep = await call<{ scene: SceneDocument; url: string }>({
       type: "prepare",
     });
-    const e = new SceneEngine(prep.scene, (t) =>
-      call({ type: "frame", time: t, includeContext: true }),
+    const e = new SceneEngine(prep.scene, (t, _revision, _zoom, knownImages) =>
+      call({ type: "frame", time: t, includeContext: true, knownImages }),
     );
     await e.init(prep.url);
     document.body.replaceChildren(e.canvas);

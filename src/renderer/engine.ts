@@ -41,6 +41,7 @@ export class SceneEngine {
   );
   textures: Record<string, THREE.Texture> = {};
   private lastImages: Record<string, string> = {};
+  private imageVersions: Record<string, string> = {};
   private instance?: SceneInstance;
   private disposed = false;
   private serial: Promise<unknown> = Promise.resolve();
@@ -50,6 +51,7 @@ export class SceneEngine {
       time: number,
       revision?: string,
       captureZoom?: number,
+      knownImages?: Record<string, string>,
     ) => Promise<CapturedFrame>,
   ) {
     this.renderer = new THREE.WebGLRenderer({
@@ -158,13 +160,20 @@ export class SceneEngine {
   ) {
     const task = this.serial.then(async () => {
       if (this.disposed) return;
-      const { images, routes, layers, quality } = await this.source(
-        time,
-        revision,
-        this.inspection.zoom,
-      );
+      const { images, imageVersions, routes, layers, quality } =
+        await this.source(time, revision, this.inspection.zoom, {
+          ...this.imageVersions,
+        });
+      for (const [id, version] of Object.entries(imageVersions || {})) {
+        if (!Object.hasOwn(images, id) && this.imageVersions[id] !== version)
+          throw new Error(`Source ${id} omitted an image this renderer needs`);
+      }
       for (const [id, data] of Object.entries(images)) {
-        if (this.lastImages[id] === data) continue;
+        if (this.lastImages[id] === data) {
+          if (imageVersions?.[id]) this.imageVersions[id] = imageVersions[id];
+          else delete this.imageVersions[id];
+          continue;
+        }
         const img = new Image();
         img.src = data;
         await img.decode();
@@ -189,6 +198,10 @@ export class SceneEngine {
           texture.image = img;
           texture.needsUpdate = true;
           this.lastImages[id] = data;
+          // Failed decodes never acknowledge a version. Each engine owns its
+          // accepted pixels; a new/rebuilt engine starts with an empty cache.
+          if (imageVersions?.[id]) this.imageVersions[id] = imageVersions[id];
+          else delete this.imageVersions[id];
         }
       }
       this.document = document;

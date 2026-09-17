@@ -1,4 +1,5 @@
 import { withCameraPatch } from "../core/camera";
+import { frameForReceiver } from "../core/frame-transfer";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -202,7 +203,9 @@ export async function startRuntime(
         const result = await (
           await getSession(s.id)
         ).frame(t, c.revision as string | undefined, zoom);
-        return c.includeContext ? result : result.images;
+        return c.includeContext
+          ? frameForReceiver(result, c.knownImages)
+          : result.images;
       }
       case "inspect": {
         const result = await (await getSession(s.id)).inspect();

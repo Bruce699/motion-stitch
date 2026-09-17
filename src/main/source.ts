@@ -226,8 +226,12 @@ export class WebSource {
       }
     }
     this.lastKey = key;
+    const version = randomUUID();
     this.lastFrame = {
       images,
+      imageVersions: Object.fromEntries(
+        Object.keys(images).map((id) => [id, version]),
+      ),
       layers,
       routes: [{ id: this.spec.id, route: this.currentRoute }],
     };
