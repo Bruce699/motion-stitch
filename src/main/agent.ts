@@ -3,12 +3,12 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import {
   agentCommands,
   parseAgentCommand,
-  commandCatalogue,
 } from "../core/commands";
 import { request, project, actorId } from "./client";
 import { reviewToolContent } from "../core/review";
+import { guidanceInstructions } from "./guidance";
 
-const server = new McpServer({ name: "tilt", version: "0.2.0" });
+const server = new McpServer({ name: "tilt", version: "0.2.0" }, { instructions: guidanceInstructions });
 for (const [type, definition] of Object.entries(agentCommands)) {
   server.registerTool(
     definition.name,
@@ -88,10 +88,16 @@ server.registerResource(
       {
         uri: uri.href,
         mimeType: "application/json",
-        text: JSON.stringify(commandCatalogue()),
+        text: JSON.stringify(await request({ type: "capabilities" })),
       },
     ],
   }),
+);
+server.registerResource(
+  "tilt-guidance",
+  "tilt://guidance",
+  { description: "Skills and linked authoring documents from the connected runtime. Read returned paths with tilt_guidance." },
+  async (uri) => ({ contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(await request({ type: "guidance" })) }] }),
 );
 server.connect(new StdioServerTransport()).catch((error) => {
   console.error(error);

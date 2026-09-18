@@ -1,0 +1,1955 @@
+[
+  {
+    "id": "LG-01",
+    "film": "apple-liquid-glass",
+    "start": 0,
+    "end": 10,
+    "subject": "Glass landscape becomes clock detail",
+    "description": "Broad blue and green surfaces give way to close relief of the lock-screen numerals. The object is initially read as material before it is read as interface.",
+    "principles": [
+      "material-demonstration",
+      "detail-and-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 0,
+        "reel_end": 10,
+        "source_start": 52.018633,
+        "source_end": 62.018633
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "LG-02",
+    "film": "apple-liquid-glass",
+    "start": 10,
+    "end": 18.7187,
+    "subject": "Dimensional app icons resolve into the phone",
+    "description": "Photos petals and the Safari needle receive enlarged product treatment, then the dock and complete home screen show their practical scale.",
+    "principles": [
+      "detail-and-context",
+      "family-variation",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 10,
+        "reel_end": 18.7187,
+        "source_start": 62.018633,
+        "source_end": 70.737333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "LG-03",
+    "film": "apple-liquid-glass",
+    "start": 18.7187,
+    "end": 30.2969,
+    "subject": "One material across the device family",
+    "description": "Mac Dock, Watch, television and a device lineup establish breadth; spatial interfaces extend that language into an environment. This is a family demonstration despite multiple shots.",
+    "principles": [
+      "family-variation",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 18.7187,
+        "reel_end": 18.7187,
+        "source_start": 70.737333,
+        "source_end": 70.737333
+      },
+      {
+        "reel_start": 18.7187,
+        "reel_end": 30.2969,
+        "source_start": 76.443033,
+        "source_end": 88.021233
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-001.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "LG-04",
+    "film": "apple-liquid-glass",
+    "start": 30.2969,
+    "end": 34.8348,
+    "subject": "Text magnifier optical demonstration",
+    "description": "The rounded lens travels across the same paragraph. Enlarged text and distortion at its edge make a small optical behavior the subject.",
+    "principles": [
+      "change-one-variable",
+      "material-demonstration"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 30.2969,
+        "reel_end": 30.296933,
+        "source_start": 88.021233,
+        "source_end": 88.021267
+      },
+      {
+        "reel_start": 30.296933,
+        "reel_end": 34.8348,
+        "source_start": 92.525767,
+        "source_end": 97.063633
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "LG-05",
+    "film": "apple-liquid-glass",
+    "start": 34.8348,
+    "end": 44,
+    "subject": "Naming the glass material",
+    "description": "Dark close-ups of edges and a changing rounded silhouette lead to a pale translucent Liquid Glass title. The restrained object and light study is one material-introduction beat.",
+    "principles": [
+      "material-demonstration",
+      "isolate-subject",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 34.8348,
+        "reel_end": 44,
+        "source_start": 104.3042,
+        "source_end": 113.4694
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "LG-06",
+    "film": "apple-liquid-glass",
+    "start": 44,
+    "end": 53,
+    "subject": "The material becomes controls",
+    "description": "Slider, switch, tab selection, camera mode control and slide-to-answer reuse rounded translucent forms. Many subjects are short examples of the same control-material claim.",
+    "principles": [
+      "family-variation",
+      "system-in-context",
+      "material-demonstration"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 44,
+        "reel_end": 53,
+        "source_start": 113.4694,
+        "source_end": 122.4694
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "LG-07",
+    "film": "apple-liquid-glass",
+    "start": 53,
+    "end": 61.9619,
+    "subject": "Glass adapts to lock-screen content",
+    "description": "The same playback container sits over floral and green artwork; clock numerals are inspected close, then returned to the phone. Content makes the surface legible.",
+    "principles": [
+      "context-changes-material",
+      "detail-and-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 53,
+        "reel_end": 61.9619,
+        "source_start": 122.4694,
+        "source_end": 131.4313
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-003.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-004.jpg"
+    ]
+  },
+  {
+    "id": "LG-08",
+    "film": "apple-liquid-glass",
+    "start": 61.9619,
+    "end": 75.2085,
+    "subject": "Content-first media and browser controls",
+    "description": "A landscape movie receives a control overlay; a compact photo-menu control changes shape; TV and Safari show compact chrome over rich imagery. This demonstrates a shared rule across apps, rather than a single app task.",
+    "principles": [
+      "family-variation",
+      "action-response",
+      "context-changes-material"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 61.9619,
+        "reel_end": 75.208467,
+        "source_start": 132.3322,
+        "source_end": 145.578767
+      },
+      {
+        "reel_start": 75.208467,
+        "reel_end": 75.2085,
+        "source_start": 150.15,
+        "source_end": 150.150033
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-004.jpg"
+    ]
+  },
+  {
+    "id": "LG-09",
+    "film": "apple-liquid-glass",
+    "start": 75.2085,
+    "end": 91.7583,
+    "subject": "Notes toolbar as a separate adaptive layer",
+    "description": "On one oblique note surface, the white bottom bar gives way to floating glass controls, those controls regroup, content scrolls under them, and a menu expands and retracts. The stable note plane supports a sequence of related states.",
+    "principles": [
+      "depth-explains-hierarchy",
+      "action-response",
+      "context-changes-material"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 75.2085,
+        "reel_end": 91.7583,
+        "source_start": 150.150033,
+        "source_end": 166.699833
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-004.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-005.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/analysis/scenes/apple-liquid-glass-notes-toolbar.jpg"
+    ]
+  },
+  {
+    "id": "LG-10",
+    "film": "apple-liquid-glass",
+    "start": 91.7583,
+    "end": 106.473,
+    "subject": "Adaptive control sizes and surfaces",
+    "description": "News scrolls beneath its toolbar; a drawing button expands into a tool tray; Maps search sits above the map and a larger library panel. These are three shots in a control-adaptation proof sequence.",
+    "principles": [
+      "family-variation",
+      "action-response",
+      "depth-explains-hierarchy"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 91.7583,
+        "reel_end": 91.758333,
+        "source_start": 166.699833,
+        "source_end": 166.699867
+      },
+      {
+        "reel_start": 91.758333,
+        "reel_end": 106.473,
+        "source_start": 171.604767,
+        "source_end": 186.319433
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-005.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-006.jpg"
+    ]
+  },
+  {
+    "id": "LG-11",
+    "film": "apple-liquid-glass",
+    "start": 106.473,
+    "end": 113.013,
+    "subject": "Music navigation compacts during scrolling",
+    "description": "The bottom player and navigation change their grouping as the content scrolls, then the broader navigation returns. Content movement is the input to chrome adaptation.",
+    "principles": [
+      "action-response",
+      "context-changes-material",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 106.473,
+        "reel_end": 106.473033,
+        "source_start": 186.319433,
+        "source_end": 186.319467
+      },
+      {
+        "reel_start": 106.473033,
+        "reel_end": 113.0129,
+        "source_start": 198.7986,
+        "source_end": 205.338467
+      },
+      {
+        "reel_start": 113.0129,
+        "reel_end": 113.013,
+        "source_start": 211.8116,
+        "source_end": 211.8117
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-006.jpg"
+    ]
+  },
+  {
+    "id": "LG-12",
+    "film": "apple-liquid-glass",
+    "start": 113.013,
+    "end": 118,
+    "subject": "Lock-screen layers accumulate",
+    "description": "One centered phone builds a stack of playback and notification cards over the portrait, then shows Control Center. The shared device remains the reference frame.",
+    "principles": [
+      "progressive-assembly",
+      "depth-explains-hierarchy"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 113.013,
+        "reel_end": 118,
+        "source_start": 211.8117,
+        "source_end": 216.7987
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-006.jpg"
+    ]
+  },
+  {
+    "id": "LG-13",
+    "film": "apple-liquid-glass",
+    "start": 118,
+    "end": 125,
+    "subject": "Photos icon construction and icon themes",
+    "description": "Large colored petals are separated in depth, descend onto their base in sequence, and resolve into an icon among neighboring apps. The family changes to a darker appearance.",
+    "principles": [
+      "construction-revealed",
+      "progressive-assembly",
+      "detail-and-context",
+      "family-variation"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 118,
+        "reel_end": 125,
+        "source_start": 216.7987,
+        "source_end": 223.7987
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-006.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-007.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/analysis/scenes/apple-liquid-glass-photos-assembly.jpg"
+    ]
+  },
+  {
+    "id": "LG-14",
+    "film": "apple-liquid-glass",
+    "start": 125,
+    "end": 137.3372,
+    "subject": "Personalization and device-family breadth",
+    "description": "Individual themed home screens expand into a phone matrix; pale glass icons and widgets demonstrate another appearance, followed by a full device lineup.",
+    "principles": [
+      "family-variation",
+      "sparse-to-dense",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 125,
+        "reel_end": 137.3372,
+        "source_start": 223.7987,
+        "source_end": 236.1359
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-007.jpg"
+    ]
+  },
+  {
+    "id": "LG-15",
+    "film": "apple-liquid-glass",
+    "start": 137.3372,
+    "end": 147.1136,
+    "subject": "Final functional examples",
+    "description": "Spotlight expands to files, followed by phone theming, desktop controls, contact cards, window controls and Camera. A rapid feature recap, with an incoming splice and one internal splice made by our edit.",
+    "principles": [
+      "family-variation",
+      "action-response",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 137.3372,
+        "reel_end": 145.311833,
+        "source_start": 245.6454,
+        "source_end": 253.620033
+      },
+      {
+        "reel_start": 145.311833,
+        "reel_end": 147.1136,
+        "source_start": 253.920333,
+        "source_end": 255.7221
+      }
+    ],
+    "our_splices_inside": [
+      145.311833
+    ],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-007.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-008.jpg"
+    ]
+  },
+  {
+    "id": "LG-16",
+    "film": "apple-liquid-glass",
+    "start": 147.1136,
+    "end": 156.122633,
+    "subject": "Home-screen and brand resolution",
+    "description": "The phone returns to its home screen, holds, then large colored background forms clear away for a small glass Apple mark.",
+    "principles": [
+      "readable-settle",
+      "motif-reuse"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 147.1136,
+        "reel_end": 147.113633,
+        "source_start": 255.7221,
+        "source_end": 255.722133
+      },
+      {
+        "reel_start": 147.113633,
+        "reel_end": 156.122633,
+        "source_start": 259.7595,
+        "source_end": 268.7685
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-008.jpg"
+    ]
+  },
+  {
+    "id": "I7-01",
+    "film": "apple-ios-7",
+    "start": 0,
+    "end": 16,
+    "subject": "iPad cover construction and utility",
+    "description": "The cover opens and folds into a stand as the device changes orientation. The coherent subject is the cover and its utility, not each view.",
+    "principles": [
+      "action-response",
+      "isolate-subject"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 0,
+        "reel_end": 16,
+        "source_start": 2.0,
+        "source_end": 18.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "I7-02",
+    "film": "apple-ios-7",
+    "start": 16,
+    "end": 38,
+    "subject": "MacBook physical detail and screen",
+    "description": "A thin laptop profile receives a slow close inspection, the charging connector approaches its edge, and the screen and Dock complete the product demonstration.",
+    "principles": [
+      "detail-and-context",
+      "action-response"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 16,
+        "reel_end": 38,
+        "source_start": 18.0,
+        "source_end": 40.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-001.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "I7-03",
+    "film": "apple-ios-7",
+    "start": 38,
+    "end": 43.333333,
+    "subject": "EarPods shape",
+    "description": "EarPods rotate into an enlarged view and fade into the white field. A short isolated hardware detail.",
+    "principles": [
+      "isolate-subject"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 38,
+        "reel_end": 43.333333,
+        "source_start": 40.0,
+        "source_end": 45.333333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "I7-04",
+    "film": "apple-ios-7",
+    "start": 43.333333,
+    "end": 54,
+    "subject": "New phone and home-screen reveal",
+    "description": "Lock-screen type begins at close range; the phone rotates and withdraws to reveal the home screen, then allows the full product to read.",
+    "principles": [
+      "detail-and-context",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 43.333333,
+        "reel_end": 43.333333,
+        "source_start": 45.333333,
+        "source_end": 45.333333
+      },
+      {
+        "reel_start": 43.333333,
+        "reel_end": 54,
+        "source_start": 69.166667,
+        "source_end": 79.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "I7-05",
+    "film": "apple-ios-7",
+    "start": 54,
+    "end": 63,
+    "subject": "Control Center reveal",
+    "description": "The drawer rises over the home screen, pauses, then is inspected closer so its translucency and controls can be read.",
+    "principles": [
+      "action-response",
+      "depth-explains-hierarchy",
+      "detail-and-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 54,
+        "reel_end": 63,
+        "source_start": 79.833333,
+        "source_end": 88.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-003.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-004.jpg"
+    ]
+  },
+  {
+    "id": "I7-06",
+    "film": "apple-ios-7",
+    "start": 63,
+    "end": 79,
+    "subject": "A shared visual language across utility apps",
+    "description": "Clock, alarms, compass, calculator, calendar, reminders and Music form one survey of new type, line symbols, color and controls. The fast cuts support family resemblance.",
+    "principles": [
+      "family-variation",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 63,
+        "reel_end": 79,
+        "source_start": 88.833333,
+        "source_end": 104.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-004.jpg"
+    ]
+  },
+  {
+    "id": "I7-07",
+    "film": "apple-ios-7",
+    "start": 79,
+    "end": 84,
+    "subject": "Mail typography becomes a specification",
+    "description": "A simple Mail layout grows into enlarged text with baseline, leading and size annotations. The reading interface becomes an explanation of its design.",
+    "principles": [
+      "detail-and-context",
+      "construction-revealed"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 79,
+        "reel_end": 84,
+        "source_start": 104.833333,
+        "source_end": 109.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-004.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-005.jpg"
+    ]
+  },
+  {
+    "id": "I7-08",
+    "film": "apple-ios-7",
+    "start": 84,
+    "end": 100,
+    "subject": "Icons built from reusable geometry",
+    "description": "Construction guides and isolated components assemble a succession of app icons. Photos petals accumulate around a center, then the completed icon resolves into the home screen.",
+    "principles": [
+      "construction-revealed",
+      "progressive-assembly",
+      "family-variation",
+      "detail-and-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 84,
+        "reel_end": 100,
+        "source_start": 109.833333,
+        "source_end": 125.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-005.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/analysis/scenes/apple-ios-7-photos-assembly.jpg"
+    ]
+  },
+  {
+    "id": "I7-09",
+    "film": "apple-ios-7",
+    "start": 100,
+    "end": 115,
+    "subject": "The interface has distinct layers",
+    "description": "Notification Center overlays the home screen; the composition separates into notification, icons and wallpaper planes, then recombines. Physical separation explains a software hierarchy.",
+    "principles": [
+      "depth-explains-hierarchy",
+      "action-response",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 100,
+        "reel_end": 115,
+        "source_start": 125.833333,
+        "source_end": 140.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-006.jpg"
+    ]
+  },
+  {
+    "id": "I7-10",
+    "film": "apple-ios-7",
+    "start": 115,
+    "end": 127,
+    "subject": "Content inside lighter app chrome",
+    "description": "Messages/photo composition, Photos collections and Music lists show imagery and content occupying the interface. The phone and chrome supply context while content changes.",
+    "principles": [
+      "family-variation",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 115,
+        "reel_end": 127,
+        "source_start": 140.833333,
+        "source_end": 152.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-006.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-007.jpg"
+    ]
+  },
+  {
+    "id": "I7-11",
+    "film": "apple-ios-7",
+    "start": 127,
+    "end": 141,
+    "subject": "Weather has an atmospheric state",
+    "description": "London, Paris and Mount Rainier weather change within the same application structure. An enlarged snowy forecast shows detailed type and conditions over an animated background.",
+    "principles": [
+      "family-variation",
+      "change-one-variable",
+      "detail-and-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 127,
+        "reel_end": 141,
+        "source_start": 152.833333,
+        "source_end": 166.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-007.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-008.jpg"
+    ]
+  },
+  {
+    "id": "I7-12",
+    "film": "apple-ios-7",
+    "start": 141,
+    "end": 153,
+    "subject": "Wallpaper remains present through folders",
+    "description": "The home screen shifts in perspective over a portrait wallpaper; a folder expands and preserves a softened connection to the image beneath it.",
+    "principles": [
+      "context-changes-material",
+      "depth-explains-hierarchy",
+      "action-response"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 141,
+        "reel_end": 153,
+        "source_start": 166.833333,
+        "source_end": 178.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-008.jpg"
+    ]
+  },
+  {
+    "id": "I7-13",
+    "film": "apple-ios-7",
+    "start": 153,
+    "end": 166,
+    "subject": "Safari chrome and scrolling",
+    "description": "A full phone view becomes a closer browser view; scrolling moves content while the bottom toolbar is shown, then makes room for the page.",
+    "principles": [
+      "action-response",
+      "detail-and-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 153,
+        "reel_end": 166,
+        "source_start": 178.833333,
+        "source_end": 191.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-008.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-009.jpg"
+    ]
+  },
+  {
+    "id": "I7-14",
+    "film": "apple-ios-7",
+    "start": 166,
+    "end": 172,
+    "subject": "Video playback controls recede",
+    "description": "A landscape phone shows playback controls over the movie, then the controls withdraw and the content carries the frame.",
+    "principles": [
+      "action-response",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 166,
+        "reel_end": 172,
+        "source_start": 191.833333,
+        "source_end": 197.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-009.jpg"
+    ]
+  },
+  {
+    "id": "I7-15",
+    "film": "apple-ios-7",
+    "start": 172,
+    "end": 183,
+    "subject": "Wallpaper tint compared across three phones",
+    "description": "Three phones show different wallpaper colors, then matching passcode, home-screen and Control Center states. Synchronized state changes expose the different background influence.",
+    "principles": [
+      "change-one-variable",
+      "context-changes-material",
+      "family-variation"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 172,
+        "reel_end": 183,
+        "source_start": 197.833333,
+        "source_end": 208.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-009.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-010.jpg"
+    ]
+  },
+  {
+    "id": "I7-16",
+    "film": "apple-ios-7",
+    "start": 183,
+    "end": 195,
+    "subject": "App switching returns to a message task",
+    "description": "App cards are browsed in the switcher; a message card expands to the full screen, then a text conversation continues. The sequence has a task destination.",
+    "principles": [
+      "action-response",
+      "depth-explains-hierarchy",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 183,
+        "reel_end": 195,
+        "source_start": 208.833333,
+        "source_end": 220.833333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-010.jpg"
+    ]
+  },
+  {
+    "id": "I7-17",
+    "film": "apple-ios-7",
+    "start": 195,
+    "end": 208.866667,
+    "subject": "Camera modes and filters",
+    "description": "One camera interface moves between capture mode, filter grid and a selected treatment, then returns to the home screen. The same coastal composition makes changes comparable.",
+    "principles": [
+      "action-response",
+      "change-one-variable",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 195,
+        "reel_end": 208.866667,
+        "source_start": 220.833333,
+        "source_end": 234.7
+      },
+      {
+        "reel_start": 208.866667,
+        "reel_end": 208.866667,
+        "source_start": 362.233333,
+        "source_end": 362.233334
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-010.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-011.jpg"
+    ]
+  },
+  {
+    "id": "I7-18",
+    "film": "apple-ios-7",
+    "start": 208.866667,
+    "end": 215.333333,
+    "subject": "Safari address and discovery",
+    "description": "A full-screen browser view scrolls and exposes the address field and a favorites grid. This is a separately selected source segment; the incoming join is ours.",
+    "principles": [
+      "action-response",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 208.866667,
+        "reel_end": 215.333333,
+        "source_start": 362.233334,
+        "source_end": 368.7
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-011.jpg"
+    ]
+  },
+  {
+    "id": "I7-19",
+    "film": "apple-ios-7",
+    "start": 215.333333,
+    "end": 221,
+    "subject": "Music playback and purchase",
+    "description": "Artwork, now-playing text and a purchase state are shown close enough to read. A separately selected source segment; the incoming join is ours.",
+    "principles": [
+      "action-response",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 215.333333,
+        "reel_end": 215.333333,
+        "source_start": 368.7,
+        "source_end": 368.7
+      },
+      {
+        "reel_start": 215.333333,
+        "reel_end": 221,
+        "source_start": 404.1,
+        "source_end": 409.766667
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-011.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-012.jpg"
+    ]
+  },
+  {
+    "id": "I7-20",
+    "film": "apple-ios-7",
+    "start": 221,
+    "end": 244.5,
+    "subject": "Home-screen beauty reprise",
+    "description": "The phone and icons are inspected through oblique and close views before the frontal home screen settles. Repeated content now acts as a product summary.",
+    "principles": [
+      "detail-and-context",
+      "motif-reuse",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 221,
+        "reel_end": 244.5,
+        "source_start": 409.766667,
+        "source_end": 433.266667
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-012.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-013.jpg"
+    ]
+  },
+  {
+    "id": "I7-21",
+    "film": "apple-ios-7",
+    "start": 244.5,
+    "end": 248.133333,
+    "subject": "Apple signature",
+    "description": "Small Apple mark on a white field with a closing fade. The incoming cut to the logo was made by our edit.",
+    "principles": [
+      "isolate-subject",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 244.5,
+        "reel_end": 248.133333,
+        "source_start": 445.0,
+        "source_end": 448.633333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-013.jpg"
+    ]
+  },
+  {
+    "id": "YO-01",
+    "film": "apple-yosemite",
+    "start": 0,
+    "end": 6,
+    "subject": "Window control geometry",
+    "description": "Three colored window controls are enlarged and inspected in sequence. Inner marks make their familiar function explicit.",
+    "principles": [
+      "isolate-subject",
+      "family-variation"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 0,
+        "reel_end": 6,
+        "source_start": 0.0,
+        "source_end": 6.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "YO-02",
+    "film": "apple-yosemite",
+    "start": 6,
+    "end": 15,
+    "subject": "Shared line-glyph vocabulary",
+    "description": "Arrows, icon/list/column/cover views and the share symbol transform through related line parts. A single semantic survey of system symbols with repeated readable arrivals.",
+    "principles": [
+      "family-variation",
+      "progressive-assembly",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 6,
+        "reel_end": 15,
+        "source_start": 6.0,
+        "source_end": 15.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-001.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/analysis/scenes/apple-yosemite-glyph-transform.jpg"
+    ]
+  },
+  {
+    "id": "YO-03",
+    "film": "apple-yosemite",
+    "start": 15,
+    "end": 21,
+    "subject": "Finder typography and menu bar",
+    "description": "An enlarged menu-bar label appears as outline construction and filled type, then the composition travels through the menu toward Finder.",
+    "principles": [
+      "construction-revealed",
+      "detail-and-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 15,
+        "reel_end": 21,
+        "source_start": 15.0,
+        "source_end": 21.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-001.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "YO-04",
+    "film": "apple-yosemite",
+    "start": 21,
+    "end": 35,
+    "subject": "Redesigned Dock family",
+    "description": "The viewpoint travels across a row of recognizable app icons against the same wallpaper and Dock surface. Sequential emphasis lets many siblings read as one family.",
+    "principles": [
+      "family-variation",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 21,
+        "reel_end": 35,
+        "source_start": 21.0,
+        "source_end": 35.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "YO-05",
+    "film": "apple-yosemite",
+    "start": 35,
+    "end": 44,
+    "subject": "Finder materials and file organization",
+    "description": "AirDrop is isolated, then located in a translucent sidebar; wallpaper and selection changes prove the surface effect, and the full file window gives those details a use.",
+    "principles": [
+      "detail-and-context",
+      "context-changes-material",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 35,
+        "reel_end": 44,
+        "source_start": 35.0,
+        "source_end": 44.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "YO-06",
+    "film": "apple-yosemite",
+    "start": 44,
+    "end": 47,
+    "subject": "Messages window",
+    "description": "The close conversation list resolves into the whole Messages window with its embedded photo and thread.",
+    "principles": [
+      "detail-and-context",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 44,
+        "reel_end": 47,
+        "source_start": 44.0,
+        "source_end": 47.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "YO-07",
+    "film": "apple-yosemite",
+    "start": 47,
+    "end": 51,
+    "subject": "Notification information stack",
+    "description": "Schedule entries and world clocks are revealed by movement through the dark information panel. The beat is the panel and its content hierarchy.",
+    "principles": [
+      "system-in-context",
+      "family-variation"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 47,
+        "reel_end": 51,
+        "source_start": 47.0,
+        "source_end": 51.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "YO-08",
+    "film": "apple-yosemite",
+    "start": 51,
+    "end": 58,
+    "subject": "Windows belong to one desktop",
+    "description": "Calendar, Messages and other windows become a layered desktop composition; the view withdraws to a whole MacBook and settles.",
+    "principles": [
+      "detail-and-context",
+      "sparse-to-dense",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 51,
+        "reel_end": 58,
+        "source_start": 51.0,
+        "source_end": 58.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "YO-09",
+    "film": "apple-yosemite",
+    "start": 58,
+    "end": 60.893,
+    "subject": "Yosemite signature",
+    "description": "OS X Yosemite mark and name close on the pale background.",
+    "principles": [
+      "isolate-subject",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 58,
+        "reel_end": 60.893,
+        "source_start": 58.0,
+        "source_end": 60.893
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-003.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-004.jpg"
+    ]
+  },
+  {
+    "id": "AB-01",
+    "film": "airbnb-design-system",
+    "start": 0,
+    "end": 10,
+    "subject": "Cereal type construction and weight family",
+    "description": "An introductory title gives way to typed Cereal naming, enlarged letter geometry and a full stack of named font weights. One typographic capability has several views.",
+    "principles": [
+      "construction-revealed",
+      "family-variation",
+      "isolate-subject"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 0,
+        "reel_end": 10,
+        "source_start": 0.0,
+        "source_end": 10.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "AB-02",
+    "film": "airbnb-design-system",
+    "start": 10,
+    "end": 14,
+    "subject": "A shared layout spans screens",
+    "description": "App screens resolve into a coordinated layout with blue construction lines, then return as a collection of interfaces.",
+    "principles": [
+      "system-in-context",
+      "family-variation",
+      "construction-revealed"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 10,
+        "reel_end": 14,
+        "source_start": 10.0,
+        "source_end": 14.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "AB-03",
+    "film": "airbnb-design-system",
+    "start": 14,
+    "end": 22,
+    "subject": "Chips, spacing and rounded corners",
+    "description": "Category chips separate, a single component is examined with spacing lines, and a rounded-corner study leads to the profile sheet. The shared content is component construction.",
+    "principles": [
+      "construction-revealed",
+      "detail-and-context",
+      "progressive-assembly"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 14,
+        "reel_end": 22,
+        "source_start": 14.0,
+        "source_end": 22.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-001.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "AB-04",
+    "film": "airbnb-design-system",
+    "start": 22,
+    "end": 26.5,
+    "subject": "Line icons on a common grid",
+    "description": "Arrow variants, airplane and suitcase are compared in the same colored square with the same construction grid.",
+    "principles": [
+      "family-variation",
+      "change-one-variable",
+      "construction-revealed"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 22,
+        "reel_end": 26.5,
+        "source_start": 22.0,
+        "source_end": 26.5
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "AB-05",
+    "film": "airbnb-design-system",
+    "start": 26.5,
+    "end": 32,
+    "subject": "Suitcase becomes a crafted object",
+    "description": "Leather-looking strips wrap the suitcase outline, the object resolves, the shot inspects stitching, and decorative stickers arrive. Several cuts deepen one icon rather than introducing new scenes.",
+    "principles": [
+      "construction-revealed",
+      "progressive-assembly",
+      "material-demonstration",
+      "detail-and-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 26.5,
+        "reel_end": 32,
+        "source_start": 26.5,
+        "source_end": 32.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/analysis/scenes/airbnb-design-system-suitcase-assembly.jpg"
+    ]
+  },
+  {
+    "id": "AB-06",
+    "film": "airbnb-design-system",
+    "start": 32,
+    "end": 38,
+    "subject": "Dimensional icon family and detail levels",
+    "description": "Gem, furry paw and bed expand the material vocabulary. A progression from tiny symbol to furnished room then enters a listing-editor interface.",
+    "principles": [
+      "family-variation",
+      "material-demonstration",
+      "detail-and-context",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 32,
+        "reel_end": 38,
+        "source_start": 32.0,
+        "source_end": 38.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "AB-07",
+    "film": "airbnb-design-system",
+    "start": 38,
+    "end": 45,
+    "subject": "Color tokens become message avatars",
+    "description": "A palette table exposes selected swatches; colored circles become letter avatars and collect into a Messages interface. The same colors survive the abstraction change.",
+    "principles": [
+      "construction-revealed",
+      "progressive-assembly",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 38,
+        "reel_end": 45,
+        "source_start": 38.0,
+        "source_end": 45.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "AB-08",
+    "film": "airbnb-design-system",
+    "start": 45,
+    "end": 46.733333,
+    "subject": "Surface tokens over moving content",
+    "description": "Light and dark material samples remain above aerial ocean imagery, demonstrating different readable surface treatments. The next join is our edit.",
+    "principles": [
+      "change-one-variable",
+      "material-demonstration",
+      "context-changes-material"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 45,
+        "reel_end": 46.733333,
+        "source_start": 45.0,
+        "source_end": 46.733333
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "AB-09",
+    "film": "airbnb-design-system",
+    "start": 46.733333,
+    "end": 49,
+    "subject": "Listing composition becomes a compact item",
+    "description": "A phone-like listing surface leads to a compact product/item card. The abrupt start after the surface study is our splice.",
+    "principles": [
+      "detail-and-context",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 46.733333,
+        "reel_end": 46.733333,
+        "source_start": 46.733333,
+        "source_end": 46.733333
+      },
+      {
+        "reel_start": 46.733333,
+        "reel_end": 49,
+        "source_start": 48.733333,
+        "source_end": 51.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "AB-10",
+    "film": "airbnb-design-system",
+    "start": 49,
+    "end": 54,
+    "subject": "Cards assemble a component collection",
+    "description": "A feature card receives room to read before related cards and UI blocks accumulate around it. The family grows from one recognizable example.",
+    "principles": [
+      "sparse-to-dense",
+      "progressive-assembly",
+      "readable-settle",
+      "family-variation"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 49,
+        "reel_end": 54,
+        "source_start": 51.0,
+        "source_end": 56.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "AB-11",
+    "film": "airbnb-design-system",
+    "start": 54,
+    "end": 58,
+    "subject": "System samples and closing mark",
+    "description": "Colored dimensional sample panels recap earlier icon, type and palette studies before the Airbnb mark closes on white.",
+    "principles": [
+      "motif-reuse",
+      "family-variation",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 54,
+        "reel_end": 58,
+        "source_start": 56.0,
+        "source_end": 60.0
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "OA-01",
+    "film": "openai-brand-2025",
+    "start": 0,
+    "end": 6,
+    "subject": "A prompt introduces the dot",
+    "description": "A tiny black dot accompanies typing until the complete question can read, then remains as the central object.",
+    "principles": [
+      "isolate-subject",
+      "action-response",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 0,
+        "reel_end": 6,
+        "source_start": 0,
+        "source_end": 6
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "OA-02",
+    "film": "openai-brand-2025",
+    "start": 6,
+    "end": 18,
+    "subject": "One dot expresses the brand principles",
+    "description": "A single circle becomes concentric lines and a field of dots. Density, regularity, size and color changes correspond to the displayed simplicity, space, imperfection and vivid labels.",
+    "principles": [
+      "change-one-variable",
+      "family-variation",
+      "progressive-assembly"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 6,
+        "reel_end": 18,
+        "source_start": 6,
+        "source_end": 18
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "OA-03",
+    "film": "openai-brand-2025",
+    "start": 18,
+    "end": 28,
+    "subject": "Letterforms explained through geometry",
+    "description": "Circles, tangents and Bezier handles become GPT contours, then outline and filled glyph specimens are compared. Construction rather than decoration carries the beat.",
+    "principles": [
+      "construction-revealed",
+      "change-one-variable",
+      "family-variation"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 18,
+        "reel_end": 28,
+        "source_start": 18,
+        "source_end": 28
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-001.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "OA-04",
+    "film": "openai-brand-2025",
+    "start": 28,
+    "end": 38,
+    "subject": "Typeface breadth and weights",
+    "description": "Accent characters grow into a character set, an enlarged a is paired with its construction, and font weights and multilingual lines reveal the system range.",
+    "principles": [
+      "family-variation",
+      "construction-revealed",
+      "sparse-to-dense"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 28,
+        "reel_end": 38,
+        "source_start": 28,
+        "source_end": 38
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "OA-05",
+    "film": "openai-brand-2025",
+    "start": 38,
+    "end": 48,
+    "subject": "Typography in editorial motion",
+    "description": "Oversized characters, dense research paragraphs, model names and dates move through asymmetric compositions. This is expressive editorial application after the controlled specimen.",
+    "principles": [
+      "system-in-context",
+      "family-variation"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 38,
+        "reel_end": 48,
+        "source_start": 38,
+        "source_end": 48
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "OA-06",
+    "film": "openai-brand-2025",
+    "start": 48,
+    "end": 58,
+    "subject": "The wordmark is constructed and extended",
+    "description": "A black circle becomes the O construction, the complete OpenAI wordmark resolves, and ChatGPT and Research show related named applications.",
+    "principles": [
+      "construction-revealed",
+      "progressive-assembly",
+      "family-variation",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 48,
+        "reel_end": 58,
+        "source_start": 48,
+        "source_end": 58
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "OA-07",
+    "film": "openai-brand-2025",
+    "start": 58,
+    "end": 65,
+    "subject": "Blossom geometry",
+    "description": "Overlapping circles resolve into the interwoven Blossom outline; vector handles emphasize the contours before the final black mark is shown at different sizes.",
+    "principles": [
+      "construction-revealed",
+      "progressive-assembly",
+      "isolate-subject",
+      "readable-settle"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 58,
+        "reel_end": 65,
+        "source_start": 58,
+        "source_end": 65
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-003.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-004.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/analysis/scenes/openai-brand-2025-blossom-construction.jpg"
+    ]
+  },
+  {
+    "id": "OA-08",
+    "film": "openai-brand-2025",
+    "start": 65,
+    "end": 78,
+    "subject": "Palette from one circle to a population",
+    "description": "Large round color specimens become a smaller group, then a larger collection of dots before reducing to one again.",
+    "principles": [
+      "family-variation",
+      "change-one-variable",
+      "sparse-to-dense",
+      "motif-reuse"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 65,
+        "reel_end": 78,
+        "source_start": 65,
+        "source_end": 78
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-004.jpg"
+    ]
+  },
+  {
+    "id": "OA-09",
+    "film": "openai-brand-2025",
+    "start": 78,
+    "end": 92,
+    "subject": "Photography and editorial placement",
+    "description": "The dot becomes an image aperture; nature and people imagery alternate between full-frame and offset crops with spatially distributed text. Several photographic shots belong to one image-language chapter.",
+    "principles": [
+      "system-in-context",
+      "family-variation",
+      "motif-reuse"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 78,
+        "reel_end": 92,
+        "source_start": 78,
+        "source_end": 92
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-004.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-005.jpg"
+    ]
+  },
+  {
+    "id": "OA-10",
+    "film": "openai-brand-2025",
+    "start": 92,
+    "end": 98,
+    "subject": "Clear space becomes the page grid",
+    "description": "Wordmark spacing circles are shown, then the mark shrinks into a page whose columns are drawn. Alternate placements demonstrate the same layout system.",
+    "principles": [
+      "construction-revealed",
+      "detail-and-context",
+      "change-one-variable"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 92,
+        "reel_end": 98,
+        "source_start": 92,
+        "source_end": 98
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-005.jpg"
+    ]
+  },
+  {
+    "id": "OA-11",
+    "film": "openai-brand-2025",
+    "start": 98,
+    "end": 105,
+    "subject": "Applications accumulate into a brand world",
+    "description": "Research covers, photography, type specimens and posters enter an increasingly dense overlapping composition. Prior chapters are now usable artifacts.",
+    "principles": [
+      "sparse-to-dense",
+      "progressive-assembly",
+      "motif-reuse",
+      "system-in-context"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 98,
+        "reel_end": 105,
+        "source_start": 98,
+        "source_end": 105
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-005.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-006.jpg"
+    ]
+  },
+  {
+    "id": "OA-12",
+    "film": "openai-brand-2025",
+    "start": 105,
+    "end": 110,
+    "subject": "Brand signature",
+    "description": "Blossom clears to a typed OpenAI wordmark and a final held mark.",
+    "principles": [
+      "motif-reuse",
+      "readable-settle",
+      "isolate-subject"
+    ],
+    "confidence": "high for subject grouping and depicted states; boundaries approximate except edit-list splices",
+    "boundary_precision": "approximately \u00b11 second; semantic boundaries, not certified shot cuts",
+    "source_spans": [
+      {
+        "reel_start": 105,
+        "reel_end": 110,
+        "source_start": 105,
+        "source_end": 110
+      }
+    ],
+    "our_splices_inside": [],
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-006.jpg"
+    ]
+  }
+]

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Product viewer · Independent reconstruction</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Product viewer</h1>
+        <div class="products" role="group" aria-label="Phone">
+          <button data-product="pro" aria-pressed="true">iPhone 18 Pro</button
+          ><button data-product="duo" aria-pressed="false">iPhone Duo</button>
+        </div>
+        <button id="inspect" aria-expanded="false">Inspect</button>
+      </header>
+      <section class="viewer" id="viewer" aria-label="Interactive phone viewer">
+        <div
+          id="stage"
+          tabindex="0"
+          role="img"
+          aria-label="Phone. Drag to rotate. Left and right arrow keys change the viewing angle."
+        ></div>
+        <nav id="shots" aria-label="Camera shots"></nav>
+        <div id="loader" role="status">Loading model…</div>
+        <div class="fold" hidden>
+          <label for="fold">Fold</label
+          ><input
+            id="fold"
+            type="range"
+            min="0"
+            max="1"
+            step="0.001"
+            value="0"
+          /><output id="fold-value">Closed</output>
+        </div>
+        <div class="bottom">
+          <span id="shot-name">Back three-quarter</span
+          ><span>Drag to explore</span><button id="reset">Reset view</button>
+        </div>
+      </section>
+      <aside id="diagnostics" hidden>
+        <div>
+          <label
+            ><input id="snap" type="checkbox" checked /> Snap to shots</label
+          ><label><input id="wireframe" type="checkbox" /> Wireframe</label
+          ><label
+            ><input id="lighting" type="checkbox" checked /> Studio
+            lighting</label
+          ><label
+            >Resolution
+            <select id="resolution">
+              <option value="1">1×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2" selected>2×</option>
+            </select></label
+          ><button id="benchmark">Measure motion</button>
+        </div>
+        <pre id="stats"></pre>
+      </aside>
+      <footer>
+        <span>Independent viewer · Apple model assets</span
+        ><a href="/RESEARCH.md">Research notes</a>
+      </footer>
+    </main>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

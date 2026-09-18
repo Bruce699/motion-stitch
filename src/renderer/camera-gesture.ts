@@ -13,12 +13,12 @@ export class CameraGestureDraft {
   private sequence = 0;
   private entries = new Map<
     LensField,
-    { sceneId: string; value: number; ticket: number }
+    { sceneId: string; value: number; ticket: number; cameraId?: string }
   >();
 
-  change(sceneId: string, field: LensField, value: number) {
+  change(sceneId: string, field: LensField, value: number, cameraId?: string) {
     const ticket = ++this.sequence;
-    this.entries.set(field, { sceneId, value, ticket });
+    this.entries.set(field, { sceneId, value, ticket, cameraId });
     return ticket;
   }
   settle(ticket: number) {
@@ -36,19 +36,28 @@ export class CameraGestureDraft {
   exitPatches(): ViewerExitPatch[] {
     const scenes = new Map<string, ViewerExitPatch>();
     for (const [field, entry] of this.entries) {
-      const patch = scenes.get(entry.sceneId) ?? {
+      const patch = scenes.get(
+        entry.sceneId + ":" + (entry.cameraId ?? "main"),
+      ) ?? {
         sceneId: entry.sceneId,
+        ...(entry.cameraId && entry.cameraId !== "main"
+          ? { cameraId: entry.cameraId }
+          : {}),
         patch: { depthOfField: {} },
       };
       patch.patch.depthOfField[field] = entry.value;
-      scenes.set(entry.sceneId, patch);
+      scenes.set(entry.sceneId + ":" + (entry.cameraId ?? "main"), patch);
     }
     return [...scenes.values()];
   }
-  apply(document: SceneDocument): SceneDocument {
+  apply(document: SceneDocument, cameraId = "main"): SceneDocument {
     const patch: Partial<Record<LensField, number>> = {};
     for (const [field, entry] of this.entries)
-      if (entry.sceneId === document.id) patch[field] = entry.value;
+      if (
+        entry.sceneId === document.id &&
+        (entry.cameraId ?? "main") === cameraId
+      )
+        patch[field] = entry.value;
     return Object.keys(patch).length
       ? {
           ...document,

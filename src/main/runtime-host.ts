@@ -1,10 +1,20 @@
+import {
+  CompositionClipSchema,
+  compositionCameras,
+  splitClip,
+  trimClip,
+  validateCompositionGraph,
+  type CompositionGraph,
+} from "../core/compositions";
+import { ProjectLibrary, projectRuntime } from "./projects";
+import type { SceneDocument } from "../core/schema";
 import { retimeTracks } from "../core/tracks";
 import { withCameraPatch } from "../core/camera";
 import { frameForReceiver } from "../core/frame-transfer";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomBytes, randomUUID } from "node:crypto";
-import { app, BrowserWindow, Menu, nativeTheme, shell } from "electron";
+import { app, BrowserWindow, Menu, nativeTheme, shell, dialog } from "electron";
 import { SceneSchema, type Command } from "../core/schema";
 import {
   agentCommands,
@@ -21,6 +31,7 @@ import { Reviews } from "./review";
 import { serve } from "./server";
 import { atomicWrite, hash, manifest, readJSON } from "./files";
 import { ViewerExitCoordinator, viewerMutationCommands } from "./viewer-exit";
+import { GuidanceLibrary, projectAgentInstructions } from "./guidance";
 
 export async function startRuntime(
   root: string,
@@ -28,6 +39,15 @@ export async function startRuntime(
   jobs: Jobs,
   browserOnly: boolean,
 ) {
+  const projects = new ProjectLibrary(
+    process.env.TILT_PROJECTS_DIRECTORY ||
+      path.join(app.getPath("appData"), "Tilt", "projects"),
+    projectAgentInstructions(path.join(runtime, "cli.cjs")),
+  );
+  const guidance = new GuidanceLibrary(runtime);
+  await projects.register(root);
+  const projectOrigins = new Set<string>();
+  const openingProjects = new Map<string, Promise<string>>();
   const stores = new Map<string, Promise<SceneStore>>();
   const sessions = new Map<string, SceneSession>();
   const viewerExits = new ViewerExitCoordinator();
@@ -94,17 +114,64 @@ export async function startRuntime(
         defaultId,
     );
   const reviews = new Reviews(root, runtime, getStore);
+  const documents = async (rootId: string, replacement?: SceneDocument) => {
+    const result: Record<string, SceneDocument> = {};
+    const visit = async (id: string) => {
+      if (result[id]) return;
+      const store = await getStore(id);
+      if (store.error) throw new Error(store.error);
+      result[id] = id === rootId && replacement ? replacement : store.scene;
+      for (const clip of result[id].clips ?? [])
+        await visit(clip.compositionId);
+    };
+    await visit(rootId);
+    validateCompositionGraph(rootId, result);
+    return result;
+  };
+  const prepareGraph = async (id: string) => {
+    const docs = await documents(id);
+    const graph: CompositionGraph = {};
+    for (const key of Object.keys(docs))
+      graph[key] = await (await getSession(key)).prepare();
+    validateCompositionGraph(
+      id,
+      Object.fromEntries(
+        Object.entries(graph).map(([id, item]) => [id, item.scene]),
+      ),
+    );
+    return { ...graph[id], compositions: graph };
+  };
   const state = async (c: Command) => {
     const s = await getStore(sceneId(c));
     if (c.fresh) await s.sync();
+    let compositions: Record<string, SceneDocument> = {};
+    let dependencyRevision = "";
+    let dependencyError: string | null = null;
+    try {
+      compositions = await documents(s.id);
+      dependencyRevision = hash(
+        JSON.stringify(
+          await Promise.all(
+            Object.keys(compositions)
+              .filter((id) => id !== s.id)
+              .map(async (id) => [id, (await getStore(id)).revision]),
+          ),
+        ),
+      );
+    } catch (error) {
+      dependencyError = String(error);
+    }
     return {
+      project: { name: path.basename(root), path: root },
+      compositions,
+      dependencyRevision,
       workspaceId: views.workspaceId,
       scenes: await catalog.list(),
       scene: s.scene,
       revision: s.revision,
       codeRevision: s.codeRevision,
       path: s.directory,
-      error: s.error,
+      error: s.error ?? dependencyError,
       jobs: await jobs.list(),
       history: s.journal.summary(),
       origin: http.publicOrigin,
@@ -120,16 +187,23 @@ export async function startRuntime(
     if (Object.hasOwn(agentCommands, c.type)) c = parseAgentCommand(c);
     const viewId = c.viewId === undefined ? undefined : views.id(c.viewId);
     if (c.type === "viewer_exit")
-      return viewerExits.finish(c, getStore, (actor) => Promise.all(
-        [...stores.values()].map(async store => (await store).finishGesture(actor)),
-      ));
-    if (viewId && viewerMutationCommands.has(c.type)) viewerExits.assertOpen(viewId);
-    if (c.type === "context_update" && viewerExits.isClosed(viewId)) return { exiting: true };
+      return viewerExits.finish(c, getStore, (actor) =>
+        Promise.all(
+          [...stores.values()].map(async (store) =>
+            (await store).finishGesture(actor),
+          ),
+        ),
+      );
+    if (viewId && viewerMutationCommands.has(c.type))
+      viewerExits.assertOpen(viewId);
+    if (c.type === "context_update" && viewerExits.isClosed(viewId))
+      return { exiting: true };
     if (c.type === "capabilities")
       return {
         version: 1,
         workspaceId: views.workspaceId,
         commands: commandCatalogue(),
+        guidance: await guidance.catalogue(),
         context: {
           snapshot: ".tilt/context.json",
           watch: "/agent-events",
@@ -139,6 +213,7 @@ export async function startRuntime(
         fileAuthoring: true,
         editOwnership: true,
         workflow: [
+          "Discover guidance; read workspace-context and motion-design when relevant",
           "Read context and state",
           "Pin viewId for viewer work",
           "Begin a scoped edit at the current revision",
@@ -147,6 +222,8 @@ export async function startRuntime(
           "Wait for the displayed revision and inspect a capture",
         ],
       };
+    if (c.type === "guidance")
+      return c.path === undefined ? guidance.catalogue() : guidance.read(String(c.path));
     if (c.type === "views")
       return views.snapshot(undefined, c.sceneId as string | undefined).views;
     if (c.type === "context_update") {
@@ -197,6 +274,51 @@ export async function startRuntime(
         viewId,
         c.sceneId as string | undefined,
       );
+    if (c.type === "projects") return { projects: await projects.list() };
+    if (c.type === "project_open" || c.type === "project_create") {
+      let folder = typeof c.path === "string" ? c.path : undefined;
+      if (c.id) folder = (await projects.get(String(c.id))).path;
+      if (!folder) {
+        if (c.type === "project_create") {
+          const result = await dialog.showSaveDialog({
+            title: "New project",
+            buttonLabel: "Create project",
+            defaultPath: path.join(
+              app.getPath("documents"),
+              "Untitled project",
+            ),
+          });
+          if (result.canceled || !result.filePath) return {};
+          folder = result.filePath;
+        } else {
+          const result = await dialog.showOpenDialog({
+            title: "Open project",
+            buttonLabel: "Open project",
+            properties: ["openDirectory"],
+          });
+          if (result.canceled || !result.filePaths[0]) return {};
+          folder = result.filePaths[0];
+        }
+      }
+      const project =
+        c.type === "project_create"
+          ? await projects.create(folder)
+          : await projects.open(folder);
+      let origin = http.publicOrigin;
+      if (project.path !== (await fs.realpath(root))) {
+        let pending = openingProjects.get(project.path);
+        if (!pending) {
+          pending = projectRuntime(project.path, runtime, projects);
+          openingProjects.set(project.path, pending);
+          void pending
+            .finally(() => openingProjects.delete(project.path))
+            .catch(() => {});
+        }
+        origin = await pending;
+      }
+      projectOrigins.add(new URL(origin).origin);
+      return { project, origin };
+    }
     if (c.type === "state") return state(c);
     if (c.type === "desktop") {
       await openDesktop();
@@ -252,7 +374,8 @@ export async function startRuntime(
       if (
         c.type === "select_track" &&
         c.id !== null &&
-        !store.scene.tracks.some((track) => track.id === c.id)
+        !store.scene.tracks.some((track) => track.id === c.id) &&
+        !(store.scene.clips ?? []).some((clip) => clip.id === c.id)
       )
         throw new Error("Unknown track");
       if (
@@ -270,6 +393,7 @@ export async function startRuntime(
         mode: c.mode as any,
         sourceId: c.sourceId as string | undefined,
         trackId: c.id as string | null | undefined,
+        cameraId: c.cameraId as string | undefined,
         revision: c.revision as string | undefined,
         timeoutMs: c.timeoutMs as number | undefined,
       });
@@ -308,7 +432,8 @@ export async function startRuntime(
     const s = await getStore(sceneId(c));
     // A request can have arrived before pagehide and waited for this store while
     // the final exit patch sealed the viewer. Recheck before enqueuing any write.
-    if (viewId && viewerMutationCommands.has(c.type)) viewerExits.assertOpen(viewId);
+    if (viewId && viewerMutationCommands.has(c.type))
+      viewerExits.assertOpen(viewId);
     const actor = String(c.actorId || viewId || "agent");
     switch (c.type) {
       case "review": {
@@ -318,7 +443,7 @@ export async function startRuntime(
       case "review_status":
         return reviews.status(String(c.id), Boolean(c.includeImages), c.artifactIndices as number[] | undefined);
       case "prepare":
-        return (await getSession(s.id)).prepare();
+        return prepareGraph(s.id);
       case "frame": {
         const t = Number(c.time);
         if (!Number.isFinite(t) || t < 0 || t > s.scene.duration)
@@ -328,7 +453,7 @@ export async function startRuntime(
           throw new Error("Invalid capture zoom");
         const result = await (
           await getSession(s.id)
-        ).frame(t, c.revision as string | undefined, zoom);
+        ).frame(t, c.revision as string | undefined, zoom, c.overrides as any);
         return c.includeContext
           ? frameForReceiver(result, c.knownImages)
           : result.images;
@@ -336,6 +461,168 @@ export async function startRuntime(
       case "inspect": {
         // Inspection can sample another source state; it is not a viewer acknowledgement.
         return (await getSession(s.id)).inspect();
+      }
+      case "add_camera":
+        return s.edit(
+          (doc) => {
+            const source = compositionCameras(doc).find(
+              (camera) =>
+                camera.id === (c.from ?? doc.defaultCameraId ?? "main"),
+            );
+            if (!source) throw new Error("Unknown camera");
+            (doc.cameras ??= []).push({
+              id: "camera-" + randomUUID().slice(0, 8),
+              name: String(c.name),
+              settings: structuredClone(source.settings),
+            });
+          },
+          c.revision as string | undefined,
+          actor,
+        );
+      case "camera_metadata":
+        return s.edit(
+          (doc) => {
+            if (
+              !compositionCameras(doc).some(
+                (camera) => camera.id === c.cameraId,
+              )
+            )
+              throw new Error("Unknown camera");
+            if (c.name) {
+              if (c.cameraId === "main") doc.cameraName = String(c.name);
+              else
+                doc.cameras!.find((camera) => camera.id === c.cameraId)!.name =
+                  String(c.name);
+            }
+            if (c.makeDefault) doc.defaultCameraId = String(c.cameraId);
+          },
+          c.revision as string | undefined,
+          actor,
+        );
+      case "expose_parameter":
+        return s.edit(
+          (doc) => {
+            if (!doc.parameters[String(c.key)])
+              throw new Error("Unknown parameter");
+            const keys = new Set(doc.exposedParameters ?? []);
+            c.exposed ? keys.add(String(c.key)) : keys.delete(String(c.key));
+            doc.exposedParameters = [...keys];
+          },
+          c.revision as string | undefined,
+          actor,
+        );
+      case "add_clip":
+      case "set_clip":
+      case "trim_clip":
+      case "split_clip":
+      case "remove_clip":
+      case "clip_parameter": {
+        // Resolve dependencies before entering the journal lock; revalidate the
+        // candidate against this snapshot inside the guarded, atomic edit.
+        const dependencies = await documents(s.id);
+        if (c.type === "add_clip")
+          Object.assign(dependencies, await documents(String(c.compositionId)));
+        return s.edit(
+          (doc) => {
+            const clips = (doc.clips ??= []);
+            const index = clips.findIndex((clip) => clip.id === c.id);
+            if (c.type === "add_clip") {
+              const source = dependencies[String(c.compositionId)];
+              const start = Math.round(Number(c.start) * doc.fps) / doc.fps;
+              if (start >= doc.duration)
+                throw new Error("Place the clip before the composition ends");
+              clips.push(
+                CompositionClipSchema.parse({
+                  id: "clip-" + randomUUID().slice(0, 8),
+                  compositionId: source.id,
+                  label: source.name,
+                  start,
+                  end: Math.min(doc.duration, start + source.duration),
+                  sourceIn: 0,
+                }),
+              );
+            } else {
+              if (index < 0) throw new Error("Unknown clip");
+              const clip = clips[index];
+              if (c.type === "remove_clip") clips.splice(index, 1);
+              else if (c.type === "split_clip")
+                clips.splice(
+                  index,
+                  1,
+                  ...splitClip(
+                    clip,
+                    Math.round(Number(c.time) * doc.fps) / doc.fps,
+                    "clip-" + randomUUID().slice(0, 8),
+                  ),
+                );
+              else if (c.type === "trim_clip") {
+                const base = c.base as
+                  { start: number; end: number } | undefined;
+                if (
+                  base &&
+                  (base.start !== clip.start || base.end !== clip.end)
+                )
+                  throw new Error("Clip changed while dragging");
+                const timing = c.timing as { start: number; end: number };
+                clips[index] = trimClip(clip, timing.start, timing.end);
+              } else if (c.type === "set_clip") {
+                const patch = c.patch as Record<string, unknown>;
+                if (
+                  Object.keys(patch).some(
+                    (key) =>
+                      ![
+                        "sourceIn",
+                        "speed",
+                        "cameraId",
+                        "label",
+                        "position",
+                        "scale",
+                        "opacity",
+                      ].includes(key),
+                  )
+                )
+                  throw new Error("Unknown clip property");
+                clips[index] = CompositionClipSchema.parse({
+                  ...clip,
+                  ...patch,
+                  ...(patch.cameraId === null ? { cameraId: undefined } : {}),
+                });
+              } else {
+                const key = String(c.key),
+                  source = dependencies[clip.compositionId];
+                if (!source.exposedParameters?.includes(key))
+                  throw new Error("Control is not exposed");
+                if (c.reset) {
+                  delete clip.overrides[key];
+                  delete clip.bindings[key];
+                } else if (c.expose) {
+                  const name = clip.id + "-" + key;
+                  doc.parameters[name] = withParameterValue(
+                    source.parameters[key],
+                    clip.overrides[key] ?? source.parameters[key].value,
+                  );
+                  doc.exposedParameters = [
+                    ...new Set([...(doc.exposedParameters ?? []), name]),
+                  ];
+                  clip.bindings[key] = name;
+                  delete clip.overrides[key];
+                } else {
+                  clip.overrides[key] = withParameterValue(
+                    source.parameters[key],
+                    c.value,
+                  ).value;
+                  delete clip.bindings[key];
+                }
+              }
+            }
+            validateCompositionGraph(doc.id, {
+              ...dependencies,
+              [doc.id]: doc,
+            });
+          },
+          c.revision as string | undefined,
+          actor,
+        );
       }
       case "set_track":
         return s.edit(
@@ -361,7 +648,15 @@ export async function startRuntime(
       case "set_camera":
         return s.edit(
           (doc) => {
-            doc.camera = withCameraPatch(doc.camera, c.patch);
+            if (!c.cameraId || c.cameraId === "main")
+              doc.camera = withCameraPatch(doc.camera, c.patch);
+            else {
+              const camera = doc.cameras?.find(
+                (camera) => camera.id === c.cameraId,
+              );
+              if (!camera) throw new Error("Unknown camera");
+              camera.settings = withCameraPatch(camera.settings, c.patch);
+            }
           },
           c.revision as string | undefined,
           actor,
@@ -475,11 +770,39 @@ export async function startRuntime(
         for (const spec of document.sources)
           await validatePackagedSource(spec, s.directory);
         const directory = await s.previewDirectory();
+        const graph = await documents(s.id);
+        const dependencies = [];
+        for (const id of Object.keys(graph).filter((id) => id !== s.id)) {
+          const store = await getStore(id);
+          await store.sync();
+          if (store.error) throw new Error(store.error);
+          if (store.journal.group)
+            throw new Error(
+              "Finish the open edit in " +
+                store.scene.name +
+                " before rendering",
+            );
+          const scene = structuredClone(store.scene),
+            directory = await store.previewDirectory();
+          dependencies.push({
+            scene,
+            directory,
+            module: await compileScene(root, directory, scene),
+          });
+        }
+        validateCompositionGraph(
+          document.id,
+          Object.fromEntries([
+            [document.id, document],
+            ...dependencies.map((d) => [d.scene.id, d.scene]),
+          ]),
+        );
         return jobs.submit(
           document,
           directory,
           () => compileScene(root, directory, document),
           String(c.requestId || randomUUID()),
+          dependencies,
         );
       }
       default:
@@ -550,7 +873,7 @@ export async function startRuntime(
       title: "Tilt",
       titleBarStyle: "hiddenInset",
       trafficLightPosition: { x: 18, y: 17 },
-      backgroundColor: nativeTheme.shouldUseDarkColors ? "#181818" : "#ffffff",
+      backgroundColor: nativeTheme.shouldUseDarkColors ? "#141414" : "#ffffff",
       webPreferences: {
         contextIsolation: true,
         nodeIntegration: false,
@@ -563,12 +886,14 @@ export async function startRuntime(
     const updateBackground = () => {
       if (!window.isDestroyed())
         window.setBackgroundColor(
-          nativeTheme.shouldUseDarkColors ? "#181818" : "#ffffff",
+          nativeTheme.shouldUseDarkColors ? "#141414" : "#ffffff",
         );
     };
     nativeTheme.on("updated", updateBackground);
     window.once("closed", () => nativeTheme.off("updated", updateBackground));
-    desktop.webContents.on("will-navigate", (event) => event.preventDefault());
+    desktop.webContents.on("will-navigate", (event, url) => {
+      if (!projectOrigins.has(new URL(url).origin)) event.preventDefault();
+    });
     await desktop.loadURL(http.publicOrigin + "/?desktop=1");
     desktop.on("closed", () => {
       desktop = undefined;

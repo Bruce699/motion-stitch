@@ -1,3 +1,13 @@
+import {
+  cameraDocument,
+  compositionCameras,
+  type CompositionGraph,
+} from "../core/compositions";
+import {
+  ProjectBrowser,
+  CameraPicker,
+  ClipInspector,
+} from "./composition-controls";
 import { DEFAULT_FRAME_RATE } from "../core/schema";
 import { bindTransportKeyboard } from "./transport-keyboard";
 import { defaultCamera, type CameraSettings } from "../core/camera";
@@ -24,14 +34,23 @@ import { createPlayheadStore } from "./playhead-store";
 import { SegmentedControl } from "./vendor/dialkit/components/SegmentedControl";
 import "./style.css";
 
-import { call, onChange, onRequest, savedView, registerPageExit } from "./bridge";
+import {
+  call,
+  onChange,
+  onRequest,
+  savedView,
+  registerPageExit,
+} from "./bridge";
 import { defaultInspection, type TimelineContext } from "../core/context";
 import { bindNavigation } from "./navigation";
 import { cameraNavigation, cameraNavigationPatch } from "./camera-navigation";
 import { CameraGizmo } from "./camera-gizmo";
-import { EditorPanels } from "./editor-panels";
+import { usePanelRef } from "react-resizable-panels";
+import { ProjectHome } from "./project-home";
+import { EditorPanels, toggleEditorPanel } from "./editor-panels";
 import { ParameterPanel } from "./parameters";
 import { SceneHeader } from "./scene-header";
+import { ErrorIndicator } from "./error-indicator";
 
 const timecode = (t: number, fps: number) =>
   `${Math.floor(t / 60)
@@ -47,12 +66,16 @@ function Button({
   onClick,
   disabled = false,
   className = "",
+  expanded,
+  controls,
 }: {
   label: string;
   icon: IconName;
   onClick: () => void;
   disabled?: boolean;
   className?: string;
+  expanded?: boolean;
+  controls?: string;
 }) {
   return (
     <button
@@ -60,6 +83,8 @@ function Button({
       data-variant="ghost"
       data-size="icon"
       aria-label={label}
+      aria-expanded={expanded}
+      aria-controls={controls}
       title={label}
       onClick={onClick}
       disabled={disabled}
@@ -70,6 +95,26 @@ function Button({
 }
 
 function App() {
+  const [home, setHome] = useState(location.hash === "#home");
+  const [leftOpen, setLeftOpen] = useState(true);
+  const [rightOpen, setRightOpen] = useState(true);
+  const [timelineOpen, setTimelineOpen] = useState(true);
+  const leftPanel = usePanelRef(),
+    rightPanel = usePanelRef(),
+    timelinePanel = usePanelRef();
+  useEffect(() => {
+    const navigate = () => setHome(location.hash === "#home");
+    window.addEventListener("hashchange", navigate);
+    return () => window.removeEventListener("hashchange", navigate);
+  }, []);
+  useEffect(() => {
+    if (home) {
+      clock.current.pause();
+      setPlaying(false);
+      activity.current?.playbackChanged();
+      void flushControlEdits().catch((e) => setError(String(e)));
+    }
+  }, [home]);
   const [sourceQuality, setSourceQuality] = useState<SourceQuality[]>([]);
   const densityTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
@@ -77,6 +122,7 @@ function App() {
   const [state, setState] = useState<ProjectState>();
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const playhead = useRef(createPlayheadStore(0)).current;
   const setTime = playhead.set;
   const [playing, setPlaying] = useState(false);
@@ -113,6 +159,10 @@ function App() {
   const [inspection, setInspection] = useState(
     savedView?.inspection || defaultInspection(),
   );
+  const [previewCameraId, setPreviewCameraId] = useState<string | undefined>(
+    savedView?.cameraId,
+  );
+  const [compositionPath, setCompositionPath] = useState<string[]>([]);
   const [selectedTrackId, setSelectedTrackId] = useState<string | undefined>(
     savedView?.selection?.[0],
   );
@@ -141,7 +191,48 @@ function App() {
     inspection: defaultInspection(),
     ...savedView,
   });
-  const displayed = useRef({ time: 0, revision: null as string | null });
+  function selectedCameraId(doc = current.current?.scene) {
+    const wanted = view.current.cameraId ?? doc?.defaultCameraId ?? "main";
+    return doc && compositionCameras(doc).some((camera) => camera.id === wanted)
+      ? wanted
+      : (doc?.defaultCameraId ?? "main");
+  }
+  function viewing(doc: SceneDocument) {
+    return cameraDocument(doc, selectedCameraId(doc));
+  }
+  function withSelectedCamera(doc: SceneDocument, camera: CameraSettings) {
+    const id = selectedCameraId(doc);
+    return id === "main"
+      ? { ...doc, camera }
+      : {
+          ...doc,
+          cameras: doc.cameras?.map((entry) =>
+            entry.id === id ? { ...entry, settings: camera } : entry,
+          ),
+        };
+  }
+  async function chooseCamera(id: string) {
+    await flushControlEdits();
+    cameraDraft.current = null;
+    lensDraft.clear();
+    view.current.cameraId = id;
+    setPreviewCameraId(id);
+    if (engine.current) engine.current.cameraId = id;
+    request.current?.request(clock.current.time);
+    interacted.current = true;
+  }
+  async function openComposition(id: string, nested = false) {
+    await flushControlEdits();
+    if (nested && current.current)
+      setCompositionPath((path) => [...path, current.current!.scene.id]);
+    else setCompositionPath([]);
+    await invoke({ type: "open", id });
+  }
+  const displayed = useRef({
+    time: 0,
+    revision: null as string | null,
+    dependencyRevision: "",
+  });
   const generation = useRef(0),
     presentation = useRef(0),
     contextRetries = useRef(0);
@@ -180,15 +271,32 @@ function App() {
       duration: s.scene.duration,
       fps: s.scene.fps,
       timeline: view.current.timeline,
-      selectedTracks: s.scene.tracks.filter(t => view.current.selection.includes(t.id)).map(t => ({
-        id: t.id, label: t.label, kind: t.kind, start: t.start, end: t.end,
-        parentId: t.parentId, parameterKeys: t.parameterKeys, targets: t.targets ?? [],
-      })),
+      selectedClips: (s.scene.clips ?? []).filter((clip) =>
+        view.current.selection.includes(clip.id),
+      ),
+      selectedTracks: s.scene.tracks
+        .filter((t) => view.current.selection.includes(t.id))
+        .map((t) => ({
+          id: t.id,
+          label: t.label,
+          kind: t.kind,
+          start: t.start,
+          end: t.end,
+          parentId: t.parentId,
+          parameterKeys: t.parameterKeys,
+          targets: t.targets ?? [],
+        })),
       mode: view.current.mode,
       sourceId: view.current.sourceId,
       selection: view.current.selection,
-      inspection: view.current.mode === "camera" ? defaultInspection() : view.current.inspection,
-      camera: lensDraft.apply(s.scene).camera ?? defaultCamera(),
+      inspection:
+        view.current.mode === "camera"
+          ? defaultInspection()
+          : view.current.inspection,
+      camera:
+        lensDraft.apply(viewing(s.scene), selectedCameraId(s.scene)).camera ??
+        defaultCamera(),
+      cameraId: selectedCameraId(s.scene),
       sourceQuality: engine.current?.quality || [],
       renderMetrics: engine.current?.metrics,
       sourceStatus: engine.current?.sourceStatus ?? [],
@@ -205,6 +313,8 @@ function App() {
       error: s.error || status.current.error,
       documentRevision: s.revision,
       displayedRevision: displayed.current.revision,
+      dependencyRevision: s.dependencyRevision,
+      displayedDependencyRevision: displayed.current.dependencyRevision,
       viewport: {
         width: stage.current?.clientWidth || 0,
         height: stage.current?.clientHeight || 0,
@@ -247,17 +357,15 @@ function App() {
       if (sequence < refreshSequence.current.applied) return;
       refreshSequence.current.applied = sequence;
       if (cameraDraft.current && current.current?.scene.id === s.scene.id)
-        s.scene = { ...s.scene, camera: {
-          ...(s.scene.camera ?? defaultCamera()),
-          ...cameraNavigationPatch(cameraNavigation(cameraDraft.current), cameraDraft.current),
-        } };
+        s.scene = withSelectedCamera(s.scene, { ...cameraDraft.current });
       for (const ticket of settling) {
         lensDraft.settle(ticket);
         settledLenses.delete(ticket);
       }
       current.current = s;
       setState(s);
-      if (settling.length && !clock.current.playing) request.current?.request(clock.current.time);
+      if (settling.length && !clock.current.playing)
+        request.current?.request(clock.current.time);
       if (s.error) setError(s.error);
     } catch (e) {
       setError(String(e));
@@ -268,7 +376,12 @@ function App() {
   function previewLens(field: LensField, value: number) {
     const s = current.current;
     if (!s) return -1;
-    const ticket = lensDraft.change(s.scene.id, field, value);
+    const ticket = lensDraft.change(
+      s.scene.id,
+      field,
+      value,
+      selectedCameraId(s.scene),
+    );
     displayed.current.revision = null;
     // The same bounded scheduler and clock serve lens gestures and timeline seeks.
     if (!clock.current.playing) request.current?.request(clock.current.time);
@@ -284,13 +397,23 @@ function App() {
   function editCameraNavigation(next: ReturnType<typeof defaultInspection>) {
     const state = current.current;
     if (!state || state.history?.pendingEdit?.kind === "agent") return;
-    const camera = { ...(cameraDraft.current ?? state.scene.camera ?? defaultCamera()),
-      ...cameraNavigationPatch(next, cameraDraft.current ?? state.scene.camera) };
+    const camera = {
+      ...(cameraDraft.current ??
+        viewing(state.scene).camera ??
+        defaultCamera()),
+      ...cameraNavigationPatch(
+        next,
+        cameraDraft.current ?? viewing(state.scene).camera,
+      ),
+    };
     cameraDraft.current = camera;
-    state.scene = { ...state.scene, camera };
+    state.scene = withSelectedCamera(state.scene, camera);
     setState({ ...state });
     if (engine.current) {
-      engine.current.document = lensDraft.apply({ ...engine.current.document, camera });
+      engine.current.document = lensDraft.apply(
+        { ...engine.current.document, camera },
+        selectedCameraId(),
+      );
       engine.current.inspection = defaultInspection();
       engine.current.renderView();
     }
@@ -300,19 +423,32 @@ function App() {
     const draft = cameraDraft.current;
     const sceneId = current.current?.scene.id;
     if (!draft || !sceneId) return;
+    const cameraId = selectedCameraId();
     const { rotation, elevation, roll, zoom, panX, panY } = draft;
     void queueControlEdit(async () => {
-      await call({ type: "set_camera", sceneId, patch: { rotation, elevation, roll, zoom, panX, panY } });
+      await call({
+        type: "set_camera",
+        sceneId,
+        cameraId,
+        patch: { rotation, elevation, roll, zoom, panX, panY },
+      });
       if (cameraDraft.current === draft) cameraDraft.current = null;
       await refresh();
-    }).catch((error) => { cameraDraft.current = null; setError(String(error)); void refresh(); });
+    }).catch((error) => {
+      cameraDraft.current = null;
+      setError(String(error));
+      void refresh();
+    });
   }
   function applyView() {
     const e = engine.current;
     if (e) {
       e.mode = view.current.mode;
       e.sourceId = view.current.sourceId;
-      e.inspection = view.current.mode === "camera" ? defaultInspection() : { ...view.current.inspection };
+      e.inspection =
+        view.current.mode === "camera"
+          ? defaultInspection()
+          : { ...view.current.inspection };
       e.renderView();
     }
     setMode(view.current.mode);
@@ -351,14 +487,21 @@ function App() {
       epoch === presentation.current &&
       e === engine.current &&
       current.current?.codeRevision === s.codeRevision &&
+      current.current?.dependencyRevision === s.dependencyRevision &&
       current.current?.scene.id === s.scene.id;
-    const document = lensDraft.apply(s.scene);
-    if (document !== s.scene && !clock.current.playing)
+    const base = viewing(s.scene);
+    const document = lensDraft.apply(base, selectedCameraId(s.scene));
+    e.cameraId = selectedCameraId(s.scene);
+    if (document !== base && !clock.current.playing)
       await e.sampleCamera(t, document, canPresent, s.revision);
     else await e.sample(t, document, canPresent, s.revision);
     if (!canPresent()) return false;
     // An unsaved gesture must never masquerade as an acknowledged file revision.
-    displayed.current = { time: t, revision: document === s.scene ? s.revision : null };
+    displayed.current = {
+      time: t,
+      revision: document === base ? s.revision : null,
+      dependencyRevision: s.dependencyRevision ?? "",
+    };
     setSourceQuality(e.quality);
     setTime(clock.current.time);
     return true;
@@ -426,6 +569,7 @@ function App() {
     const s = state.scene;
     clock.current.ready = false;
     setReady(false);
+    setPreparing(true);
     request.current?.invalidate();
     let disposed = false;
     let candidate: SceneEngine | null = null;
@@ -436,11 +580,12 @@ function App() {
           scene: SceneDocument;
           revision: string;
           codeRevision: number;
+          compositions?: CompositionGraph;
         }>({ type: "prepare", sceneId: s.id });
         if (disposed || n !== generation.current) return;
         candidate = new SceneEngine(
-          prep.scene,
-          (t, revision, captureZoom, knownImages) =>
+          viewing(prep.scene),
+          (t, revision, captureZoom, knownImages, overrides) =>
             call({
               type: "frame",
               sceneId: s.id,
@@ -448,14 +593,33 @@ function App() {
               revision,
               captureZoom,
               knownImages,
+              overrides,
               includeContext: true,
             }),
         );
-        await candidate.init(prep.url);
+        candidate.cameraId = selectedCameraId(prep.scene);
+        await candidate.init(
+          prep.url,
+          prep.compositions,
+          (sceneId, time, revision, captureZoom, knownImages, overrides) =>
+            call({
+              type: "frame",
+              sceneId,
+              time,
+              revision,
+              captureZoom,
+              knownImages,
+              overrides,
+              includeContext: true,
+            }),
+        );
         const t = Math.min(clock.current.time, s.duration);
         candidate.mode = view.current.mode;
         candidate.sourceId = view.current.sourceId;
-        candidate.inspection = view.current.mode === "camera" ? defaultInspection() : { ...view.current.inspection };
+        candidate.inspection =
+          view.current.mode === "camera"
+            ? defaultInspection()
+            : { ...view.current.inspection };
         if (stage.current)
           candidate.setPreviewViewport(
             stage.current.clientWidth,
@@ -464,7 +628,7 @@ function App() {
           );
         await candidate.sample(
           t,
-          prep.scene,
+          viewing(prep.scene),
           () => !disposed && n === generation.current,
           prep.revision,
         );
@@ -477,7 +641,11 @@ function App() {
         engine.current = candidate;
         stage.current!.replaceChildren(candidate.canvas);
         old?.dispose();
-        displayed.current = { time: t, revision: prep.revision };
+        displayed.current = {
+          time: t,
+          revision: prep.revision,
+          dependencyRevision: state.dependencyRevision ?? "",
+        };
         candidate.canvas.addEventListener("webglcontextlost", (event) => {
           if (engine.current !== candidate) return;
           event.preventDefault();
@@ -493,9 +661,13 @@ function App() {
         setReady(true);
         setTime(t);
         setError(null);
-        request.current = new LatestFrame(async (t, valid) => {
-          await draw(t, valid);
-        }, failed, true);
+        request.current = new LatestFrame(
+          async (t, valid) => {
+            await draw(t, valid);
+          },
+          failed,
+          true,
+        );
         if (current.current?.revision !== prep.revision || lensDraft.has(s.id))
           request.current.request(t);
       } catch (e) {
@@ -504,6 +676,8 @@ function App() {
           if (String(e).includes("revision changed")) setRetry((x) => x + 1);
           else failed(e);
         }
+      } finally {
+        if (!disposed) setPreparing(false);
       }
     })();
     return () => {
@@ -512,6 +686,10 @@ function App() {
   }, [
     state?.scene.id,
     state?.codeRevision,
+    state?.dependencyRevision,
+    JSON.stringify(
+      (state?.scene.clips ?? []).map((clip) => [clip.id, clip.compositionId]),
+    ),
     JSON.stringify(state?.scene.sources),
     state?.scene.entry,
     state?.scene.size.width,
@@ -605,10 +783,17 @@ function App() {
             clock.current.pause();
             clock.current.seek(0);
             setPlaying(false);
+            view.current.cameraId = undefined;
+            setPreviewCameraId(undefined);
+            view.current.mode = "camera";
+            setMode("camera");
             view.current.selection = [];
             view.current.timeline = undefined;
             setSelectedTrackId(undefined);
-            const next = await call<ProjectState>({ type: "state", sceneId: c.sceneId });
+            const next = await call<ProjectState>({
+              type: "state",
+              sceneId: c.sceneId,
+            });
             current.current = next;
             setState(next);
           }
@@ -620,23 +805,39 @@ function App() {
               if (currentState?.error) throw new Error(currentState.error);
               if (c.revision && currentState?.revision !== c.revision) {
                 await refresh();
-                if (current.current?.revision !== c.revision) throw new Error("Expected revision is no longer current");
+                if (current.current?.revision !== c.revision)
+                  throw new Error("Expected revision is no longer current");
               }
-              if (clock.current.ready && displayed.current.revision === current.current?.revision &&
-                  (!c.sceneId || current.current?.scene.id === c.sceneId)) break;
-              if (performance.now() >= deadline) throw new Error("Viewer did not present the expected revision in time");
-              await new Promise(resolve => setTimeout(resolve, 25));
+              if (
+                clock.current.ready &&
+                displayed.current.revision === current.current?.revision &&
+                (!c.sceneId || current.current?.scene.id === c.sceneId)
+              )
+                break;
+              if (performance.now() >= deadline)
+                throw new Error(
+                  "Viewer did not present the expected revision in time",
+                );
+              await new Promise((resolve) => setTimeout(resolve, 25));
             }
           }
           if (c.type === "view") {
             if (c.mode !== "camera" && c.mode !== "source")
               throw new Error("View must be camera or source");
+            if (c.cameraId) await chooseCamera(c.cameraId);
             changeMode(c.mode, c.sourceId);
+            if (c.cameraId) await draw(clock.current.time);
           }
           if (["seek", "capture"].includes(c.type)) {
             if (c.type === "capture") await flushControlEdits();
-            if (c.type === "capture" && current.current && lensDraft.has(current.current.scene.id))
-              throw new Error("Finish the camera gesture before capturing its saved frame.");
+            if (
+              c.type === "capture" &&
+              current.current &&
+              lensDraft.has(current.current.scene.id)
+            )
+              throw new Error(
+                "Finish the camera gesture before capturing its saved frame.",
+              );
             presentation.current++;
             request.current?.invalidate();
             clock.current.pause();
@@ -677,11 +878,21 @@ function App() {
       element,
       () => ({
         ...view.current,
-        projection: current.current?.scene.camera?.projection,
-        inspection: view.current.mode === "camera" ? cameraNavigation(cameraDraft.current ?? current.current?.scene.camera) : view.current.inspection,
+        projection:
+          current.current && viewing(current.current.scene).camera?.projection,
+        inspection:
+          view.current.mode === "camera"
+            ? cameraNavigation(
+                cameraDraft.current ??
+                  (current.current && viewing(current.current.scene).camera),
+              )
+            : view.current.inspection,
       }),
       (next) => {
-        if (view.current.mode === "camera") { editCameraNavigation(next); return; }
+        if (view.current.mode === "camera") {
+          editCameraNavigation(next);
+          return;
+        }
         view.current.inspection = next;
         applyView();
         interacted.current = true;
@@ -724,6 +935,7 @@ function App() {
     return () => observer.disconnect();
   }, [state?.scene.size.width, state?.scene.size.height]);
   useEffect(() => {
+    if (home) return;
     const key = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.isComposing) return;
       const target = e.target as HTMLElement;
@@ -777,19 +989,26 @@ function App() {
       unbindTransport();
       window.removeEventListener("keydown", key);
     };
-  }, []);
+  }, [home]);
   async function render() {
     setExporting(true);
     try {
       await flushControlEdits();
       if (current.current && lensDraft.has(current.current.scene.id))
-        throw new Error("Finish the camera gesture before rendering its saved frames.");
+        throw new Error(
+          "Finish the camera gesture before rendering its saved frames.",
+        );
       await invoke({ type: "export", requestId: crypto.randomUUID() });
       await refresh();
-    } catch (error) { setError(String(error)); }
-    finally { setExporting(false); }
+    } catch (error) {
+      setError(String(error));
+    } finally {
+      setExporting(false);
+    }
   }
   const s = state?.scene;
+  const viewedCamera = s && viewing(s).camera;
+  const selectedClip = s?.clips?.find((clip) => clip.id === selectedTrackId);
   const activeJobs =
     state?.jobs.filter((j) =>
       ["preparing", "queued", "capturing", "encoding"].includes(j.phase),
@@ -802,247 +1021,425 @@ function App() {
           : "app"
       }
     >
-      <EditorPanels
-        header={
-          <>
-            {" "}
-            <header className="titlebar">
-              <div className="header-view-controls">
-                <span className="view-controls">
-                  <div aria-label="Canvas view" title="2D (1) · Camera (2)">
-                    <SegmentedControl
-                      label="Canvas view"
-                      value={mode}
-                      options={[
-                        { value: "source", label: "2D" },
-                        { value: "camera", label: "Camera" },
-                      ]}
-                      onChange={(next) => changeMode(next)}
-                    />
-                  </div>
-                </span>
-              </div>
-
-              {s && (
-                <SceneHeader
-                  scene={s}
-                  sourceQuality={sourceQuality}
-                  disabled={!!state?.history?.pendingEdit}
-                  onSetting={(key, value) =>
-                    queueControlEdit(() =>
-                      invoke({
-                        type: "set_setting",
-                        sceneId: s.id,
-                        key,
-                        value,
-                      }),
-                    )
-                  }
-                />
+      <div
+        className="editor-shell"
+        inert={home}
+        aria-hidden={home}
+        style={{ visibility: home ? "hidden" : undefined }}
+      >
+        <EditorPanels
+          left={{ ref: leftPanel, open: leftOpen, onOpen: setLeftOpen }}
+          right={{ ref: rightPanel, open: rightOpen, onOpen: setRightOpen }}
+          bottom={{
+            ref: timelinePanel,
+            open: timelineOpen,
+            onOpen: setTimelineOpen,
+          }}
+          project={
+            state && (
+              <ProjectBrowser
+                state={state}
+                onOpen={(id) => void openComposition(id)}
+                onAdd={(compositionId) =>
+                  void invoke({
+                    type: "add_clip",
+                    sceneId: s!.id,
+                    compositionId,
+                    start: clock.current.time,
+                  })
+                }
+                reportError={(e) => setError(String(e))}
+              />
+            )
+          }
+          header={
+            <>
+              {" "}
+              {compositionPath.length > 0 && (
+                <nav
+                  className="composition-breadcrumb"
+                  aria-label="Containing compositions"
+                >
+                  {compositionPath.map((id, index) => (
+                    <button
+                      key={id + index}
+                      className="ui-button"
+                      onClick={() => {
+                        setCompositionPath(compositionPath.slice(0, index));
+                        void invoke({ type: "open", id });
+                      }}
+                    >
+                      {state?.scenes.find((scene) => scene.id === id)?.name ??
+                        id}
+                      <Icon name="chevron" />
+                    </button>
+                  ))}
+                </nav>
               )}
-              <div className="header-actions">
-                <Button
-                  icon="undo"
-                  label="Undo"
-                  disabled={
-                    !state?.history?.canUndo || !!state.history.pendingEdit
-                  }
-                  onClick={() => void invoke({ type: "undo" })}
-                />
-                <Button
-                  icon="redo"
-                  label="Redo"
-                  disabled={
-                    !state?.history?.canRedo || !!state.history.pendingEdit
-                  }
-                  onClick={() => void invoke({ type: "redo" })}
-                />
-                {(exporting || activeJobs.length > 0) && (
+              <header className="titlebar">
+                <div className="header-view-controls">
+                  <Button
+                    icon="home"
+                    label="Home"
+                    onClick={() => {
+                      location.hash = "home";
+                    }}
+                  />
+                  <Button
+                    icon="sidebarLeft"
+                    label={leftOpen ? "Hide compositions" : "Show compositions"}
+                    expanded={leftOpen}
+                    controls="compositions"
+                    onClick={() =>
+                      toggleEditorPanel(leftPanel.current, "compositions")
+                    }
+                  />
+                </div>
+
+                {s && (
+                  <SceneHeader
+                    scene={s}
+                    sourceQuality={sourceQuality}
+                    disabled={!!state?.history?.pendingEdit}
+                    onSetting={(key, value) =>
+                      queueControlEdit(() =>
+                        invoke({
+                          type: "set_setting",
+                          sceneId: s.id,
+                          key,
+                          value,
+                        }),
+                      )
+                    }
+                  />
+                )}
+                <div className="header-actions">
+                  <Button
+                    icon="sidebarRight"
+                    label={rightOpen ? "Hide inspector" : "Show inspector"}
+                    expanded={rightOpen}
+                    controls="inspector"
+                    onClick={() =>
+                      toggleEditorPanel(rightPanel.current, "inspector")
+                    }
+                  />
+                  <Button
+                    icon="undo"
+                    label="Undo"
+                    disabled={
+                      !state?.history?.canUndo || !!state.history.pendingEdit
+                    }
+                    onClick={() => void invoke({ type: "undo" })}
+                  />
+                  <Button
+                    icon="redo"
+                    label="Redo"
+                    disabled={
+                      !state?.history?.canRedo || !!state.history.pendingEdit
+                    }
+                    onClick={() => void invoke({ type: "redo" })}
+                  />
+                  <ErrorIndicator
+                    error={error}
+                    onOpen={() => setShowJobs(false)}
+                    onRetry={() => {
+                      setError(null);
+                      void refresh(true).then(() => setRetry((x) => x + 1)).catch(() => {});
+                    }}
+                    onDismiss={() => setError(null)}
+                  />
+                  {(exporting || activeJobs.length > 0) && (
+                    <button
+                      className="ui-button icon-button"
+                      data-variant="ghost"
+                      data-size="icon"
+                      aria-label="Render progress"
+                      title="Render progress"
+                      aria-expanded={showJobs}
+                      aria-controls="render-jobs"
+                      onClick={(event) => {
+                        const bounds =
+                          event.currentTarget.getBoundingClientRect();
+                        setJobsPosition({
+                          top: bounds.bottom + 8,
+                          right: window.innerWidth - bounds.right,
+                        });
+                        setShowJobs((open) => !open);
+                      }}
+                    >
+                      <span className="spinner" />
+                    </button>
+                  )}
                   <button
-                    className="ui-button icon-button"
-                    data-variant="ghost"
-                    data-size="icon"
-                    aria-label="Render progress"
-                    title="Render progress"
-                    aria-expanded={showJobs}
-                    aria-controls="render-jobs"
-                    onClick={(event) => {
-                      const bounds =
-                        event.currentTarget.getBoundingClientRect();
-                      setJobsPosition({
-                        top: bounds.bottom + 8,
-                        right: window.innerWidth - bounds.right,
-                      });
-                      setShowJobs((open) => !open);
+                    className="ui-button render-button"
+                    data-size="composer"
+                    onClick={() => void render()}
+                    disabled={!ready || exporting}
+                  >
+                    <Icon name="share" size={16} />
+                    {exporting ? "Preparing…" : "Render"}
+                  </button>
+                </div>
+              </header>
+            </>
+          }
+          workspace={
+            <>
+              {" "}
+              <main className="workspace">
+                <div className="canvas-area">
+                  <div
+                    className="canvas-frame"
+                    style={{
+                      aspectRatio: s
+                        ? `${s.size.width}/${s.size.height}`
+                        : "1.6",
                     }}
                   >
-                    <span className="spinner" />
-                  </button>
-                )}
-                <button
-                  className="ui-button render-button"
-                  data-size="composer"
-                  onClick={() => void render()}
-                  disabled={!ready || exporting}
-                >
-                  {exporting ? "Preparing…" : "Render"}
-                </button>
-              </div>
-            </header>
-          </>
-        }
-        workspace={
-          <>
-            {" "}
-            <main className="workspace">
-              <div className="canvas-area">
-                <div
-                  className="canvas-frame"
-                  style={{
-                    aspectRatio: s ? `${s.size.width}/${s.size.height}` : "1.6",
-                  }}
-                >
-                  <div
-                    className="scene-stage"
-                    ref={stage}
-                    title={
-                      mode === "camera"
-                        ? "Drag to orbit · Shift-drag or right-drag to pan · Scroll to zoom"
-                        : "Drag to pan · Scroll to zoom"
+                    <div
+                      className="scene-stage"
+                      ref={stage}
+                      title={
+                        mode === "camera"
+                          ? "Drag to orbit · Shift-drag or right-drag to pan · Scroll to zoom"
+                          : "Drag to pan · Scroll to zoom"
+                      }
+                    />
+                    {preparing && (
+                      <div className="preparing">
+                        <span className="spinner" />
+                        Preparing composition
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="viewer-mode-toggle" title="2D (1) · Camera (2)">
+                  <SegmentedControl
+                    label="Canvas view"
+                    value={mode}
+                    options={
+                      s?.sources.length === 0
+                        ? [{ value: "camera", label: "Camera" }]
+                        : [
+                            { value: "source", label: "2D" },
+                            { value: "camera", label: "Camera" },
+                          ]
                     }
+                    onChange={(next) => changeMode(next)}
                   />
-                  {!ready && (
-                    <div className="preparing">
-                      <span className="spinner" />
-                      Preparing scene
+                </div>
+              </main>
+            </>
+          }
+          timeline={
+            <>
+              {" "}
+              <section
+                className="timeline"
+                onDragOver={(event) => {
+                  if (
+                    event.dataTransfer.types.includes(
+                      "application/x-tilt-composition",
+                    )
+                  )
+                    event.preventDefault();
+                }}
+                onDrop={(event) => {
+                  const compositionId = event.dataTransfer.getData(
+                    "application/x-tilt-composition",
+                  );
+                  if (compositionId && s) {
+                    event.preventDefault();
+                    void invoke({
+                      type: "add_clip",
+                      sceneId: s.id,
+                      compositionId,
+                      start: clock.current.time,
+                    });
+                  }
+                }}
+              >
+                <LiveTimeline
+                  collapsed={!timelineOpen}
+                  actions={
+                    <>
+                      <span
+                        className="timecode timeline-duration"
+                        aria-label="Duration"
+                        title="Duration"
+                      >
+                        {timecode(
+                          s?.duration || 8,
+                          s?.fps || DEFAULT_FRAME_RATE,
+                        )}
+                      </span>
+                      <Button
+                        icon={timelineOpen ? "chevron" : "expand"}
+                        label={
+                          timelineOpen ? "Collapse timeline" : "Expand timeline"
+                        }
+                        expanded={timelineOpen}
+                        controls="timeline"
+                        onClick={() =>
+                          toggleEditorPanel(timelinePanel.current, "timeline")
+                        }
+                      />
+                    </>
+                  }
+                  transport={
+                    <div className="transport-left">
+                      {timelineOpen && (
+                        <Button
+                          icon="back"
+                          label="Go to start"
+                          onClick={() => seek(0)}
+                        />
+                      )}
+                      <Button
+                        icon={playing ? "pause" : "play"}
+                        label={playing ? "Pause" : "Play"}
+                        onClick={toggle}
+                      />
+                      {timelineOpen && (
+                        <Button
+                          icon="next"
+                          label="Step forward"
+                          onClick={() =>
+                            seek(clock.current.time + 1 / clock.current.fps)
+                          }
+                        />
+                      )}
+                      <span className="timecode" title="Minutes:seconds:frames">
+                        <LiveTimecode
+                          playhead={playhead}
+                          fps={s?.fps || DEFAULT_FRAME_RATE}
+                          format={timecode}
+                        />
+                      </span>
                     </div>
+                  }
+                  key={s?.id}
+                  duration={s?.duration || 8}
+                  playhead={playhead}
+                  fps={s?.fps || DEFAULT_FRAME_RATE}
+                  tracks={[
+                    ...(s?.tracks || []),
+                    ...(s?.clips ?? []).map((clip) => ({
+                      ...clip,
+                      kind: "clip" as const,
+                      keys: [],
+                    })),
+                  ]}
+                  selectedId={selectedTrackId}
+                  onSelect={selectTrack}
+                  initialContext={
+                    savedView?.sceneId === s?.id
+                      ? savedView?.timeline
+                      : undefined
+                  }
+                  onContextChange={timelineContext}
+                  onTrackChange={async (track, timing) => {
+                    try {
+                      await flushControlEdits();
+                      await call({
+                        type: track.kind === "clip" ? "trim_clip" : "set_track",
+                        sceneId: s?.id,
+                        id: track.id,
+                        base: { start: track.start, end: track.end },
+                        timing,
+                      });
+                      await refresh();
+                    } catch (error) {
+                      setError(String(error));
+                    }
+                  }}
+                  onSeek={seek}
+                  onScrubEnd={() => activity.current?.endScrub()}
+                />
+              </section>
+            </>
+          }
+          inspector={
+            <>
+              {" "}
+              {s && (
+                <div className="composition-inspector">
+                  {selectedClip &&
+                    state?.compositions?.[selectedClip.compositionId] && (
+                      <ClipInspector
+                        key={selectedClip.id}
+                        clip={selectedClip}
+                        parent={s}
+                        source={state.compositions[selectedClip.compositionId]}
+                        playhead={playhead}
+                        onDeselect={() => selectTrack()}
+                        onOpen={() =>
+                          void openComposition(selectedClip.compositionId, true)
+                        }
+                        reportError={(e) => setError(String(e))}
+                      />
+                    )}
+                  {!selectedClip && mode === "camera" && (
+                    <CameraPicker
+                      document={s}
+                      selectedId={selectedCameraId(s)}
+                      onSelect={(id) => void chooseCamera(id)}
+                      reportError={(e) => setError(String(e))}
+                    />
+                  )}
+                  {!selectedClip && (
+                    <ParameterPanel
+                      key={s.id + ":" + selectedCameraId(s)}
+                      cameraId={selectedCameraId(s)}
+                      exposedParameters={s.exposedParameters}
+                      mode={mode}
+                      parameters={s.parameters}
+                      tracks={s.tracks}
+                      selectedId={selectedTrackId}
+                      duration={s.duration}
+                      fps={s.fps}
+                      onDeselect={() => selectTrack()}
+                      camera={viewedCamera}
+                      lensPreview={{ change: previewLens, settled: settleLens }}
+                      cameraGizmo={
+                        mode === "camera" ? (
+                          <CameraGizmo
+                            inspection={cameraNavigation(viewedCamera)}
+                            step={
+                              viewedCamera?.projection === "orthographic"
+                                ? 5
+                                : 1
+                            }
+                            disabled={!ready}
+                            onChange={editCameraNavigation}
+                            onInteractionEnd={finishCameraNavigation}
+                          />
+                        ) : null
+                      }
+                      sources={s.sources}
+                      sceneId={s.id}
+                      reportError={(e) => setError(String(e))}
+                      disabled={state?.history?.pendingEdit?.kind === "agent"}
+                    />
                   )}
                 </div>
-              </div>
-              <div className="canvas-status">
-                <span>
-                  {state?.history?.pendingEdit?.kind === "agent"
-                    ? state.history.pendingEdit.label + " · editing"
-                    : playing
-                      ? `${fps} fps preview`
-                      : ""}
-                </span>
-              </div>
-            </main>
-          </>
-        }
-        timeline={
-          <>
-            {" "}
-            <section className="timeline">
-              <div className="transport">
-                <div className="transport-left">
-                  <Button
-                    icon="back"
-                    label="Go to start"
-                    onClick={() => seek(0)}
-                  />
-                  <Button
-                    icon={playing ? "pause" : "play"}
-                    label={playing ? "Pause" : "Play"}
-                    onClick={toggle}
-                  />
-                  <Button
-                    icon="next"
-                    label="Step forward"
-                    onClick={() =>
-                      seek(clock.current.time + 1 / clock.current.fps)
-                    }
-                  />
-                  <span className="timecode">
-                    <LiveTimecode playhead={playhead} fps={s?.fps || DEFAULT_FRAME_RATE} format={timecode} />
-                  </span>
-                  <span className="total-time">
-                    / {timecode(s?.duration || 0, s?.fps || DEFAULT_FRAME_RATE)}
-                  </span>
-                </div>
-              </div>
-              <LiveTimeline
-                key={s?.id}
-                duration={s?.duration || 8}
-                playhead={playhead}
-                fps={s?.fps || DEFAULT_FRAME_RATE}
-                tracks={s?.tracks || []}
-                selectedId={selectedTrackId}
-                onSelect={selectTrack}
-                initialContext={savedView?.sceneId === s?.id ? savedView?.timeline : undefined}
-                onContextChange={timelineContext}
-                onTrackChange={async (track, timing) => {
-                  try {
-                    await flushControlEdits();
-                    await call({ type: "set_track", id: track.id, base: { start: track.start, end: track.end }, timing });
-                    await refresh();
-                  } catch (error) { setError(String(error)); }
-                }}
-                onSeek={seek}
-                onScrubEnd={() => activity.current?.endScrub()}
-              />
-            </section>
-          </>
-        }
-        inspector={
-          <>
-            {" "}
-            {s && (
-              <ParameterPanel
-                mode={mode}
-                parameters={s.parameters}
-                tracks={s.tracks}
-                selectedId={selectedTrackId}
-                duration={s.duration}
-                fps={s.fps}
-                onDeselect={() => selectTrack()}
-                camera={s.camera}
-                lensPreview={{ change: previewLens, settled: settleLens }}
-                cameraGizmo={
-                  mode === "camera" ? (
-                    <CameraGizmo
-                      inspection={cameraNavigation(s.camera)}
-                      step={s.camera?.projection === "orthographic" ? 5 : 1}
-                      disabled={!ready}
-                      onChange={editCameraNavigation}
-                      onInteractionEnd={finishCameraNavigation}
-                    />
-                  ) : null
-                }
-                sources={s.sources}
-                sceneId={s.id}
-                reportError={(e) => setError(String(e))}
-                disabled={state?.history?.pendingEdit?.kind === "agent"}
-              />
-            )}
-          </>
-        }
-      />
-      {error && (
-        <div className="error-toast" role="alert">
-          <div>
-            {error
-              .replace(
-                "Error invoking remote method 'tilt:command': Error: ",
-                "",
-              )
-              .slice(0, 500)}
-          </div>
-          <button
-            onClick={() => {
-              setError(null);
-              setRetry((x) => x + 1);
-            }}
-          >
-            Retry
-          </button>
-          <Button
-            icon="close"
-            label="Dismiss error"
-            onClick={() => setError(null)}
-          />
-        </div>
+              )}
+            </>
+          }
+        />
+      </div>
+      {home && (
+        <ProjectHome
+          current={state?.project}
+          onReturn={() => {
+            location.hash = "";
+            requestAnimationFrame(() =>
+              document
+                .querySelector<HTMLButtonElement>('button[aria-label="Home"]')
+                ?.focus(),
+            );
+          }}
+        />
       )}
       {showJobs && (
         <div
@@ -1133,13 +1530,40 @@ function App() {
 }
 if (new URLSearchParams(location.search).has("render")) {
   const setup = async () => {
-    const prep = await call<{ scene: SceneDocument; url: string }>({
+    const prep = await call<{
+      scene: SceneDocument;
+      url: string;
+      compositions?: CompositionGraph;
+    }>({
       type: "prepare",
     });
-    const e = new SceneEngine(prep.scene, (t, _revision, _zoom, knownImages) =>
-      call({ type: "frame", time: t, includeContext: true, knownImages }),
+    const e = new SceneEngine(
+      cameraDocument(prep.scene),
+      (t, _revision, _zoom, knownImages, overrides) =>
+        call({
+          type: "frame",
+          time: t,
+          includeContext: true,
+          knownImages,
+          overrides,
+        }),
     );
-    await e.init(prep.url);
+    e.cameraId = prep.scene.defaultCameraId ?? "main";
+    await e.init(
+      prep.url,
+      prep.compositions,
+      (sceneId, time, revision, captureZoom, knownImages, overrides) =>
+        call({
+          type: "frame",
+          sceneId,
+          time,
+          revision,
+          captureZoom,
+          knownImages,
+          overrides,
+          includeContext: true,
+        }),
+    );
     document.body.replaceChildren(e.canvas);
     window.__tiltRender = async (time) => {
       await e.sample(time);

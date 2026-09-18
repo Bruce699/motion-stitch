@@ -20,7 +20,15 @@ import {
 } from "../core/schema";
 import { frameForReceiver } from "../core/frame-transfer";
 import { sampleSources } from "./frame-preparation";
-import { compileScene as compileSceneModule } from "./scene-session";
+import { sourceFingerprint } from "./source-fingerprint";
+import {
+  validateCompositionGraph,
+  type CompositionGraph,
+} from "../core/compositions";
+import {
+  SceneSession,
+  compileScene as compileSceneModule,
+} from "./scene-session";
 import { validatePackagedSource } from "./source-host";
 import { PNGEncoder, mp4EncodingArguments } from "./png-encoder";
 import { startRuntime } from "./runtime-host";
@@ -64,6 +72,37 @@ const jobs = new Jobs(
 let editor: BrowserWindow | undefined;
 let origin = "";
 
+const frozenCompositions = new Map<
+  string,
+  { scene: SceneDocument; directory: string; module: string }
+>();
+const frozenSessions = new Map<string, SceneSession>();
+async function frozenSession(id: string) {
+  let session = frozenSessions.get(id);
+  if (!session) {
+    const entry = frozenCompositions.get(id);
+    if (!entry) throw new Error("Composition was not frozen: " + id);
+    session = new SceneSession(
+      {
+        root,
+        id,
+        scene: entry.scene,
+        revision: "frozen",
+        codeRevision: 0,
+        error: null,
+        previewDirectory: async () => entry.directory,
+      },
+      origin,
+      {
+        compile: async () => entry.module,
+        fingerprint: sourceFingerprint,
+        createSource: (...args) => new WebSource(...args),
+      },
+    );
+    frozenSessions.set(id, session);
+  }
+  return session;
+}
 let frozen: SceneDocument | undefined;
 let frozenDirectory = "";
 let sources: WebSource[] = [];
@@ -163,13 +202,25 @@ async function command(c: Command): Promise<any> {
   if (!c || typeof c.type !== "string")
     throw new Error("Command requires a type");
   if (c.type === "state") return state();
-  if (c.type === "prepare") return prepare();
+  if (c.type === "prepare") {
+    if (!frozenCompositions.size) return prepare();
+    const compositions: CompositionGraph = {};
+    for (const id of frozenCompositions.keys())
+      compositions[id] = await (await frozenSession(id)).prepare();
+    return { ...compositions[scene().id], compositions };
+  }
   if (c.type === "frame") {
     const time = Number(c.time);
-    if (!Number.isFinite(time) || time < 0 || time > scene().duration)
+    const document =
+      frozenCompositions.get(String(c.sceneId ?? scene().id))?.scene ?? scene();
+    if (!Number.isFinite(time) || time < 0 || time > document.duration)
       throw new Error("Invalid time");
     currentFrame = time;
-    const result = await sample(time);
+    const result = frozenCompositions.size
+      ? await (
+          await frozenSession(document.id)
+        ).frame(time, "frozen", Number(c.captureZoom ?? 1), c.overrides as any)
+      : await sample(time);
     return c.includeContext
       ? frameForReceiver(result, c.knownImages)
       : result.images;
@@ -363,6 +414,38 @@ async function runWorker() {
       path.join(dir, "scene.js"),
       path.join(moduleDir, job.id + ".js"),
     );
+    try {
+      const ids = await readJSON<string[]>(path.join(dir, "compositions.json"));
+      frozenCompositions.set(frozen.id, {
+        scene: frozen,
+        directory: frozenDirectory,
+        module: path.join(moduleDir, job.id + ".js"),
+      });
+      for (const id of ids) {
+        if (!/^[a-z0-9-]+$/.test(id))
+          throw new Error("Invalid frozen composition ID");
+        const directory = path.join(dir, "compositions", id, "scene");
+        const scene = SceneSchema.parse(
+          await readJSON(path.join(directory, "scene.json")),
+        );
+        const module = path.join(moduleDir, job.id + "-" + id + ".js");
+        await fs.copyFile(
+          path.join(dir, "compositions", id, "scene.js"),
+          module,
+        );
+        for (const spec of scene.sources)
+          await validatePackagedSource(spec, directory);
+        frozenCompositions.set(id, { scene, directory, module });
+      }
+      validateCompositionGraph(
+        frozen.id,
+        Object.fromEntries(
+          [...frozenCompositions].map(([id, entry]) => [id, entry.scene]),
+        ),
+      );
+    } catch (error: any) {
+      if (error.code !== "ENOENT") throw error;
+    }
     await setupServer();
     editor = new BrowserWindow({
       ...windowOptions(false),
@@ -527,6 +610,10 @@ async function runWorker() {
     clearInterval(cancelEncoder);
     await encoder?.abort();
     await Promise.all(sources.map((s) => s.dispose()));
+    await Promise.all(
+      [...frozenSessions.values()].map((session) => session.dispose()),
+    );
+    frozenSessions.clear();
     editor?.destroy();
     app.quit();
   }

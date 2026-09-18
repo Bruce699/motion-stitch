@@ -1,0 +1,652 @@
+{
+  "version": 1,
+  "id": "order-1401-becoming-20a10226",
+  "name": "Order 1401 — Becoming",
+  "duration": 15,
+  "fps": 60,
+  "size": {
+    "width": 1920,
+    "height": 1080
+  },
+  "background": "#e9e7e3",
+  "entry": "scene.ts",
+  "capture": {
+    "density": 4
+  },
+  "camera": {
+    "projection": "perspective",
+    "preset": "front",
+    "side": "right",
+    "depthOfField": {
+      "enabled": true,
+      "focusPlane": 0,
+      "blur": 0.34
+    }
+  },
+  "sources": [
+    {
+      "id": "ui",
+      "kind": "web",
+      "entry": "admin-order/index.html",
+      "width": 1440,
+      "height": 1000,
+      "sampling": "static",
+      "layers": [
+        {
+          "id": "note",
+          "selector": "[data-tilt-id=\"note\"]",
+          "padding": 24
+        },
+        {
+          "id": "fulfillment-0",
+          "selector": "[data-tilt-id=\"fulfillment-0\"]",
+          "padding": 24
+        },
+        {
+          "id": "customer",
+          "selector": "[data-tilt-id=\"customer\"]",
+          "padding": 24
+        },
+        {
+          "id": "payment",
+          "selector": "[data-tilt-id=\"payment\"]",
+          "padding": 24
+        },
+        {
+          "id": "payment-surface",
+          "selector": "[data-tilt-id=\"payment-surface\"]",
+          "padding": 24
+        },
+        {
+          "id": "risk",
+          "selector": "[data-tilt-id=\"risk\"]",
+          "padding": 24
+        },
+        {
+          "id": "timeline",
+          "selector": "[data-tilt-id=\"timeline\"]",
+          "padding": 24
+        },
+        {
+          "id": "order-title",
+          "selector": "h1",
+          "padding": 12
+        },
+        {
+          "id": "payment-rule",
+          "selector": "[data-tilt-id=\"payment-surface\"] hr",
+          "padding": 4
+        },
+        {
+          "id": "payment-row-1",
+          "selector": "[data-tilt-id=\"payment-surface\"] > div > div:nth-child(1)",
+          "padding": 8
+        },
+        {
+          "id": "payment-row-2",
+          "selector": "[data-tilt-id=\"payment-surface\"] > div > div:nth-child(2)",
+          "padding": 8
+        },
+        {
+          "id": "payment-row-3",
+          "selector": "[data-tilt-id=\"payment-surface\"] > div > div:nth-child(3)",
+          "padding": 8
+        },
+        {
+          "id": "total",
+          "selector": "[data-tilt-id=\"payment-surface\"] > div > div:last-child",
+          "padding": 8
+        },
+        {
+          "id": "shop-cash",
+          "selector": "img[alt=\"Shop Cash\"]",
+          "padding": 8
+        },
+        {
+          "id": "mastercard",
+          "selector": "img[alt=\"Mastercard\"]",
+          "padding": 8
+        },
+        {
+          "id": "fulfillment-rule",
+          "selector": "[data-tilt-id=\"fulfillment-0\"] hr",
+          "padding": 4
+        },
+        {
+          "id": "product-row",
+          "selector": "[data-tilt-id=\"fulfillment-0\"] tbody > tr:first-child",
+          "padding": 10
+        },
+        {
+          "id": "product-image",
+          "selector": "[data-tilt-id=\"fulfillment-0\"] tbody > tr:first-child img",
+          "padding": 8
+        },
+        {
+          "id": "fulfillment-badge",
+          "selector": "[data-tilt-id=\"fulfillment-0-surface\"] > div > div:first-child > :first-child",
+          "padding": 8
+        },
+        {
+          "id": "second-product-row",
+          "selector": "[data-tilt-id=\"fulfillment-0\"] tbody > tr:nth-child(2)",
+          "padding": 10
+        },
+        {
+          "id": "second-product-image",
+          "selector": "[data-tilt-id=\"fulfillment-0\"] tbody > tr:nth-child(2) img",
+          "padding": 10
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "macro": {
+      "type": "number",
+      "label": "Detail distance",
+      "value": 1,
+      "min": 0.7,
+      "max": 1.5,
+      "step": 0.01,
+      "group": "Camera"
+    },
+    "framing": {
+      "type": "number",
+      "label": "Final framing",
+      "value": 1,
+      "min": 0.8,
+      "max": 1.4,
+      "step": 0.01,
+      "group": "Camera"
+    },
+    "lift": {
+      "type": "number",
+      "label": "Layer separation",
+      "value": 0.8,
+      "min": 0,
+      "max": 1.5,
+      "step": 0.01,
+      "group": "Construction"
+    },
+    "delight": {
+      "type": "number",
+      "label": "Small overshoot",
+      "value": 0.55,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "group": "Construction"
+    }
+  },
+  "tracks": [
+    {
+      "id": "camera",
+      "label": "Continuous camera",
+      "start": 0,
+      "end": 15,
+      "color": "#047efe",
+      "kind": "group",
+      "parameterKeys": [
+        "macro",
+        "framing"
+      ],
+      "targets": []
+    },
+    {
+      "id": "camera-details",
+      "label": "Payment details",
+      "start": 0,
+      "end": 4.1,
+      "color": "#047efe",
+      "kind": "animation",
+      "parentId": "camera",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
+    },
+    {
+      "id": "camera-product",
+      "label": "Product pass",
+      "start": 4.1,
+      "end": 7.3,
+      "color": "#047efe",
+      "kind": "animation",
+      "parentId": "camera",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
+    },
+    {
+      "id": "camera-title",
+      "label": "Paper and title",
+      "start": 7.3,
+      "end": 10,
+      "color": "#047efe",
+      "kind": "animation",
+      "parentId": "camera",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
+    },
+    {
+      "id": "camera-reveal",
+      "label": "Full reveal",
+      "start": 10,
+      "end": 15,
+      "color": "#047efe",
+      "kind": "animation",
+      "parentId": "camera",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "camera"
+        }
+      ]
+    },
+    {
+      "id": "assembly",
+      "label": "Layers settle",
+      "start": 0,
+      "end": 13.4,
+      "color": "#00bca6",
+      "kind": "group",
+      "parameterKeys": [
+        "lift"
+      ],
+      "targets": []
+    },
+    {
+      "id": "settle-payment",
+      "label": "payment",
+      "start": 0,
+      "end": 10.8,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "assembly",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment"
+        }
+      ]
+    },
+    {
+      "id": "settle-payment-surface",
+      "label": "payment surface",
+      "start": 0,
+      "end": 5,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "assembly",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-surface"
+        }
+      ]
+    },
+    {
+      "id": "settle-fulfillment-0",
+      "label": "Fulfillment",
+      "start": 3.5,
+      "end": 9,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "assembly",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "fulfillment-0"
+        }
+      ]
+    },
+    {
+      "id": "settle-note",
+      "label": "note",
+      "start": 6.8,
+      "end": 10.8,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "assembly",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "note"
+        }
+      ]
+    },
+    {
+      "id": "settle-order-title",
+      "label": "order title",
+      "start": 7.9,
+      "end": 11.2,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "assembly",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "order-title"
+        }
+      ]
+    },
+    {
+      "id": "settle-customer",
+      "label": "customer",
+      "start": 8,
+      "end": 12,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "assembly",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "customer"
+        }
+      ]
+    },
+    {
+      "id": "settle-risk",
+      "label": "risk",
+      "start": 8.7,
+      "end": 12.5,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "assembly",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "risk"
+        }
+      ]
+    },
+    {
+      "id": "settle-timeline",
+      "label": "timeline",
+      "start": 9.4,
+      "end": 13,
+      "color": "#00bca6",
+      "kind": "animation",
+      "parentId": "assembly",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "timeline"
+        }
+      ]
+    },
+    {
+      "id": "details",
+      "label": "Interface builds",
+      "start": 0,
+      "end": 9,
+      "color": "#ff6600",
+      "kind": "group",
+      "parameterKeys": [
+        "delight"
+      ],
+      "targets": []
+    },
+    {
+      "id": "build-payment-rule",
+      "label": "Payment line",
+      "start": 0,
+      "end": 1.5,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-rule"
+        }
+      ]
+    },
+    {
+      "id": "build-payment-row-1",
+      "label": "Subtotal",
+      "start": 0.35,
+      "end": 1.35,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-row-1"
+        }
+      ]
+    },
+    {
+      "id": "build-payment-row-2",
+      "label": "Discount",
+      "start": 0.8,
+      "end": 1.8,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-row-2"
+        }
+      ]
+    },
+    {
+      "id": "build-payment-row-3",
+      "label": "Shipping",
+      "start": 1.25,
+      "end": 2.25,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "payment-row-3"
+        }
+      ]
+    },
+    {
+      "id": "build-total",
+      "label": "Total lands",
+      "start": 1.8,
+      "end": 2.9,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "total"
+        }
+      ]
+    },
+    {
+      "id": "build-shop-cash",
+      "label": "Shop Cash",
+      "start": 2.45,
+      "end": 3.25,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "shop-cash"
+        }
+      ]
+    },
+    {
+      "id": "build-mastercard",
+      "label": "Mastercard",
+      "start": 2.75,
+      "end": 3.65,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "mastercard"
+        }
+      ]
+    },
+    {
+      "id": "build-fulfillment-rule",
+      "label": "Fulfillment line",
+      "start": 5.5,
+      "end": 6.4,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "fulfillment-rule"
+        }
+      ]
+    },
+    {
+      "id": "build-product-row",
+      "label": "Product row",
+      "start": 5.9,
+      "end": 6.7,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "product-row"
+        }
+      ]
+    },
+    {
+      "id": "build-product-image",
+      "label": "Product image",
+      "start": 6.15,
+      "end": 6.85,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "product-image"
+        }
+      ]
+    },
+    {
+      "id": "build-fulfillment-badge",
+      "label": "Status lands",
+      "start": 6.7,
+      "end": 7.45,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "fulfillment-badge"
+        }
+      ]
+    },
+    {
+      "id": "frame-arrives",
+      "label": "Screen resolves",
+      "kind": "animation",
+      "start": 10,
+      "end": 13,
+      "color": "#8c51fe",
+      "targets": [
+        {
+          "kind": "object",
+          "id": "screen"
+        }
+      ],
+      "parameterKeys": []
+    },
+    {
+      "id": "build-second-product-row",
+      "label": "Second product",
+      "start": 6.25,
+      "end": 7.05,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "second-product-row"
+        }
+      ]
+    },
+    {
+      "id": "build-second-product-image",
+      "label": "Second image",
+      "start": 6.5,
+      "end": 7.2,
+      "color": "#ff6600",
+      "kind": "animation",
+      "parentId": "details",
+      "parameterKeys": [],
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "ui",
+          "layerId": "second-product-image"
+        }
+      ]
+    }
+  ]
+}

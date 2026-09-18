@@ -1,0 +1,1626 @@
+{
+  "method": {
+    "reviewed_windows_6fps": 40,
+    "reviewed_windows_30fps": 12,
+    "window_seconds_6fps": 4,
+    "window_seconds_30fps": 0.8,
+    "sample": "Purposive audit of candidate content boundaries and instructive internal bridges, not a census or random sample. 40 exploratory windows include duplicates and no-event windows. Each row is one selected transition; not every shot change inside windows is counted.",
+    "timing": "Edited-reel seconds; 6 fps boundaries approximate within 0.167 s; fine 30 fps within 0.034 s. Continuous bridges have a representative semantic handoff time, not an objective edit frame.",
+    "scope": "Reconciled against final analysis/scenes.json. Content chapter changes vs same-subject proof continuations; approximate scene edges permit +/-1 second. Events record semantic_scene_ids; proximity alone does not count an internal shot as another chapter boundary.",
+    "observation": "Mechanisms describe visible pixels, not original project hierarchy, shader technology, camera data or claimed creator intent. Easing/velocity are qualitative here.",
+    "artificial_splices_excluded": {
+      "airbnb-design-system": [
+        46.733333
+      ],
+      "apple-ios-7": [
+        43.333333,
+        208.866667,
+        215.333333,
+        244.5
+      ],
+      "apple-liquid-glass": [
+        18.7187,
+        30.296933,
+        34.8348,
+        61.9619,
+        75.208467,
+        91.758333,
+        106.473033,
+        113.0129,
+        137.3372,
+        145.311833,
+        147.113633
+      ]
+    },
+    "sound": "Visual-only analysis; no music-beat or narration synchronization claims.",
+    "scope_reconciliation_changed_ids": [
+      "TR-05",
+      "TR-06",
+      "TR-08",
+      "TR-14",
+      "TR-34",
+      "TR-42"
+    ]
+  },
+  "counts": {
+    "total": 42,
+    "by_scope": {
+      "between_semantic_scenes": 26,
+      "within_semantic_scene": 16
+    },
+    "by_kind_all_scopes": {
+      "direct_cut": 13,
+      "anchor_continuation": 9,
+      "scale_bridge": 6,
+      "matched_cut": 3,
+      "directional_replace": 3,
+      "overlap_reveal": 2,
+      "motif_reset": 3,
+      "white_reset": 2,
+      "ui_state_bridge": 1
+    },
+    "by_film": {
+      "airbnb-design-system": {
+        "between_semantic_scenes": 7,
+        "within_semantic_scene": 7
+      },
+      "apple-yosemite": {
+        "between_semantic_scenes": 7,
+        "within_semantic_scene": 1
+      },
+      "openai-brand-2025": {
+        "between_semantic_scenes": 7,
+        "within_semantic_scene": 2
+      },
+      "apple-ios-7": {
+        "between_semantic_scenes": 4
+      },
+      "apple-liquid-glass": {
+        "within_semantic_scene": 6,
+        "between_semantic_scenes": 1
+      }
+    },
+    "between_scene_kind_counts": {
+      "direct_cut": 4,
+      "matched_cut": 3,
+      "anchor_continuation": 4,
+      "directional_replace": 3,
+      "overlap_reveal": 2,
+      "scale_bridge": 4,
+      "motif_reset": 3,
+      "white_reset": 2,
+      "ui_state_bridge": 1
+    }
+  },
+  "principle_occurrence_counts": [
+    {
+      "principle": "persistent-anchor",
+      "all_scopes_events": 21,
+      "all_scopes_films": 5,
+      "between_scene_events": 14,
+      "between_scene_films": 5,
+      "event_ids": [
+        "TR-02",
+        "TR-03",
+        "TR-04",
+        "TR-05",
+        "TR-08",
+        "TR-10",
+        "TR-11",
+        "TR-12",
+        "TR-16",
+        "TR-17",
+        "TR-19",
+        "TR-23",
+        "TR-25",
+        "TR-26",
+        "TR-27",
+        "TR-28",
+        "TR-29",
+        "TR-34",
+        "TR-35",
+        "TR-37",
+        "TR-40"
+      ]
+    },
+    {
+      "principle": "graphic-match",
+      "all_scopes_events": 12,
+      "all_scopes_films": 4,
+      "between_scene_events": 11,
+      "between_scene_films": 4,
+      "event_ids": [
+        "TR-04",
+        "TR-10",
+        "TR-16",
+        "TR-18",
+        "TR-19",
+        "TR-23",
+        "TR-25",
+        "TR-26",
+        "TR-27",
+        "TR-28",
+        "TR-29",
+        "TR-40"
+      ]
+    },
+    {
+      "principle": "construction-application-link",
+      "all_scopes_events": 11,
+      "all_scopes_films": 5,
+      "between_scene_events": 5,
+      "between_scene_films": 4,
+      "event_ids": [
+        "TR-03",
+        "TR-05",
+        "TR-08",
+        "TR-10",
+        "TR-11",
+        "TR-17",
+        "TR-29",
+        "TR-30",
+        "TR-34",
+        "TR-37",
+        "TR-40"
+      ]
+    },
+    {
+      "principle": "entry-exit-overlap",
+      "all_scopes_events": 10,
+      "all_scopes_films": 3,
+      "between_scene_events": 7,
+      "between_scene_films": 3,
+      "event_ids": [
+        "TR-03",
+        "TR-05",
+        "TR-08",
+        "TR-09",
+        "TR-11",
+        "TR-12",
+        "TR-19",
+        "TR-20",
+        "TR-21",
+        "TR-30"
+      ]
+    },
+    {
+      "principle": "neutral-field-continuity",
+      "all_scopes_events": 7,
+      "all_scopes_films": 4,
+      "between_scene_events": 5,
+      "between_scene_films": 3,
+      "event_ids": [
+        "TR-01",
+        "TR-06",
+        "TR-07",
+        "TR-15",
+        "TR-24",
+        "TR-32",
+        "TR-33"
+      ]
+    },
+    {
+      "principle": "detail-to-context",
+      "all_scopes_events": 7,
+      "all_scopes_films": 4,
+      "between_scene_events": 4,
+      "between_scene_films": 3,
+      "event_ids": [
+        "TR-03",
+        "TR-04",
+        "TR-15",
+        "TR-17",
+        "TR-34",
+        "TR-35",
+        "TR-37"
+      ]
+    },
+    {
+      "principle": "directional-handoff",
+      "all_scopes_events": 4,
+      "all_scopes_films": 3,
+      "between_scene_events": 4,
+      "between_scene_films": 3,
+      "event_ids": [
+        "TR-09",
+        "TR-20",
+        "TR-21",
+        "TR-40"
+      ]
+    },
+    {
+      "principle": "buildup-before-cut",
+      "all_scopes_events": 6,
+      "all_scopes_films": 3,
+      "between_scene_events": 5,
+      "between_scene_films": 2,
+      "event_ids": [
+        "TR-04",
+        "TR-13",
+        "TR-15",
+        "TR-18",
+        "TR-19",
+        "TR-42"
+      ]
+    },
+    {
+      "principle": "direct-cut",
+      "all_scopes_events": 13,
+      "all_scopes_films": 4,
+      "between_scene_events": 4,
+      "between_scene_films": 2,
+      "event_ids": [
+        "TR-01",
+        "TR-06",
+        "TR-07",
+        "TR-13",
+        "TR-14",
+        "TR-22",
+        "TR-24",
+        "TR-31",
+        "TR-36",
+        "TR-38",
+        "TR-39",
+        "TR-41",
+        "TR-42"
+      ]
+    },
+    {
+      "principle": "quiet-handoff",
+      "all_scopes_events": 4,
+      "all_scopes_films": 2,
+      "between_scene_events": 4,
+      "between_scene_films": 2,
+      "event_ids": [
+        "TR-25",
+        "TR-27",
+        "TR-32",
+        "TR-33"
+      ]
+    },
+    {
+      "principle": "aperture-bridge",
+      "all_scopes_events": 3,
+      "all_scopes_films": 2,
+      "between_scene_events": 3,
+      "between_scene_films": 2,
+      "event_ids": [
+        "TR-16",
+        "TR-18",
+        "TR-28"
+      ]
+    },
+    {
+      "principle": "density-release",
+      "all_scopes_events": 4,
+      "all_scopes_films": 4,
+      "between_scene_events": 2,
+      "between_scene_films": 2,
+      "event_ids": [
+        "TR-14",
+        "TR-22",
+        "TR-24",
+        "TR-32"
+      ]
+    },
+    {
+      "principle": "chapter-punctuation",
+      "all_scopes_events": 5,
+      "all_scopes_films": 1,
+      "between_scene_events": 5,
+      "between_scene_films": 1,
+      "event_ids": [
+        "TR-23",
+        "TR-25",
+        "TR-26",
+        "TR-27",
+        "TR-28"
+      ]
+    },
+    {
+      "principle": "centered-stage",
+      "all_scopes_events": 3,
+      "all_scopes_films": 2,
+      "between_scene_events": 1,
+      "between_scene_films": 1,
+      "event_ids": [
+        "TR-06",
+        "TR-07",
+        "TR-31"
+      ]
+    },
+    {
+      "principle": "quiet-ending",
+      "all_scopes_events": 3,
+      "all_scopes_films": 3,
+      "between_scene_events": 1,
+      "between_scene_films": 1,
+      "event_ids": [
+        "TR-14",
+        "TR-22",
+        "TR-31"
+      ]
+    },
+    {
+      "principle": "construction-language-continuity",
+      "all_scopes_events": 1,
+      "all_scopes_films": 1,
+      "between_scene_events": 1,
+      "between_scene_films": 1,
+      "event_ids": [
+        "TR-33"
+      ]
+    },
+    {
+      "principle": "interaction-as-transition",
+      "all_scopes_events": 1,
+      "all_scopes_films": 1,
+      "between_scene_events": 1,
+      "between_scene_films": 1,
+      "event_ids": [
+        "TR-35"
+      ]
+    },
+    {
+      "principle": "material-continuity",
+      "all_scopes_events": 5,
+      "all_scopes_films": 1,
+      "between_scene_events": 0,
+      "between_scene_films": 0,
+      "event_ids": [
+        "TR-36",
+        "TR-38",
+        "TR-39",
+        "TR-41",
+        "TR-42"
+      ]
+    },
+    {
+      "principle": "geometry-continuity",
+      "all_scopes_events": 1,
+      "all_scopes_films": 1,
+      "between_scene_events": 0,
+      "between_scene_films": 0,
+      "event_ids": [
+        "TR-02"
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "id": "TR-01",
+      "film": "airbnb-design-system",
+      "start": 13.5,
+      "end": 14.2,
+      "from_subject": "Responsive screen layout",
+      "to_subject": "Experience category chips",
+      "boundary_seconds": 13.83,
+      "scope": "between_semantic_scenes",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "neutral-field-continuity"
+      ],
+      "description": "The small screen array is replaced by a close crop of category chips. White stays constant; there is no sustained element morph.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-011.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 13.83,
+      "semantic_scene_ids": [
+        "AB-02",
+        "AB-03"
+      ],
+      "semantic_boundary_seconds": 14,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-02",
+      "film": "airbnb-design-system",
+      "start": 16.5,
+      "end": 17.33,
+      "from_subject": "Category chip spacing",
+      "to_subject": "Button spacing",
+      "boundary_seconds": 16.83,
+      "scope": "within_semantic_scene",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "geometry-continuity"
+      ],
+      "description": "Architecture chip loses its text and becomes a Next button while the alignment guides remain. Component geometry remains the same content study.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-016.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 16.83,
+      "semantic_scene_ids": [
+        "AB-03"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-03",
+      "film": "airbnb-design-system",
+      "start": 18.83,
+      "end": 19.83,
+      "from_subject": "Corner radius construction",
+      "to_subject": "Next button in profile interface",
+      "boundary_seconds": 19.17,
+      "scope": "within_semantic_scene",
+      "kind": "scale_bridge",
+      "principles": [
+        "persistent-anchor",
+        "detail-to-context",
+        "construction-application-link",
+        "entry-exit-overlap"
+      ],
+      "description": "The enlarged black corner resolves into the Next button as the view pulls back and surrounding profile content fades into place.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-016.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 19.17,
+      "semantic_scene_ids": [
+        "AB-03"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-04",
+      "film": "airbnb-design-system",
+      "start": 21.4,
+      "end": 22.17,
+      "from_subject": "Profile interface and navigation",
+      "to_subject": "Line icon construction",
+      "boundary_seconds": 21.833,
+      "scope": "between_semantic_scenes",
+      "kind": "matched_cut",
+      "principles": [
+        "persistent-anchor",
+        "graphic-match",
+        "buildup-before-cut",
+        "detail-to-context"
+      ],
+      "description": "The view accelerates toward the small back arrow. A hard change to yellow preserves the enlarged white arrow near the same screen location; the grid then expands around it.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-019.jpg",
+        "references/motion/local/analysis/transitions/airbnb-design-system-fine-21.80.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 21.833,
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-04"
+      ],
+      "semantic_boundary_seconds": 22,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-05",
+      "film": "airbnb-design-system",
+      "start": 26.33,
+      "end": 28.0,
+      "from_subject": "Suitcase outline",
+      "to_subject": "Dimensional leather suitcase",
+      "boundary_seconds": 26.5,
+      "scope": "between_semantic_scenes",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "construction-application-link",
+        "entry-exit-overlap"
+      ],
+      "description": "Leather strips fold around the still-visible white suitcase outline; the grid disappears and the background lightens. The object persists, but the final semantic map treats the move from line icons to the suitcase material study as a chapter change.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-025.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 26.5,
+      "semantic_scene_ids": [
+        "AB-04",
+        "AB-05"
+      ],
+      "semantic_boundary_seconds": 26.5,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "AB-04 to AB-05: the final map separates line-icon construction from the suitcase material chapter, despite the persistent subject."
+    },
+    {
+      "id": "TR-06",
+      "film": "airbnb-design-system",
+      "start": 30.9,
+      "end": 31.5,
+      "from_subject": "Leather suitcase exemplar",
+      "to_subject": "Pink gem exemplar",
+      "boundary_seconds": 31.167,
+      "scope": "between_semantic_scenes",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "neutral-field-continuity",
+        "centered-stage"
+      ],
+      "description": "The centered suitcase is directly replaced by a centered rotating gem. Similar occupancy and white field unify different objects without a morph. The final map treats this as the move from a dedicated suitcase craft study to the wider dimensional icon family.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-031.jpg",
+        "references/motion/local/analysis/transitions/airbnb-design-system-fine-31.10.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 31.167,
+      "semantic_scene_ids": [
+        "AB-05",
+        "AB-06"
+      ],
+      "semantic_boundary_seconds": 32,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "AB-05 to AB-06: the suitcase-to-gem cut begins the broader dimensional family; the map places this approximate boundary at 32s."
+    },
+    {
+      "id": "TR-07",
+      "film": "airbnb-design-system",
+      "start": 32.17,
+      "end": 32.83,
+      "from_subject": "Pink gem exemplar",
+      "to_subject": "Furry paw exemplar",
+      "boundary_seconds": 32.5,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "neutral-field-continuity",
+        "centered-stage"
+      ],
+      "description": "Gem is replaced by a paw with no persistent identifiable part. Both remain examples in the dimensional icon/material chapter.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-031.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 32.5,
+      "semantic_scene_ids": [
+        "AB-06"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "Internal AB-06 exemplar cut. The nearby approximate 32s chapter boundary is assigned to the earlier suitcase-to-gem handoff TR-06, not counted twice."
+    },
+    {
+      "id": "TR-08",
+      "film": "airbnb-design-system",
+      "start": 36.0,
+      "end": 36.83,
+      "from_subject": "Levels of icon detail",
+      "to_subject": "Listing editor application",
+      "boundary_seconds": 36.33,
+      "scope": "within_semantic_scene",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "construction-application-link",
+        "entry-exit-overlap"
+      ],
+      "description": "The chosen bed/room illustration remains while the other detail levels fade and the listing editor appears around it. The abstract system lands in use.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-035.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 36.33,
+      "semantic_scene_ids": [
+        "AB-06"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "Internal AB-06: the listing editor resolves the dimensional icon/detail-level proof in the final semantic map."
+    },
+    {
+      "id": "TR-09",
+      "film": "airbnb-design-system",
+      "start": 37.67,
+      "end": 38.67,
+      "from_subject": "Listing editor",
+      "to_subject": "Color palette",
+      "boundary_seconds": 38.0,
+      "scope": "between_semantic_scenes",
+      "kind": "directional_replace",
+      "principles": [
+        "entry-exit-overlap",
+        "directional-handoff"
+      ],
+      "description": "Large swatch bands rise from the bottom while the UI remains visible above, then expand into a multi-column palette. New subject occupies the frame before the previous one is fully gone.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-035.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 38.0,
+      "semantic_scene_ids": [
+        "AB-06",
+        "AB-07"
+      ],
+      "semantic_boundary_seconds": 38,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-10",
+      "film": "airbnb-design-system",
+      "start": 41.33,
+      "end": 42.5,
+      "from_subject": "Color token columns",
+      "to_subject": "Colored avatars",
+      "boundary_seconds": 42.17,
+      "scope": "within_semantic_scene",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "graphic-match",
+        "construction-application-link"
+      ],
+      "description": "Palette columns fade and compress toward their pale base colors, where initialed avatar circles appear in corresponding horizontal positions.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-040.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 42.17,
+      "semantic_scene_ids": [
+        "AB-07"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-11",
+      "film": "airbnb-design-system",
+      "start": 42.67,
+      "end": 43.5,
+      "from_subject": "Colored avatars",
+      "to_subject": "Messages interface",
+      "boundary_seconds": 43.17,
+      "scope": "within_semantic_scene",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "construction-application-link",
+        "entry-exit-overlap"
+      ],
+      "description": "Avatar circles separate from a row and travel into different conversation rows as Messages content appears behind them.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-040.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 43.17,
+      "semantic_scene_ids": [
+        "AB-07"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-12",
+      "film": "airbnb-design-system",
+      "start": 43.83,
+      "end": 44.67,
+      "from_subject": "Messages application",
+      "to_subject": "Surface/transparency material study",
+      "boundary_seconds": 44.33,
+      "scope": "between_semantic_scenes",
+      "kind": "overlap_reveal",
+      "principles": [
+        "entry-exit-overlap",
+        "persistent-anchor"
+      ],
+      "description": "Material swatches arrive over the still-visible Messages UI; ocean imagery then replaces the app beneath them. The surface cards bridge the background change.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-043.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 44.33,
+      "semantic_scene_ids": [
+        "AB-07",
+        "AB-08"
+      ],
+      "semantic_boundary_seconds": 45,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-13",
+      "film": "airbnb-design-system",
+      "start": 53.7,
+      "end": 54.33,
+      "from_subject": "Product component collage",
+      "to_subject": "Dimensional system recap",
+      "boundary_seconds": 53.983,
+      "scope": "between_semantic_scenes",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "buildup-before-cut"
+      ],
+      "description": "The UI collage begins a faster upward translation before a hard cut to already-moving colored 3D panels. The cut changes subject and viewpoint; it is not a demonstrated one-to-one panel morph.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-051.jpg",
+        "references/motion/local/analysis/transitions/airbnb-design-system-fine-53.95.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 55.983,
+      "semantic_scene_ids": [
+        "AB-10",
+        "AB-11"
+      ],
+      "semantic_boundary_seconds": 54,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-14",
+      "film": "airbnb-design-system",
+      "start": 56.2,
+      "end": 57.0,
+      "from_subject": "Dimensional recap",
+      "to_subject": "Closing Airbnb symbol",
+      "boundary_seconds": 56.633,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "quiet-ending",
+        "density-release"
+      ],
+      "description": "Moving dense panels cut to a small black symbol on empty white, followed by a hold. The reduction in density supplies the ending.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/airbnb-design-system-054.jpg",
+        "references/motion/local/analysis/transitions/airbnb-design-system-fine-56.60.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 58.633,
+      "semantic_scene_ids": [
+        "AB-11"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "Internal AB-11: recap and closing mark form one final semantic scene."
+    },
+    {
+      "id": "TR-15",
+      "film": "apple-yosemite",
+      "start": 13.83,
+      "end": 15.5,
+      "from_subject": "Enlarged interface symbols",
+      "to_subject": "Menu bar typography",
+      "boundary_seconds": 14.17,
+      "scope": "between_semantic_scenes",
+      "kind": "scale_bridge",
+      "principles": [
+        "detail-to-context",
+        "buildup-before-cut",
+        "neutral-field-continuity"
+      ],
+      "description": "Share symbol shrinks; an oversized Apple mark rapidly resolves to the menu-bar Apple, then horizontal travel exposes Finder lettering. Scale supplies continuity across subjects without showing every intermediate state.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-yosemite-012.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 14.17,
+      "semantic_scene_ids": [
+        "YO-02",
+        "YO-03"
+      ],
+      "semantic_boundary_seconds": 15,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-16",
+      "film": "apple-yosemite",
+      "start": 19.67,
+      "end": 20.5,
+      "from_subject": "Menu typography",
+      "to_subject": "Finder app icon",
+      "boundary_seconds": 20.0,
+      "scope": "between_semantic_scenes",
+      "kind": "scale_bridge",
+      "principles": [
+        "graphic-match",
+        "persistent-anchor",
+        "aperture-bridge"
+      ],
+      "description": "The round o in Go enlarges into a circular aperture; a Finder icon is revealed through the opening. The shared circle motivates the passage from type to icons.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-yosemite-018.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 20.0,
+      "semantic_scene_ids": [
+        "YO-03",
+        "YO-04"
+      ],
+      "semantic_boundary_seconds": 21,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "YO-03 to YO-04: the fine-reviewed typography-to-Finder bridge begins the Dock chapter before its approximate 21s map boundary."
+    },
+    {
+      "id": "TR-17",
+      "film": "apple-yosemite",
+      "start": 20.33,
+      "end": 21.17,
+      "from_subject": "Isolated Finder icon",
+      "to_subject": "Finder in Dock",
+      "boundary_seconds": 20.67,
+      "scope": "within_semantic_scene",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "construction-application-link",
+        "detail-to-context"
+      ],
+      "description": "Finder stays recognizable and nearly anchored as the Dock and wallpaper appear behind it; the frame then pulls wider. Same icon chapter expands into context.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-yosemite-018.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 20.67,
+      "semantic_scene_ids": [
+        "YO-04"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "Internal YO-04: Finder gains Dock context as the preceding TR-16 handoff completes; not a second semantic boundary."
+    },
+    {
+      "id": "TR-18",
+      "film": "apple-yosemite",
+      "start": 34.6,
+      "end": 35.17,
+      "from_subject": "Dock icon family",
+      "to_subject": "Finder sidebar translucency",
+      "boundary_seconds": 34.867,
+      "scope": "between_semantic_scenes",
+      "kind": "scale_bridge",
+      "principles": [
+        "graphic-match",
+        "aperture-bridge",
+        "buildup-before-cut"
+      ],
+      "description": "Fast push toward the circular gear center reveals an orange field and white AirDrop glyph inside the gear opening. At 30 fps this is a brief circular bridge, not a plain unrelated cut.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-yosemite-033.jpg",
+        "references/motion/local/analysis/transitions/apple-yosemite-fine-34.80.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 34.867,
+      "semantic_scene_ids": [
+        "YO-04",
+        "YO-05"
+      ],
+      "semantic_boundary_seconds": 35,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-19",
+      "film": "apple-yosemite",
+      "start": 42.33,
+      "end": 43.5,
+      "from_subject": "Finder file browser",
+      "to_subject": "Messages",
+      "boundary_seconds": 43.08,
+      "scope": "between_semantic_scenes",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "graphic-match",
+        "entry-exit-overlap",
+        "buildup-before-cut"
+      ],
+      "description": "The view targets a purple file-tag dot; surrounding Finder content moves away as a portrait grows inside that same circle and Messages rows emerge. Shared circular geometry makes the app change legible.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-yosemite-040.jpg",
+        "references/motion/local/analysis/transitions/apple-yosemite-fine-42.95.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 43.08,
+      "semantic_scene_ids": [
+        "YO-05",
+        "YO-06"
+      ],
+      "semantic_boundary_seconds": 44,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-20",
+      "film": "apple-yosemite",
+      "start": 46.5,
+      "end": 47.67,
+      "from_subject": "Messages",
+      "to_subject": "Today widgets",
+      "boundary_seconds": 47.0,
+      "scope": "between_semantic_scenes",
+      "kind": "directional_replace",
+      "principles": [
+        "directional-handoff",
+        "entry-exit-overlap"
+      ],
+      "description": "The view travels right: Messages leaves to the left while the dark widget surface enters from the right, followed by calendar event construction.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-yosemite-046.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 47.0,
+      "semantic_scene_ids": [
+        "YO-06",
+        "YO-07"
+      ],
+      "semantic_boundary_seconds": 47,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-21",
+      "film": "apple-yosemite",
+      "start": 50.5,
+      "end": 52.0,
+      "from_subject": "Today widgets",
+      "to_subject": "Desktop window montage",
+      "boundary_seconds": 50.83,
+      "scope": "between_semantic_scenes",
+      "kind": "directional_replace",
+      "principles": [
+        "directional-handoff",
+        "entry-exit-overlap"
+      ],
+      "description": "Widget panel slides right, revealing wallpaper and Calendar on the left. The motion hands back to the desktop and additional windows accumulate.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-yosemite-050.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 50.83,
+      "semantic_scene_ids": [
+        "YO-07",
+        "YO-08"
+      ],
+      "semantic_boundary_seconds": 51,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-22",
+      "film": "apple-yosemite",
+      "start": 56.7,
+      "end": 57.47,
+      "from_subject": "MacBook application montage",
+      "to_subject": "Yosemite end card",
+      "boundary_seconds": 57.1,
+      "scope": "between_semantic_scenes",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "quiet-ending",
+        "density-release"
+      ],
+      "description": "After the laptop pullback settles, a single cut replaces it with the centered OS X mark and name. No logo morph or decorative transition is needed.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-yosemite-055.jpg",
+        "references/motion/local/analysis/transitions/apple-yosemite-fine-57.10.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 57.1,
+      "semantic_scene_ids": [
+        "YO-08",
+        "YO-09"
+      ],
+      "semantic_boundary_seconds": 58,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-23",
+      "film": "openai-brand-2025",
+      "start": 17.33,
+      "end": 18.83,
+      "from_subject": "Dot behavior",
+      "to_subject": "Typography construction",
+      "boundary_seconds": 17.83,
+      "scope": "between_semantic_scenes",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "chapter-punctuation",
+        "graphic-match"
+      ],
+      "description": "A small black dot recenters; a circle and guides then build where it was. The circle becomes the basis for enlarged glyph construction. Dot recurrence marks a new subject.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-017.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "semantic_scene_ids": [
+        "OA-02",
+        "OA-03"
+      ],
+      "semantic_boundary_seconds": 18,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-24",
+      "film": "openai-brand-2025",
+      "start": 30.33,
+      "end": 30.83,
+      "from_subject": "Character repertoire",
+      "to_subject": "Lowercase a construction",
+      "boundary_seconds": 30.67,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "neutral-field-continuity",
+        "density-release"
+      ],
+      "description": "The dense character inventory is replaced by a large a with a construction diagram. It is an internal typography cut, not a new semantic chapter.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-027.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "semantic_scene_ids": [
+        "OA-04"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-25",
+      "film": "openai-brand-2025",
+      "start": 46.67,
+      "end": 49.17,
+      "from_subject": "Model-name typography",
+      "to_subject": "Wordmark construction",
+      "boundary_seconds": 47.17,
+      "scope": "between_semantic_scenes",
+      "kind": "motif_reset",
+      "principles": [
+        "persistent-anchor",
+        "chapter-punctuation",
+        "graphic-match",
+        "quiet-handoff"
+      ],
+      "description": "Centered o1 becomes the black dot; the dot holds, then its fill fades to a circle outline and control points arrive. The recurring circle bridges subjects with a pause.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-046.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "semantic_scene_ids": [
+        "OA-05",
+        "OA-06"
+      ],
+      "semantic_boundary_seconds": 48,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-26",
+      "film": "openai-brand-2025",
+      "start": 57.17,
+      "end": 59.67,
+      "from_subject": "Product wordmarks",
+      "to_subject": "Blossom construction",
+      "boundary_seconds": 57.5,
+      "scope": "between_semantic_scenes",
+      "kind": "motif_reset",
+      "principles": [
+        "persistent-anchor",
+        "chapter-punctuation",
+        "graphic-match"
+      ],
+      "description": "Research is replaced by the centered dot, then an outline circle multiplies and arranges into Blossom geometry. The circle restarts the visual grammar.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-056.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "semantic_scene_ids": [
+        "OA-06",
+        "OA-07"
+      ],
+      "semantic_boundary_seconds": 58,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-27",
+      "film": "openai-brand-2025",
+      "start": 64.17,
+      "end": 65.83,
+      "from_subject": "Blossom logo",
+      "to_subject": "Color system",
+      "boundary_seconds": 64.433,
+      "scope": "between_semantic_scenes",
+      "kind": "matched_cut",
+      "principles": [
+        "persistent-anchor",
+        "chapter-punctuation",
+        "graphic-match",
+        "quiet-handoff"
+      ],
+      "description": "Blossom shrinks, then switches to a similarly placed black dot at the reviewed frame boundary. The dot holds before expanding into the color specimen. This is a scale-prepared match cut, not a fully traced logo-to-dot morph.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-063.jpg",
+        "references/motion/local/analysis/transitions/openai-brand-2025-fine-64.40.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "semantic_scene_ids": [
+        "OA-07",
+        "OA-08"
+      ],
+      "semantic_boundary_seconds": 65,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-28",
+      "film": "openai-brand-2025",
+      "start": 76.17,
+      "end": 78.0,
+      "from_subject": "Color dots",
+      "to_subject": "Photography",
+      "boundary_seconds": 77.17,
+      "scope": "between_semantic_scenes",
+      "kind": "motif_reset",
+      "principles": [
+        "persistent-anchor",
+        "chapter-punctuation",
+        "graphic-match",
+        "aperture-bridge"
+      ],
+      "description": "Scattered colored dots collect into a black center dot. That circle becomes a circular sky-image aperture: geometry persists while content changes from color tokens to imagery.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-075.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "semantic_scene_ids": [
+        "OA-08",
+        "OA-09"
+      ],
+      "semantic_boundary_seconds": 78,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-29",
+      "film": "openai-brand-2025",
+      "start": 91.5,
+      "end": 92.33,
+      "from_subject": "Photography with brand",
+      "to_subject": "Clear-space and layout rules",
+      "boundary_seconds": 91.967,
+      "scope": "between_semantic_scenes",
+      "kind": "matched_cut",
+      "principles": [
+        "persistent-anchor",
+        "graphic-match",
+        "construction-application-link"
+      ],
+      "description": "A centered white OpenAI wordmark on landscape switches to a black wordmark at effectively the same position on white, with clear-space guides. The word itself joins application and specification.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-090.jpg",
+        "references/motion/local/analysis/transitions/openai-brand-2025-fine-91.90.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "semantic_scene_ids": [
+        "OA-09",
+        "OA-10"
+      ],
+      "semantic_boundary_seconds": 92,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-30",
+      "film": "openai-brand-2025",
+      "start": 97.33,
+      "end": 98.83,
+      "from_subject": "Layout grid",
+      "to_subject": "Brand applications",
+      "boundary_seconds": 97.67,
+      "scope": "between_semantic_scenes",
+      "kind": "overlap_reveal",
+      "principles": [
+        "entry-exit-overlap",
+        "construction-application-link"
+      ],
+      "description": "Finished editorial covers arrive one by one over the still-visible grid. The underlying rule becomes a collage of results without first clearing the frame.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-097.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "semantic_scene_ids": [
+        "OA-10",
+        "OA-11"
+      ],
+      "semantic_boundary_seconds": 98,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-31",
+      "film": "openai-brand-2025",
+      "start": 106.5,
+      "end": 107.33,
+      "from_subject": "Closing Blossom",
+      "to_subject": "Closing OpenAI wordmark",
+      "boundary_seconds": 106.83,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "centered-stage",
+        "quiet-ending"
+      ],
+      "description": "The held Blossom is replaced by typing letters, rapidly resolving to OpenAI in the same central stage. This is the closing brand lockup sequence, not a new topic.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/openai-brand-2025-105.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "semantic_scene_ids": [
+        "OA-12"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-32",
+      "film": "apple-ios-7",
+      "start": 77.5,
+      "end": 79.83,
+      "from_subject": "Music UI details",
+      "to_subject": "Mail typography",
+      "boundary_seconds": 78.33,
+      "scope": "between_semantic_scenes",
+      "kind": "white_reset",
+      "principles": [
+        "neutral-field-continuity",
+        "quiet-handoff",
+        "density-release"
+      ],
+      "description": "Music details fade away to a brief almost-empty white field; the small Mail interface then builds from header and text to image. Empty space visibly separates subjects.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-ios-7-077.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 104.163,
+      "semantic_scene_ids": [
+        "I7-06",
+        "I7-07"
+      ],
+      "semantic_boundary_seconds": 79,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-33",
+      "film": "apple-ios-7",
+      "start": 83.33,
+      "end": 85.5,
+      "from_subject": "Typography specifications",
+      "to_subject": "Icon construction",
+      "boundary_seconds": 84.0,
+      "scope": "between_semantic_scenes",
+      "kind": "white_reset",
+      "principles": [
+        "neutral-field-continuity",
+        "quiet-handoff",
+        "construction-language-continuity"
+      ],
+      "description": "Text progressively disappears while red annotation lines clear. A faint icon outline/grid assembles on white, then the Safari mark fills in. Shared construction language bridges type and icons.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-ios-7-082.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 109.833,
+      "semantic_scene_ids": [
+        "I7-07",
+        "I7-08"
+      ],
+      "semantic_boundary_seconds": 84,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-34",
+      "film": "apple-ios-7",
+      "start": 98.67,
+      "end": 100.5,
+      "from_subject": "Photos icon construction",
+      "to_subject": "Home screen and layers",
+      "boundary_seconds": 99.17,
+      "scope": "between_semantic_scenes",
+      "kind": "scale_bridge",
+      "principles": [
+        "persistent-anchor",
+        "detail-to-context",
+        "construction-application-link"
+      ],
+      "description": "The completed Photos symbol persists as its rounded tile, neighboring icons, wallpaper, and finally the phone frame appear during pullback. The final semantic map assigns this to the handoff from icon construction to interface layering.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-ios-7-097.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 125.003,
+      "semantic_scene_ids": [
+        "I7-08",
+        "I7-09"
+      ],
+      "semantic_boundary_seconds": 100,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "I7-08 to I7-09: the final map resolves the prior grouping ambiguity by starting the interface-layering chapter at approximately 100s."
+    },
+    {
+      "id": "TR-35",
+      "film": "apple-ios-7",
+      "start": 114.33,
+      "end": 115.33,
+      "from_subject": "Home screen/layering",
+      "to_subject": "Message composition",
+      "boundary_seconds": 114.83,
+      "scope": "between_semantic_scenes",
+      "kind": "ui_state_bridge",
+      "principles": [
+        "persistent-anchor",
+        "interaction-as-transition",
+        "detail-to-context"
+      ],
+      "description": "The phone frame stays fixed. Home-screen icons expand out and a compose surface grows from within the screen to fill it. The real OS launch convention carries the film into the next app subject.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-ios-7-112.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 140.663,
+      "semantic_scene_ids": [
+        "I7-09",
+        "I7-10"
+      ],
+      "semantic_boundary_seconds": 115,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-36",
+      "film": "apple-liquid-glass",
+      "start": 11.33,
+      "end": 12.0,
+      "from_subject": "Photos construction close-up",
+      "to_subject": "Safari construction close-up",
+      "boundary_seconds": 11.67,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "material-continuity"
+      ],
+      "description": "A direct cut exchanges colored petal forms for the compass needle and blue disc. Both are shots in the icon-construction content scene.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-liquid-glass-011.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 63.689,
+      "semantic_scene_ids": [
+        "LG-02"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-37",
+      "film": "apple-liquid-glass",
+      "start": 12.67,
+      "end": 14.5,
+      "from_subject": "Exploded Safari icon",
+      "to_subject": "Dock in iPhone",
+      "boundary_seconds": 13.5,
+      "scope": "within_semantic_scene",
+      "kind": "scale_bridge",
+      "principles": [
+        "persistent-anchor",
+        "detail-to-context",
+        "construction-application-link"
+      ],
+      "description": "Needle/disc/ticks settle into a readable Safari icon as the camera pulls away, levels, and reveals the surrounding Dock and phone. Construction returns to actual use.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-liquid-glass-011.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 65.519,
+      "semantic_scene_ids": [
+        "LG-02"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-38",
+      "film": "apple-liquid-glass",
+      "start": 20.4,
+      "end": 21.17,
+      "from_subject": "Mac material example",
+      "to_subject": "Watch material example",
+      "boundary_seconds": 20.833,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "material-continuity"
+      ],
+      "description": "Mac Dock cuts directly to an already-framed Watch screen. This is a device-example montage within the shared material chapter; no inter-device morph is visible.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-liquid-glass-020.jpg",
+        "references/motion/local/analysis/transitions/apple-liquid-glass-fine-20.80.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 78.557,
+      "semantic_scene_ids": [
+        "LG-03"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-39",
+      "film": "apple-liquid-glass",
+      "start": 22.4,
+      "end": 23.17,
+      "from_subject": "Watch material example",
+      "to_subject": "TV material example",
+      "boundary_seconds": 22.9,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "material-continuity"
+      ],
+      "description": "Watch activity card cuts directly to TV tiles, which already have lateral motion. Repeated material treatment unifies the shots; there is no exact shared position match.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-liquid-glass-020.jpg",
+        "references/motion/local/analysis/transitions/apple-liquid-glass-fine-22.80.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 80.624,
+      "semantic_scene_ids": [
+        "LG-03"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-40",
+      "film": "apple-liquid-glass",
+      "start": 43.17,
+      "end": 45.83,
+      "from_subject": "Liquid Glass title/material identity",
+      "to_subject": "Interactive slider",
+      "boundary_seconds": 44.33,
+      "scope": "between_semantic_scenes",
+      "kind": "anchor_continuation",
+      "principles": [
+        "persistent-anchor",
+        "graphic-match",
+        "construction-application-link",
+        "directional-handoff"
+      ],
+      "description": "The view moves close and low across the glass title. The dot of the i reads as a rounded glass control; a blue track extends beneath it and the composition resolves into a slider. The same material becomes behavior.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-liquid-glass-042.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 113.799,
+      "semantic_scene_ids": [
+        "LG-05",
+        "LG-06"
+      ],
+      "semantic_boundary_seconds": 44,
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-41",
+      "film": "apple-liquid-glass",
+      "start": 55.9,
+      "end": 56.67,
+      "from_subject": "Music lock-screen controls",
+      "to_subject": "Glass clock on lock screen",
+      "boundary_seconds": 56.267,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "material-continuity"
+      ],
+      "description": "A direct cut shifts from lower music controls to the top of another lock-screen example; the incoming clock shot moves upward into view. Different examples share the glass-behavior argument.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-liquid-glass-055.jpg",
+        "references/motion/local/analysis/transitions/apple-liquid-glass-fine-56.30.jpg"
+      ],
+      "timing_precision_seconds": 0.034,
+      "source_boundary_seconds": 125.736,
+      "semantic_scene_ids": [
+        "LG-07"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s."
+    },
+    {
+      "id": "TR-42",
+      "film": "apple-liquid-glass",
+      "start": 129.33,
+      "end": 130.17,
+      "from_subject": "Personalized home-screen variants",
+      "to_subject": "Clear icon construction",
+      "boundary_seconds": 129.67,
+      "scope": "within_semantic_scene",
+      "kind": "direct_cut",
+      "principles": [
+        "direct-cut",
+        "buildup-before-cut",
+        "material-continuity"
+      ],
+      "description": "The group of customized phones begins tilting upward before a hard cut to close glass icon parts in perspective. Both sides move, but the frames do not prove a literal object transformation.",
+      "confidence": "high",
+      "artificial_splice": false,
+      "evidence": [
+        "references/motion/local/analysis/transitions/apple-liquid-glass-129.jpg"
+      ],
+      "timing_precision_seconds": 0.167,
+      "source_boundary_seconds": 228.469,
+      "semantic_scene_ids": [
+        "LG-14"
+      ],
+      "scope_basis": "Final scenes.json content grouping; approximate semantic boundaries allow +/-1s.",
+      "scope_note": "Internal LG-14: personalized phone variants and glass icon/device-family examples remain one breadth chapter."
+    }
+  ]
+}

@@ -18,6 +18,7 @@ function CameraAngle({
   field,
   settings,
   sceneId,
+  cameraId,
   reportError,
   lensPreview,
 }: {
@@ -32,6 +33,7 @@ function CameraAngle({
     | "blur";
   settings: CameraSettings;
   sceneId: string;
+  cameraId?: string;
   reportError: (error: unknown) => void;
   lensPreview?: LensPreview;
 }) {
@@ -88,6 +90,7 @@ function CameraAngle({
               await call({
                 type: "set_camera",
                 sceneId,
+                cameraId,
                 patch: { depthOfField: { [field]: edit.value } },
               });
           } finally {
@@ -191,6 +194,7 @@ function CameraAngle({
                 await call({
                   type: "set_camera",
                   sceneId,
+                  cameraId,
                   patch: { depthOfField: { [field]: next } },
                 });
               } finally {
@@ -204,6 +208,7 @@ function CameraAngle({
           call({
             type: "set_camera",
             sceneId,
+            cameraId,
             patch: isDepth
               ? { depthOfField: { [field]: next } }
               : { [field]: next },
@@ -218,12 +223,14 @@ export function CameraControls({
   camera,
   sources,
   sceneId,
+  cameraId,
   reportError,
   lensPreview,
 }: {
   camera?: CameraSettings;
   sources: SceneDocument["sources"];
   sceneId: string;
+  cameraId?: string;
   reportError: (error: unknown) => void;
   lensPreview?: LensPreview;
 }) {
@@ -235,7 +242,7 @@ export function CameraControls({
     },
   ) => {
     void queueControlEdit(() =>
-      call({ type: "set_camera", sceneId, patch }),
+      call({ type: "set_camera", sceneId, cameraId, patch }),
     ).catch(reportError);
   };
   return (
@@ -259,6 +266,7 @@ export function CameraControls({
               field={field}
               settings={settings}
               sceneId={sceneId}
+              cameraId={cameraId}
               reportError={reportError}
             />
           ))}
@@ -289,6 +297,7 @@ export function CameraControls({
             field={field}
             settings={settings}
             sceneId={sceneId}
+            cameraId={cameraId}
             reportError={reportError}
             lensPreview={lensPreview}
           />

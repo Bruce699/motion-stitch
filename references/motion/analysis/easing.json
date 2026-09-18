@@ -1,0 +1,700 @@
+{
+  "schema_version": 1,
+  "scope": {
+    "films": 3,
+    "visual_events": 5,
+    "coordinate_tracks": 6,
+    "exhaustive": false,
+    "selection": "Intentionally selected stable, measurable graphic features; not a prevalence sample."
+  },
+  "interpretation": "Screen-space curve approximations only. No recovered author easing, exact CSS, spring settings, world-space camera, or implementation claims.",
+  "rmse_unit": "Fraction of selected interval displacement; multiply by100 for percentage.",
+  "fitted_bezier_order": [
+    "x1",
+    "y1",
+    "x2",
+    "y2"
+  ],
+  "fixed_curves": {
+    "linear": "t",
+    "smoothstep": "3t^2-2t^3",
+    "sine_in_out": "(1-cos(pi*t))/2",
+    "cubic_in_out": "4t^3 if t<0.5 else 1-(-2t+2)^3/2",
+    "quadratic_out": "1-(1-t)^2",
+    "cubic_out": "1-(1-t)^3",
+    "quintic_out": "1-(1-t)^5"
+  },
+  "pixel_validation": "All six validation sheets and six raw/normalized plots were visually inspected. No chosen interval crosses a local edit splice.",
+  "tracks": [
+    {
+      "id": "openai-intro-circle",
+      "film": "openai-brand-2025",
+      "fps": 30.0,
+      "fit_a": 191,
+      "fit_b": 210,
+      "duration_seconds": 0.6333333333333333,
+      "samples": 20,
+      "raw_start_pixels": 324.0,
+      "raw_end_pixels": 360.0,
+      "fixed_curve_rmse": {
+        "linear": 0.3142696805273545,
+        "smoothstep": 0.3384719172739799,
+        "sine_in_out": 0.3412350306434962,
+        "cubic_in_out": 0.37132442304360647,
+        "quadratic_out": 0.15371975417625683,
+        "cubic_out": 0.07283649126936247,
+        "quintic_out": 0.05731879256011612
+      },
+      "best_fixed": "quintic_out",
+      "fitted_bezier_control_points": [
+        0.035838042535202765,
+        0.05397017547354045,
+        2.089725572082925e-16,
+        0.9854428895136896
+      ],
+      "fitted_bezier_rmse": 0.014749385576529925,
+      "endpoint_sensitivity": [
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": -1,
+          "best_fixed": "quintic_out",
+          "bezier_rmse": 0.034922355289316157,
+          "bezier_control_points": [
+            3.4163421466489636e-11,
+            0.9999999996684741,
+            1.385302144674861e-10,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": 1,
+          "best_fixed": "quintic_out",
+          "bezier_rmse": 0.039014149955924095,
+          "bezier_control_points": [
+            5.036778657487047e-12,
+            0.9999999999604249,
+            1.92078868829935e-11,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": -1,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.021450190043669486,
+          "bezier_control_points": [
+            0.12033979775845348,
+            0.5978639295315994,
+            0.43824730302441745,
+            0.9581164025409696
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 1,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.020971488245645986,
+          "bezier_control_points": [
+            0.1791391207044987,
+            0.9999999999999979,
+            0.8034258725406612,
+            0.9999999999999962
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 0,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.02092796499159331,
+          "bezier_control_points": [
+            0.15905352040863485,
+            0.8543128853192954,
+            0.6793562992396377,
+            0.9999952701855906
+          ]
+        }
+      ],
+      "csv": "../local/analysis/easing/openai-intro-circle.csv",
+      "plot": "../local/analysis/easing/openai-intro-circle.png",
+      "validation": "../local/analysis/easing/openai-intro-circle-validation.jpg",
+      "first_half_progress": 0.8888888888888888,
+      "time_to_90_percent": 0.33999999999999997,
+      "tracked_property": "diameter",
+      "method": "Mean of width and height of largest black connected component, grayscale <100; top/bottom 100px excluded.",
+      "limitation": "Only post-discontinuity settling is fitted. Diameter jumps 34 to 324px between frames190 and191 before settling to360px.",
+      "confidence": "High for visible jump and deceleration; moderate for exact curve.",
+      "reel_start_seconds": 6.366666666666666,
+      "reel_end_seconds": 7.0,
+      "source_start_seconds": 6.366666666666666,
+      "source_end_seconds": 7.0,
+      "source_equals_reel": true,
+      "native_frame_sampling": true,
+      "discontinuity_in_fit": false
+    },
+    {
+      "id": "openai-palette-circle",
+      "film": "openai-brand-2025",
+      "fps": 30.0,
+      "fit_a": 1972,
+      "fit_b": 1984,
+      "duration_seconds": 0.4,
+      "samples": 13,
+      "raw_start_pixels": 746.0,
+      "raw_end_pixels": 800.0,
+      "fixed_curve_rmse": {
+        "linear": 0.22473061969784477,
+        "smoothstep": 0.23862681009838635,
+        "sine_in_out": 0.24083481503408535,
+        "cubic_in_out": 0.26863362058043244,
+        "quadratic_out": 0.051449330488177916,
+        "cubic_out": 0.04322464633189082,
+        "quintic_out": 0.14488894419454093
+      },
+      "best_fixed": "cubic_out",
+      "fitted_bezier_control_points": [
+        0.39422871904153123,
+        0.9999999999999999,
+        0.7925948057350907,
+        0.9999999999999999
+      ],
+      "fitted_bezier_rmse": 0.006138636188597626,
+      "endpoint_sensitivity": [
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": -1,
+          "best_fixed": "quintic_out",
+          "bezier_rmse": 0.028198061813840554,
+          "bezier_control_points": [
+            2.650142456334738e-13,
+            0.9999999999928201,
+            2.401846504929146e-13,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": 1,
+          "best_fixed": "quintic_out",
+          "bezier_rmse": 0.03231076894308064,
+          "bezier_control_points": [
+            1.6493795283780296e-14,
+            0.9999999999997132,
+            7.250796683947279e-14,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": -1,
+          "best_fixed": "quadratic_out",
+          "bezier_rmse": 0.006205816680930704,
+          "bezier_control_points": [
+            0.08292714142946073,
+            0.2305032433766833,
+            0.4347767282215468,
+            0.9787284782984748
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 1,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.007780842042628961,
+          "bezier_control_points": [
+            0.3502032106575026,
+            0.9999999999999992,
+            0.7124578647589135,
+            0.999999999999998
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 0,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.006781871748240534,
+          "bezier_control_points": [
+            0.3727731899299592,
+            0.9999999999999986,
+            0.8192621657970905,
+            0.9999999999999989
+          ]
+        }
+      ],
+      "csv": "../local/analysis/easing/openai-palette-circle.csv",
+      "plot": "../local/analysis/easing/openai-palette-circle.png",
+      "validation": "../local/analysis/easing/openai-palette-circle-validation.jpg",
+      "first_half_progress": 0.8148148148148148,
+      "time_to_90_percent": 0.24333333333333343,
+      "tracked_property": "diameter",
+      "method": "Mean of width and height of largest black connected component, grayscale <100; top/bottom 100px excluded.",
+      "limitation": "Only post-discontinuity settling is fitted. Diameter jumps 152 to746px between frames1971 and1972 before settling to800px.",
+      "confidence": "High for visible jump and deceleration; moderate for exact curve.",
+      "reel_start_seconds": 65.73333333333333,
+      "reel_end_seconds": 66.13333333333334,
+      "source_start_seconds": 65.73333333333333,
+      "source_end_seconds": 66.13333333333334,
+      "source_equals_reel": true,
+      "native_frame_sampling": true,
+      "discontinuity_in_fit": false
+    },
+    {
+      "id": "yosemite-red-appearance",
+      "film": "apple-yosemite",
+      "fps": 29.97002997002997,
+      "fit_a": 1,
+      "fit_b": 18,
+      "duration_seconds": 0.5672333333333334,
+      "samples": 18,
+      "raw_start_pixels": 0,
+      "raw_end_pixels": 266.5,
+      "fixed_curve_rmse": {
+        "linear": 0.25135924140480154,
+        "smoothstep": 0.26211532119680303,
+        "sine_in_out": 0.2640428420257552,
+        "cubic_in_out": 0.2895592291223538,
+        "quadratic_out": 0.07700131228785319,
+        "cubic_out": 0.0390458874937893,
+        "quintic_out": 0.13816710378486416
+      },
+      "best_fixed": "cubic_out",
+      "fitted_bezier_control_points": [
+        0.3656628093404993,
+        0.6472954896853704,
+        0.2986478126139154,
+        0.9999999999999999
+      ],
+      "fitted_bezier_rmse": 0.0051098737983550765,
+      "endpoint_sensitivity": [
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": -1,
+          "best_fixed": "quadratic_out",
+          "bezier_rmse": 0.010314939765829487,
+          "bezier_control_points": [
+            0.2799942103041898,
+            0.031898459320513516,
+            0.18587717499486178,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": 1,
+          "best_fixed": "quadratic_out",
+          "bezier_rmse": 0.016510121936228386,
+          "bezier_control_points": [
+            0.3472245817039026,
+            0.22651628018917352,
+            0.11366253687933373,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": -1,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.0015237609233668635,
+          "bezier_control_points": [
+            0.3247589227780653,
+            0.6939644161398644,
+            0.3943443352014419,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 1,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.0026776516130340208,
+          "bezier_control_points": [
+            0.35651290755282555,
+            0.894730867063503,
+            0.40076324604413177,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 0,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.002135559660936513,
+          "bezier_control_points": [
+            0.34834870293658265,
+            0.8115863871890268,
+            0.39983475632346066,
+            0.9999999999999999
+          ]
+        }
+      ],
+      "csv": "../local/analysis/easing/yosemite-red-appearance.csv",
+      "plot": "../local/analysis/easing/yosemite-red-appearance.png",
+      "validation": "../local/analysis/easing/yosemite-red-appearance-validation.jpg",
+      "first_half_progress": 0.875234521575985,
+      "time_to_90_percent": 0.30313616666666676,
+      "tracked_property": "diameter",
+      "method": "Mean of width and height of largest red connected component; R>140 and R>1.3G and R>1.3B.",
+      "limitation": "Frame1 is invisible/undetected and zero is an inferred threshold baseline. Frame2 is first measured feature. start+1/end-unchanged sensitivity excludes this inferred baseline.",
+      "confidence": "Moderate at onset; high for visible deceleration.",
+      "reel_start_seconds": 0.03336666666666667,
+      "reel_end_seconds": 0.6006,
+      "source_start_seconds": 0.03336666666666667,
+      "source_end_seconds": 0.6006,
+      "source_equals_reel": true,
+      "native_frame_sampling": true,
+      "discontinuity_in_fit": false
+    },
+    {
+      "id": "yosemite-red-zoom",
+      "film": "apple-yosemite",
+      "fps": 29.97002997002997,
+      "fit_a": 32,
+      "fit_b": 73,
+      "duration_seconds": 1.3680333333333334,
+      "samples": 42,
+      "raw_start_pixels": 267.0,
+      "raw_end_pixels": 743.5,
+      "fixed_curve_rmse": {
+        "linear": 0.34068333430874953,
+        "smoothstep": 0.3612806769630832,
+        "sine_in_out": 0.36399048691338204,
+        "cubic_in_out": 0.3947162486560646,
+        "quadratic_out": 0.1730068723723428,
+        "cubic_out": 0.08675439464253992,
+        "quintic_out": 0.07030119490385886
+      },
+      "best_fixed": "quintic_out",
+      "fitted_bezier_control_points": [
+        0.34752657237644474,
+        0.6907846792004723,
+        2.634368083742385e-22,
+        0.9986318772906446
+      ],
+      "fitted_bezier_rmse": 0.014223475511748355,
+      "endpoint_sensitivity": [
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": -1,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.022068379463550596,
+          "bezier_control_points": [
+            0.38451491970267737,
+            0.6045063459229683,
+            1.3992616469243843e-25,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": 1,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.023521072738358705,
+          "bezier_control_points": [
+            0.37838810579983734,
+            0.6615525504730067,
+            7.5980351695246545e-22,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": -1,
+          "best_fixed": "quintic_out",
+          "bezier_rmse": 0.008923909990005688,
+          "bezier_control_points": [
+            0.3314933381100268,
+            0.7713618555719616,
+            8.118842869657492e-19,
+            0.9630686698790403
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 1,
+          "best_fixed": "quintic_out",
+          "bezier_rmse": 0.00974332886519199,
+          "bezier_control_points": [
+            0.31766951356683,
+            0.7879483138234344,
+            2.006253230024199e-21,
+            0.9744783248423787
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 0,
+          "best_fixed": "quintic_out",
+          "bezier_rmse": 0.009345018641314944,
+          "bezier_control_points": [
+            0.3243620638891639,
+            0.7794640788733562,
+            6.882035801109047e-13,
+            0.9690864835039856
+          ]
+        }
+      ],
+      "csv": "../local/analysis/easing/yosemite-red-zoom.csv",
+      "plot": "../local/analysis/easing/yosemite-red-zoom.png",
+      "validation": "../local/analysis/easing/yosemite-red-zoom-validation.jpg",
+      "first_half_progress": 0.9407135362014691,
+      "time_to_90_percent": 0.5358130555555557,
+      "tracked_property": "diameter",
+      "method": "Mean of width and height of largest red connected component; R>140 and R>1.3G and R>1.3B.",
+      "limitation": "Apparent screen diameter may combine object scale and camera change. Not a recovered world-space camera curve.",
+      "confidence": "High screen trajectory; moderate exact curve.",
+      "reel_start_seconds": 1.0677333333333334,
+      "reel_end_seconds": 2.435766666666667,
+      "source_start_seconds": 1.0677333333333334,
+      "source_end_seconds": 2.435766666666667,
+      "source_equals_reel": true,
+      "native_frame_sampling": true,
+      "discontinuity_in_fit": false
+    },
+    {
+      "id": "airbnb-chip-y",
+      "film": "airbnb-design-system",
+      "fps": 30.0,
+      "fit_a": 445,
+      "fit_b": 456,
+      "duration_seconds": 0.36666666666666664,
+      "samples": 12,
+      "raw_start_pixels": 245.0,
+      "raw_end_pixels": 338.0,
+      "fixed_curve_rmse": {
+        "linear": 0.11880787845137793,
+        "smoothstep": 0.06219303536702595,
+        "sine_in_out": 0.057049371068506535,
+        "cubic_in_out": 0.03569488612371195,
+        "quadratic_out": 0.23065090274383432,
+        "cubic_out": 0.3225678591771677,
+        "quintic_out": 0.4216341275140498
+      },
+      "best_fixed": "cubic_in_out",
+      "fitted_bezier_control_points": [
+        0.6970726842544446,
+        0.0767529470911826,
+        0.3936740891370324,
+        0.956661157297536
+      ],
+      "fitted_bezier_rmse": 0.004796035357612927,
+      "endpoint_sensitivity": [
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": -1,
+          "best_fixed": "sine_in_out",
+          "bezier_rmse": 0.004003704644693018,
+          "bezier_control_points": [
+            0.7743866745460468,
+            0.0023126162571742758,
+            0.48030281054628826,
+            0.839885006652498
+          ]
+        },
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": 1,
+          "best_fixed": "cubic_in_out",
+          "bezier_rmse": 0.0061209715918026306,
+          "bezier_control_points": [
+            0.7360282267598595,
+            0.01583338426271601,
+            0.3327888489737188,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": -1,
+          "best_fixed": "sine_in_out",
+          "bezier_rmse": 0.003703988709979849,
+          "bezier_control_points": [
+            0.6534145053741556,
+            0.10446500315794356,
+            0.4313515476308694,
+            0.8634125003228629
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 1,
+          "best_fixed": "cubic_in_out",
+          "bezier_rmse": 0.006536765685547908,
+          "bezier_control_points": [
+            0.6214893653334723,
+            0.1465451584976284,
+            0.2731246568058813,
+            0.9999999999999999
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 0,
+          "best_fixed": "cubic_in_out",
+          "bezier_rmse": 0.003788541357501532,
+          "bezier_control_points": [
+            0.6170389125770501,
+            0.10047702230861204,
+            0.37516975096174504,
+            0.9727535948670082
+          ]
+        }
+      ],
+      "csv": "../local/analysis/easing/airbnb-chip-y.csv",
+      "plot": "../local/analysis/easing/airbnb-chip-y.png",
+      "validation": "../local/analysis/easing/airbnb-chip-y-validation.jpg",
+      "first_half_progress": 0.435483870967742,
+      "time_to_90_percent": 0.2747619047619048,
+      "tracked_property": "template_top_y",
+      "method": "OpenCV TM_CCOEFF_NORMED; frame450 grayscale template x85:377,y275:318; match over full720x720 frame.",
+      "limitation": "Tracks unchanged Architecture label and icon. Integer-pixel position. Minimum correlation in inspected interval about0.766.",
+      "confidence": "High split-axis timing and curved path; moderate exact curve.",
+      "reel_start_seconds": 14.833333333333334,
+      "reel_end_seconds": 15.2,
+      "source_start_seconds": 14.833333333333334,
+      "source_end_seconds": 15.2,
+      "source_equals_reel": true,
+      "native_frame_sampling": true,
+      "discontinuity_in_fit": false
+    },
+    {
+      "id": "airbnb-chip-x",
+      "film": "airbnb-design-system",
+      "fps": 30.0,
+      "fit_a": 450,
+      "fit_b": 476,
+      "duration_seconds": 0.8666666666666667,
+      "samples": 27,
+      "raw_start_pixels": 85.0,
+      "raw_end_pixels": 215.0,
+      "fixed_curve_rmse": {
+        "linear": 0.20722221781563907,
+        "smoothstep": 0.2203042556095765,
+        "sine_in_out": 0.22279256094919592,
+        "cubic_in_out": 0.2548363828518555,
+        "quadratic_out": 0.04958270885718745,
+        "cubic_out": 0.0832688538254517,
+        "quintic_out": 0.1827105379663735
+      },
+      "best_fixed": "quadratic_out",
+      "fitted_bezier_control_points": [
+        0.25409372146527154,
+        0.02843264498669635,
+        9.12622960970249e-19,
+        0.8053167513550722
+      ],
+      "fitted_bezier_rmse": 0.004431516223610744,
+      "endpoint_sensitivity": [
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": -1,
+          "best_fixed": "quadratic_out",
+          "bezier_rmse": 0.003891267710923661,
+          "bezier_control_points": [
+            0.32549476697487134,
+            1.857602874180788e-16,
+            1.7751407354241466e-24,
+            0.7528698542748776
+          ]
+        },
+        {
+          "start_shift_frames": -1,
+          "end_shift_frames": 1,
+          "best_fixed": "quadratic_out",
+          "bezier_rmse": 0.006915856256313992,
+          "bezier_control_points": [
+            0.3080676315912117,
+            7.137605549406297e-29,
+            1.9529805348210875e-19,
+            0.8297277294983485
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": -1,
+          "best_fixed": "quadratic_out",
+          "bezier_rmse": 0.002493858863082409,
+          "bezier_control_points": [
+            0.21348551020454792,
+            0.10147491828435017,
+            1.3271839540728712e-20,
+            0.7631852122928829
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 1,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.00588578933407249,
+          "bezier_control_points": [
+            0.18066999329706002,
+            0.04422275931925672,
+            0.010275518916170418,
+            0.8562642543612037
+          ]
+        },
+        {
+          "start_shift_frames": 1,
+          "end_shift_frames": 0,
+          "best_fixed": "cubic_out",
+          "bezier_rmse": 0.004279157657050826,
+          "bezier_control_points": [
+            0.19678040640464362,
+            0.06876635688855882,
+            0.0022481223791732717,
+            0.8096200520919917
+          ]
+        }
+      ],
+      "csv": "../local/analysis/easing/airbnb-chip-x.csv",
+      "plot": "../local/analysis/easing/airbnb-chip-x.png",
+      "validation": "../local/analysis/easing/airbnb-chip-x-validation.jpg",
+      "first_half_progress": 0.8,
+      "time_to_90_percent": 0.5888888888888889,
+      "tracked_property": "template_left_x",
+      "method": "OpenCV TM_CCOEFF_NORMED; frame450 grayscale template x85:377,y275:318; match over full720x720 frame.",
+      "limitation": "Same physical feature as airbnb-chip-y; not an independent event. Integer-pixel position.",
+      "confidence": "High split-axis timing and curved path; moderate exact curve.",
+      "reel_start_seconds": 15.0,
+      "reel_end_seconds": 15.866666666666667,
+      "source_start_seconds": 15.0,
+      "source_end_seconds": 15.866666666666667,
+      "source_equals_reel": true,
+      "native_frame_sampling": true,
+      "discontinuity_in_fit": false
+    }
+  ],
+  "rejected": [
+    {
+      "film": "openai-brand-2025",
+      "interval": [
+        6.3333,
+        6.3667
+      ],
+      "reason": "One-frame jump; do not fit entire event as a continuous ease."
+    },
+    {
+      "film": "apple-yosemite",
+      "interval": [
+        2.8,
+        3.2
+      ],
+      "reason": "Red circle cropped by frame; visible-component centroid no longer equals circle center."
+    },
+    {
+      "film": "airbnb-design-system",
+      "interval": [
+        30,
+        33
+      ],
+      "reason": "Rotation, changing silhouette, perspective and occlusion confound simple box track."
+    },
+    {
+      "film": "airbnb-design-system",
+      "interval": [
+        17.7,
+        19
+      ],
+      "reason": "Shape-parameter change is not a clean translation track."
+    }
+  ]
+}

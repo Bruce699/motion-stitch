@@ -42,6 +42,11 @@ export class Jobs {
     sceneDir: string,
     compile: () => Promise<string>,
     requestId: string,
+    dependencies: {
+      scene: SceneDocument;
+      directory: string;
+      module: string;
+    }[] = [],
   ) {
     const task = this.submissions.then(async () => {
       const existing = (await this.list()).find(
@@ -99,6 +104,58 @@ export class Jobs {
           JSON.stringify(scene, null, 2),
         );
         await fs.copyFile(module, path.join(dir, "scene.js"));
+        const dependencyManifests: Record<string, unknown> = {};
+        for (const dependency of dependencies) {
+          if (dependency.scene.sources.some((source) => source.url))
+            throw new Error(
+              "Nested composition export needs local source files: " +
+                dependency.scene.name,
+            );
+          for (const source of dependency.scene.sources)
+            await validatePackagedSource(source, dependency.directory);
+          const destination = path.join(
+            dir,
+            "compositions",
+            dependency.scene.id,
+          );
+          const before = await manifest(dependency.directory);
+          await fs.cp(dependency.directory, path.join(destination, "scene"), {
+            recursive: true,
+            filter: (file) =>
+              !path
+                .relative(dependency.directory, file)
+                .split(path.sep)
+                .some(
+                  (name) => name.startsWith(".") || name === "node_modules",
+                ),
+          });
+          if (
+            JSON.stringify(before) !==
+              JSON.stringify(await manifest(dependency.directory)) ||
+            JSON.stringify(before) !==
+              JSON.stringify(await manifest(path.join(destination, "scene")))
+          )
+            throw new Error(
+              "Composition changed while freezing: " + dependency.scene.name,
+            );
+          await atomicWrite(
+            path.join(destination, "scene", "scene.json"),
+            JSON.stringify(dependency.scene, null, 2),
+          );
+          await fs.copyFile(
+            dependency.module,
+            path.join(destination, "scene.js"),
+          );
+          dependencyManifests[dependency.scene.id] = before;
+        }
+        if (dependencies.length)
+          await atomicWrite(
+            path.join(dir, "compositions.json"),
+            JSON.stringify(
+              dependencies.map((dependency) => dependency.scene.id),
+            ),
+          );
+
         const runtimeManifest = await manifest(this.runtime);
         const runtimeHash = hash(JSON.stringify(runtimeManifest)).slice(0, 20);
         const runtime = path.join(this.root, ".tilt", "runtimes", runtimeHash);
@@ -113,6 +170,7 @@ export class Jobs {
           JSON.stringify(
             {
               source: before,
+              compositions: dependencyManifests,
               runtime: runtimeManifest,
               electron: this.electronVersion,
             },

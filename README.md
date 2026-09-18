@@ -1,6 +1,8 @@
 # Tilt
 
-Tilt is an agent-first motion workspace built around scenes. A scene is a folder containing the real interface, executable animation code, assets, and a small persistent document. The editor is a capable container that gives people and agents a shared clock, browser surfaces, a compositor, inspection, and reliable rendering. It should make bespoke work easy: an agent can write a shader, adapt an unusual interface, or construct a 3D composition without waiting for a new effect to be added to the product. We provide clear contracts and useful skills, while leaving the creative implementation open. Files are the source of truth; the editor and agents change the same files.
+Tilt is an agent-first motion workspace built around **projects and compositions**. A project scopes the source files, assets and compositions to a local folder, usually a Git repository. A composition produces an image over time from real interfaces, executable animation code and other compositions. A final edit is another composition: place references on its timeline, trim or split them, choose a camera and override exposed controls independently. Editing the original updates its uses.
+
+The editor gives people and agents a shared clock, browser surfaces, a compositor, inspection and reliable rendering. It should make bespoke work easy: an agent can write a shader, adapt an unusual interface or construct a 3D composition without waiting for a new effect. Files are the source of truth; the editor and agents change the same files. The existing `scenes/`, `scene.json` and `scene.ts` filenames remain compatible. See [projects and compositions](docs/compositions.md) for the reference, camera, timing and export contracts.
 
 ## Run
 
@@ -24,9 +26,9 @@ Open `https://tilt.video` in Codex or any browser while Tilt is running. The add
 
 For isolated verification without the local domain setup, `npm start -- --direct --browser` skips Portless and uses a direct loopback port. The CLI always uses its private loopback connection. Source capture and detached export workers keep their isolated local servers. The proxy starts at boot; Tilt itself still starts with `npm start` or `Tilt.command`.
 
-Drag in either Perspective or Orthographic camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In Isometric or 2D, dragging pans. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline has a full-scene overview, scrubbing and zoom (Option/Alt-drag or wheel; Shift-drag resets). Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. New scenes default to 60 fps; the available rates are 30 and 60 fps. The right panel contains parameter controls and the shared camera controls. Render writes an MP4 to `exports/`.
+Drag in either Perspective or Orthographic camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In Isometric or 2D, dragging pans. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline combines playback and one time readout with its ruler. Drag to scrub; pinch or Option/Alt-wheel to zoom around the pointer; scroll sideways to pan. Double-click the ruler to fit the scene. With the ruler focused, +/− zoom and 0 fits. Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. New scenes default to 60 fps; the available rates are 30 and 60 fps. The right panel contains parameter controls and the shared camera controls. Render writes an MP4 to `exports/`.
 
-## Scene files
+## Composition files
 
 ```text
 scenes/interface/

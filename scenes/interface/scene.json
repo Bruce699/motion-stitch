@@ -1,29 +1,29 @@
 {
   "version": 1,
   "id": "interface",
-  "name": "Order #1401",
+  "name": "demo video",
   "duration": 8,
   "fps": 60,
   "size": {
-    "width": 1440,
-    "height": 900
+    "width": 3840,
+    "height": 2160
   },
   "background": "#040403",
   "entry": "scene.ts",
   "camera": {
-    "projection": "orthographic",
+    "projection": "perspective",
     "preset": "diagonal15",
     "side": "right",
-    "rotation": -25,
-    "elevation": 40,
+    "rotation": -23,
+    "elevation": 42,
     "roll": 0,
-    "zoom": 3.6649509091432133,
-    "panX": 0.489654396645402,
-    "panY": 0.04871367669689497,
+    "zoom": 3.443384482247572,
+    "panX": 0.40667510492630127,
+    "panY": -0.13158723109288395,
     "depthOfField": {
       "enabled": true,
-      "focusPlane": 0.38,
-      "blur": 0.41
+      "focusPlane": 0.84,
+      "blur": 0.53
     }
   },
   "capture": {
@@ -154,7 +154,7 @@
       "max": 2,
       "step": 0.05,
       "type": "number",
-      "value": 0.8,
+      "value": 1.6,
       "control": "slider"
     },
     "driftX": {
@@ -182,7 +182,7 @@
     {
       "id": "cards-settle",
       "label": "Cards settle",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 0,
       "end": 6,
       "keys": [],
@@ -195,7 +195,7 @@
     {
       "id": "settle-note",
       "label": "Note",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 0,
       "end": 3.12,
       "keys": [],
@@ -213,7 +213,7 @@
     {
       "id": "settle-fulfillment-0",
       "label": "Fulfillment",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 0.41142857142857137,
       "end": 3.5314285714285716,
       "keys": [],
@@ -231,7 +231,7 @@
     {
       "id": "settle-customer",
       "label": "Customer",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 0.8228571428571427,
       "end": 3.942857142857143,
       "keys": [],
@@ -249,7 +249,7 @@
     {
       "id": "settle-payment",
       "label": "Payment",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 1.2342857142857142,
       "end": 4.354285714285714,
       "keys": [],
@@ -267,7 +267,7 @@
     {
       "id": "settle-risk",
       "label": "Risk",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 1.6457142857142855,
       "end": 4.765714285714285,
       "keys": [],
@@ -285,7 +285,7 @@
     {
       "id": "settle-timeline",
       "label": "Timeline",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 2.057142857142857,
       "end": 5.177142857142857,
       "keys": [],
@@ -303,7 +303,7 @@
     {
       "id": "settle-payment-surface",
       "label": "Payment surface",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 2.4685714285714284,
       "end": 5.588571428571429,
       "keys": [],
@@ -321,7 +321,7 @@
     {
       "id": "settle-composer",
       "label": "Composer",
-      "color": "#94b7a6",
+      "color": "#00bca6",
       "start": 2.88,
       "end": 6,
       "keys": [],
@@ -339,7 +339,7 @@
     {
       "id": "camera-drift",
       "label": "Camera drift",
-      "color": "#a7a9ce",
+      "color": "#8c51fe",
       "start": 0,
       "end": 6,
       "keys": [],

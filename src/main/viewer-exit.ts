@@ -28,13 +28,21 @@ export class ViewerExitCoordinator {
     const pending = (async () => {
       const savedScenes: string[] = [],
         errors: unknown[] = [];
-      for (const { sceneId, patch } of command.patches) {
+      for (const { sceneId, cameraId, patch } of command.patches) {
         try {
           const store = await getStore(sceneId);
           try {
             await store.edit(
               (doc) => {
-                doc.camera = withCameraPatch(doc.camera, patch);
+                if (!cameraId || cameraId === "main")
+                  doc.camera = withCameraPatch(doc.camera, patch);
+                else {
+                  const camera = doc.cameras?.find(
+                    (camera) => camera.id === cameraId,
+                  );
+                  if (!camera) throw new Error("Unknown camera");
+                  camera.settings = withCameraPatch(camera.settings, patch);
+                }
               },
               undefined,
               command.viewId,
@@ -64,6 +72,15 @@ export class ViewerExitCoordinator {
 
 export const viewerMutationCommands = new Set([
   "set_track",
+  "add_camera",
+  "camera_metadata",
+  "add_clip",
+  "set_clip",
+  "trim_clip",
+  "split_clip",
+  "remove_clip",
+  "clip_parameter",
+  "expose_parameter",
   "set_camera",
   "set_parameter",
   "set_setting",

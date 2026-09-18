@@ -4,6 +4,7 @@ Read the thesis in README.md. Keep the product a small, malleable container for 
 
 - First read `.agents/skills/workspace-context/SKILL.md` for the active viewer, file workflow and edit groups.
 - Scene work: read `.agents/skills/scene-authoring/SKILL.md`.
+- Creative motion, pacing, framing, transitions or visual treatment: read `.agents/skills/motion-design/SKILL.md` and only its relevant guides. Choose approaches for the brief; do not impose a recurring effect sequence. CLI/MCP agents retrieve the same guidance with `skills` / `skill motion-design` or `tilt_guidance`; `capabilities` exposes the catalogue.
 - Authored motion must expose meaningful animation tracks/groups and contextual controls. Read `docs/animation-groups.md`; group coordinated targets, keep individual timing expandable, and make track timing drive scene code. Do not leave new choreography hidden behind a generic whole-scene lane.
 - Adding or changing exposed controls: read `.agents/skills/parameter-controls/SKILL.md`. Declare them in `scene.json.parameters`; use the shared control vocabulary rather than a bespoke editor widget.
 - Importing/adapting UI: read `.agents/skills/import-web-ui/SKILL.md`.

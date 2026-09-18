@@ -1,0 +1,819 @@
+[
+  {
+    "id": "ST-LG-01",
+    "film": "apple-liquid-glass",
+    "start": 0,
+    "end": 10,
+    "semantic_scene_ids": [
+      "LG-01"
+    ],
+    "description": "The opening blue-green landscape resolves into enormously enlarged transparent clock numerals. Near edges have bright relief while farther regions soften; the interface is temporarily treated as a material object.",
+    "principles": [
+      "macro-detail",
+      "material-as-subject",
+      "selective-focus",
+      "content-backed-surface"
+    ],
+    "framing": "Full bleed, tightly cropped, no hardware in the early material views",
+    "surface": "Transparent thick-looking numeral edges with highlights and distortion",
+    "background": "Blue-green lock-screen artwork fills the image",
+    "shadow": "Dark edge shading and highlights describe relief; not a clearly separated floor shadow",
+    "typography": "Clock numerals become the object, accompanied later by a small date",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "ST-LG-02",
+    "film": "apple-liquid-glass",
+    "start": 10,
+    "end": 18.7187,
+    "semantic_scene_ids": [
+      "LG-02"
+    ],
+    "description": "Colorful Photos petals and a Safari needle receive dimensional macro treatment before the dock and complete phone restore usable scale.",
+    "principles": [
+      "macro-detail",
+      "material-as-subject",
+      "device-as-context",
+      "neutral-stage",
+      "selective-focus"
+    ],
+    "framing": "Cropped icon details resolve into realistic dark-edged phone hardware",
+    "surface": "Glossy colored petals, metallic-looking compass parts, transparent dock",
+    "background": "Artwork inside phone; white/light-gray studio field outside",
+    "shadow": "Shading on components; subtle separation around hardware",
+    "typography": "Small icon labels appear only with the system context",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "ST-LG-05",
+    "film": "apple-liquid-glass",
+    "start": 34.8348,
+    "end": 44,
+    "semantic_scene_ids": [
+      "LG-05"
+    ],
+    "description": "A nearly black field makes a glass silhouette readable at its rim; the name then appears as pale dimensional lettering on a pale field. Both treatments minimize competing objects.",
+    "principles": [
+      "material-as-subject",
+      "isolate-subject",
+      "neutral-stage",
+      "edge-defines-form"
+    ],
+    "framing": "Single unframed object/title",
+    "surface": "Thin bright rim in dark view; translucent raised-looking title",
+    "background": "Near-black then pale gray/white",
+    "shadow": "Subtle title shading; rim contrast is more conspicuous than a cast shadow",
+    "typography": "The title itself uses the material being introduced",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "ST-LG-06",
+    "film": "apple-liquid-glass",
+    "start": 44,
+    "end": 53,
+    "semantic_scene_ids": [
+      "LG-06"
+    ],
+    "description": "Sliders and rounded controls are removed from the device and placed on a pale stage. The same rounded language subsequently sits over camera and call imagery.",
+    "principles": [
+      "isolated-component",
+      "neutral-stage",
+      "soft-shadow-separation",
+      "content-backed-surface",
+      "material-as-subject"
+    ],
+    "framing": "No bezel in isolated control specimens; cropped UI over imagery later",
+    "surface": "Clear/colored rounded lobes and frosted white pills",
+    "background": "Pale neutral for specimens; kayaking/call imagery as UI content",
+    "shadow": "Soft gray shadows under isolated controls; brighter rims over imagery",
+    "typography": "Compact icon labels and interface text; color appears on active state",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "ST-LG-07",
+    "film": "apple-liquid-glass",
+    "start": 53,
+    "end": 61.9619,
+    "semantic_scene_ids": [
+      "LG-07"
+    ],
+    "description": "Playback controls remain recognizable over floral artwork and a strongly green album background. Clock numerals are then enlarged and returned to the phone.",
+    "principles": [
+      "content-backed-surface",
+      "device-as-context",
+      "macro-detail",
+      "material-as-subject"
+    ],
+    "framing": "Cropped realistic phone, then close numeral detail",
+    "surface": "Translucent playback plate and glossy transparent numerals",
+    "background": "Saturated album/lock-screen content inside device, pale outside",
+    "shadow": "Fine bright border plus local dark/light contrast; background is softened within the plate",
+    "typography": "White playback labels and oversized thin clock numerals",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "ST-LG-09",
+    "film": "apple-liquid-glass",
+    "start": 75.2085,
+    "end": 91.7583,
+    "semantic_scene_ids": [
+      "LG-09"
+    ],
+    "description": "Notes is a thin, rounded screen-shaped plane without a device bezel. Its glass controls and expanded menu visibly sit above the image and text plane.",
+    "principles": [
+      "screen-shaped-plane",
+      "soft-shadow-separation",
+      "neutral-stage",
+      "content-backed-surface",
+      "depth-explains-hierarchy"
+    ],
+    "framing": "Oblique frameless rounded UI plane, cropped at top",
+    "surface": "Flat content plane with translucent rounded controls and a frosted menu",
+    "background": "Light-gray stage outside; blue/orange flower and portrait content inside",
+    "shadow": "Diffuse stage shadow beneath the plane; local separation under menu",
+    "typography": "Regular black UI text remains legible above softened photography",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-005.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/frames/frame-00088.jpg"
+    ]
+  },
+  {
+    "id": "ST-LG-14",
+    "film": "apple-liquid-glass",
+    "start": 125,
+    "end": 137.3372,
+    "semantic_scene_ids": [
+      "LG-14"
+    ],
+    "description": "Customized phones share consistent hardware but vary wallpaper and icon tint; transparent icons and widgets are also shown close before a multi-device lineup.",
+    "principles": [
+      "device-as-context",
+      "neutral-stage",
+      "content-backed-surface",
+      "family-variation"
+    ],
+    "framing": "Repeated realistic phones, close component view, then laptop/tablet/watch lineup",
+    "surface": "Tinted and clear icon treatments, consistent rounded widgets",
+    "background": "Pale studio stage; richly colored wallpapers inside hardware",
+    "shadow": "Subtle device grounding/separation; edge highlights on clear objects",
+    "typography": "Same icon-label and widget hierarchy across different themes",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-liquid-glass/sheets/sheet-007.jpg"
+    ]
+  },
+  {
+    "id": "ST-I7-04",
+    "film": "apple-ios-7",
+    "start": 43.333333,
+    "end": 54,
+    "semantic_scene_ids": [
+      "I7-04"
+    ],
+    "description": "The white phone is first cropped extremely close, including the home button, then shown complete against white. The colored screen carries most contrast while the hardware nearly merges with its stage.",
+    "principles": [
+      "device-as-context",
+      "neutral-stage",
+      "macro-detail",
+      "isolate-subject"
+    ],
+    "framing": "Realistic white phone, macro crop to full object",
+    "surface": "White/silver hardware surrounding a crisp colorful screen",
+    "background": "Clean white exterior; blue-green wallpaper inside",
+    "shadow": "Hardware contours are defined primarily by gray edge shading and black screen edge",
+    "typography": "Very thin white lock-screen text, then small system labels",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "ST-I7-07",
+    "film": "apple-ios-7",
+    "start": 79,
+    "end": 84,
+    "semantic_scene_ids": [
+      "I7-07"
+    ],
+    "description": "Mail temporarily loses its hardware frame, and a close typographic specimen exposes baselines, dimensions, weights and blue/black hierarchy.",
+    "principles": [
+      "schematic-construction",
+      "macro-detail",
+      "neutral-stage",
+      "type-as-subject"
+    ],
+    "framing": "Unframed full interface then large cropped specification",
+    "surface": "Flat typography and fine annotation rules",
+    "background": "White",
+    "shadow": "No conspicuous cast shadows; hierarchy comes from size, weight, color and rules",
+    "typography": "Actual Mail content is the specimen; red measurements explain the typography",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-005.jpg"
+    ]
+  },
+  {
+    "id": "ST-I7-08",
+    "film": "apple-ios-7",
+    "start": 84,
+    "end": 100,
+    "semantic_scene_ids": [
+      "I7-08"
+    ],
+    "description": "One icon at a time is isolated on white with construction lines. The family is not uniformly flat: colored gradients and translucent overlapping Game Center bubbles sit beside simpler glyphs.",
+    "principles": [
+      "schematic-construction",
+      "neutral-stage",
+      "isolate-subject",
+      "family-variation",
+      "isolated-component"
+    ],
+    "framing": "Unframed centered icon specimens",
+    "surface": "Mixture of flat fills, gradients and bubble-like translucency",
+    "background": "White",
+    "shadow": "Mostly no cast shadow; internal gradients/highlights give some icons volume",
+    "typography": "Minimal text; icon form dominates",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-005.jpg"
+    ]
+  },
+  {
+    "id": "ST-I7-09",
+    "film": "apple-ios-7",
+    "start": 100,
+    "end": 115,
+    "semantic_scene_ids": [
+      "I7-09"
+    ],
+    "description": "The notification panel, icons and wallpaper separate into parallel planes while recognizable phone hardware remains behind them. The dark translucent front plane changes the content underneath.",
+    "principles": [
+      "depth-explains-hierarchy",
+      "device-as-context",
+      "content-backed-surface",
+      "neutral-stage"
+    ],
+    "framing": "Exploded interface planes in front of phone",
+    "surface": "Dark translucent notification layer; separate icon and wallpaper planes",
+    "background": "White exterior and blue-green wallpaper behind UI",
+    "shadow": "Occlusion and plane separation establish depth more strongly than floor shadows",
+    "typography": "Thin white type remains attached to the dark foreground panel",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-006.jpg"
+    ]
+  },
+  {
+    "id": "ST-I7-11",
+    "film": "apple-ios-7",
+    "start": 127,
+    "end": 141,
+    "semantic_scene_ids": [
+      "I7-11"
+    ],
+    "description": "Weather retains the white phone edge while the interface background changes from blue sky to muted rain and dark snow. Large, fine white numerals dominate the atmospheric field.",
+    "principles": [
+      "device-as-context",
+      "content-backed-surface",
+      "macro-detail"
+    ],
+    "framing": "Portrait phone cropped progressively into its display",
+    "surface": "Flat white text/icons over atmospheric image/particle background",
+    "background": "White exterior where visible; blue, gray and near-black weather content",
+    "shadow": "Contrast, not strong drop shadows, separates the information",
+    "typography": "Oversized thin temperature; small forecast rows and line icons",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-007.jpg"
+    ]
+  },
+  {
+    "id": "ST-I7-15",
+    "film": "apple-ios-7",
+    "start": 172,
+    "end": 183,
+    "semantic_scene_ids": [
+      "I7-15"
+    ],
+    "description": "Three matching white phones compare red, blue and green portrait wallpapers, then tinted passcode views and home screens. Matching framing exposes the effect of content on chrome.",
+    "principles": [
+      "device-as-context",
+      "content-backed-surface",
+      "neutral-stage",
+      "family-variation"
+    ],
+    "framing": "Three aligned realistic phones",
+    "surface": "Thin outlined keys over blurred/tinted wallpaper; bright app icons",
+    "background": "White outside the devices; strongly different colors within",
+    "shadow": "Fine outlines and tonal contrast dominate; no heavy card shadows",
+    "typography": "Same clock, keypad and icon-label scale across variants",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-ios-7/sheets/sheet-009.jpg"
+    ]
+  },
+  {
+    "id": "ST-YO-01",
+    "film": "apple-yosemite",
+    "start": 0,
+    "end": 6,
+    "semantic_scene_ids": [
+      "YO-01"
+    ],
+    "description": "Window buttons are enlarged beyond their practical size and isolated on white. Their colored discs, rims and embedded symbols become a miniature construction study.",
+    "principles": [
+      "neutral-stage",
+      "isolated-component",
+      "macro-detail",
+      "edge-defines-form"
+    ],
+    "framing": "Unframed large circular controls, some cropped by image edge",
+    "surface": "Solid saturated discs with darker perimeter and recessed-looking symbols",
+    "background": "White",
+    "shadow": "Internal edge shading; no obvious floating-object floor shadow",
+    "typography": "No text required for the control study",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "ST-YO-02",
+    "film": "apple-yosemite",
+    "start": 6,
+    "end": 15,
+    "semantic_scene_ids": [
+      "YO-02"
+    ],
+    "description": "The control study becomes a run of black line glyphs on white. Consistent stroke character links several symbols without any device or surface rendering.",
+    "principles": [
+      "neutral-stage",
+      "isolated-component",
+      "isolate-subject",
+      "flat-contrast",
+      "family-variation"
+    ],
+    "framing": "Unframed centered and enlarged glyphs",
+    "surface": "Flat dark strokes with rounded corners",
+    "background": "White",
+    "shadow": "No conspicuous cast shadows; silhouette carries the form",
+    "typography": "Icons rather than type",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "ST-YO-03",
+    "film": "apple-yosemite",
+    "start": 15,
+    "end": 21,
+    "semantic_scene_ids": [
+      "YO-03"
+    ],
+    "description": "Finder type appears over fine construction dots and lines before resolving into the menu bar. The large crop lets typography, spacing and baseline alignment carry the scene.",
+    "principles": [
+      "schematic-construction",
+      "macro-detail",
+      "type-as-subject",
+      "neutral-stage"
+    ],
+    "framing": "Full-frame type/menu-bar crop",
+    "surface": "Outlined then solid lettering, faint drafting guides, light bar surface",
+    "background": "White/light gray",
+    "shadow": "A soft band around the bar is visible; type itself remains flat",
+    "typography": "Large Finder lettering becomes normal menu-bar text",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "ST-YO-04",
+    "film": "apple-yosemite",
+    "start": 21,
+    "end": 35,
+    "semantic_scene_ids": [
+      "YO-04"
+    ],
+    "description": "The dock is shown as a broad gray translucent strip against Yosemite scenery. Icons retain individual illustration styles, including paper, metallic discs, a stamp, leather-like contact book and simple speech bubbles.",
+    "principles": [
+      "content-backed-surface",
+      "material-as-subject",
+      "soft-shadow-separation",
+      "family-variation",
+      "macro-detail"
+    ],
+    "framing": "Bezel-free close view of dock; icons cropped as the view travels",
+    "surface": "Mixed icon materials on one consistent dock plane",
+    "background": "Mountain wallpaper above; gray translucent dock below",
+    "shadow": "Small directional shadows/rims beneath icons make them feel seated on the dock",
+    "typography": "Tiny calendar/notes details are part of icon artwork, not explanatory labels",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/frames/frame-00025.jpg"
+    ]
+  },
+  {
+    "id": "ST-YO-05",
+    "film": "apple-yosemite",
+    "start": 35,
+    "end": 44,
+    "semantic_scene_ids": [
+      "YO-05"
+    ],
+    "description": "Finder chrome and sidebar are shown over changing scenic content. Frosted regions borrow background color while icons, rows and selected blue states remain clear.",
+    "principles": [
+      "content-backed-surface",
+      "depth-explains-hierarchy",
+      "macro-detail"
+    ],
+    "framing": "Window and sidebar crops without a hardware frame",
+    "surface": "Pale translucent chrome, opaque white file area, blue selection",
+    "background": "Mountain/lake wallpaper and file imagery",
+    "shadow": "Window edge separation and softened background; no claim about the rendering technique",
+    "typography": "Compact black/gray labels remain readable over the softened sidebar",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "ST-YO-08",
+    "film": "apple-yosemite",
+    "start": 51,
+    "end": 58,
+    "semantic_scene_ids": [
+      "YO-08"
+    ],
+    "description": "The full desktop gathers overlapping windows before a laptop is revealed against a pale studio background. Device framing arrives late as a scale and product-context cue.",
+    "principles": [
+      "device-as-context",
+      "neutral-stage",
+      "soft-shadow-separation",
+      "content-backed-surface"
+    ],
+    "framing": "Overlapping desktop windows to complete realistic laptop",
+    "surface": "White app windows over scenic wallpaper; metallic hardware",
+    "background": "Wallpaper first; pale studio environment around laptop after reveal",
+    "shadow": "Window shadows distinguish overlap; subtle grounding below laptop",
+    "typography": "Full working interfaces shown at useful desktop scale",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/apple-yosemite/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "ST-AB-01",
+    "film": "airbnb-design-system",
+    "start": 0,
+    "end": 10,
+    "semantic_scene_ids": [
+      "AB-01"
+    ],
+    "description": "Cereal is introduced as ordinary centered black text, then its large letter contour is examined over orange with coordinate handles; weight specimens return to white.",
+    "principles": [
+      "type-as-subject",
+      "schematic-construction",
+      "macro-detail",
+      "neutral-stage",
+      "color-as-chapter"
+    ],
+    "framing": "No device; small type specimen alternates with giant cropped glyph",
+    "surface": "Flat type and vector-control annotations",
+    "background": "White for reading; saturated orange for construction close-up",
+    "shadow": "No conspicuous cast shadows",
+    "typography": "Typeface name, curve coordinates and weight labels make type the content",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "ST-AB-02",
+    "film": "airbnb-design-system",
+    "start": 10,
+    "end": 14,
+    "semantic_scene_ids": [
+      "AB-02"
+    ],
+    "description": "Several tall interfaces are presented as white rounded cards with status bars but no modeled metal hardware. A blue layout field then turns the screens into columns and aligns their structure.",
+    "principles": [
+      "screen-shaped-plane",
+      "neutral-stage",
+      "schematic-construction",
+      "soft-shadow-separation",
+      "color-as-chapter"
+    ],
+    "framing": "Multiple screen-shaped cards, no realistic bezel",
+    "surface": "White flat app surfaces with rounded corners",
+    "background": "White presentation field then saturated blue technical field",
+    "shadow": "Soft shadows separate white cards from the white stage",
+    "typography": "Real app headers establish shared alignment across screens",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "ST-AB-03",
+    "film": "airbnb-design-system",
+    "start": 14,
+    "end": 22,
+    "semantic_scene_ids": [
+      "AB-03"
+    ],
+    "description": "Outline chips float on white, then spacing guides and large corner-radius specimens expose the component system. A rounded mobile sheet demonstrates the same geometry in context.",
+    "principles": [
+      "isolated-component",
+      "schematic-construction",
+      "macro-detail",
+      "neutral-stage",
+      "screen-shaped-plane"
+    ],
+    "framing": "Cropped controls and a screen-shaped card without realistic hardware",
+    "surface": "Flat black/white UI, hairline outlines, rounded sheet",
+    "background": "White",
+    "shadow": "Chip outlines do the initial separation; card/sheet examples add soft shadows",
+    "typography": "Functional labels and headings stay inside the component being examined",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-001.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "ST-AB-04",
+    "film": "airbnb-design-system",
+    "start": 22,
+    "end": 26.5,
+    "semantic_scene_ids": [
+      "AB-04"
+    ],
+    "description": "White line icons occupy an ochre field with a darker square grid. Stroke width, proportions and alignment can be compared without changing the staging.",
+    "principles": [
+      "schematic-construction",
+      "isolated-component",
+      "color-as-chapter",
+      "family-variation",
+      "flat-contrast"
+    ],
+    "framing": "Centered glyphs in a visible construction square",
+    "surface": "Flat white strokes over dark fine grid",
+    "background": "Warm ochre",
+    "shadow": "No visible cast shadows; figure/ground contrast and grid establish structure",
+    "typography": "Small specification markings remain subordinate to icon silhouettes",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "ST-AB-05",
+    "film": "airbnb-design-system",
+    "start": 26.5,
+    "end": 32,
+    "semantic_scene_ids": [
+      "AB-05"
+    ],
+    "description": "The suitcase moves from line-symbol logic into a dimensional object with pink-brown leather grain, thread loops, brass-colored rivets and stickers. A close crop gives the stitching its own product shot.",
+    "principles": [
+      "material-as-subject",
+      "macro-detail",
+      "neutral-stage",
+      "isolate-subject"
+    ],
+    "framing": "Standalone object; extreme material crop; no UI/device frame",
+    "surface": "Tactile leather-like grain, stitching, shiny hardware, paper-like stickers",
+    "background": "Ochre during initial construction, then white for completed object",
+    "shadow": "Self-shadow in seams and overlapping parts; restrained soft grounding",
+    "typography": "Sticker marks function as object artwork",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-002.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/frames/frame-00030.jpg"
+    ]
+  },
+  {
+    "id": "ST-AB-08",
+    "film": "airbnb-design-system",
+    "start": 45,
+    "end": 46.733333,
+    "semantic_scene_ids": [
+      "AB-08"
+    ],
+    "description": "Labeled light and dark surface samples are placed directly over aerial ocean imagery. The moving content is a comparison substrate for surface readability rather than a literal desktop environment.",
+    "principles": [
+      "content-backed-surface",
+      "family-variation",
+      "surface-comparison"
+    ],
+    "framing": "Separate rectangular swatches distributed over full-frame imagery",
+    "surface": "Mixture of light, dark and translucent-looking tonal surfaces",
+    "background": "Full-frame aerial coast/ocean",
+    "shadow": "Contrast and opacity differences distinguish swatches; shadow is secondary",
+    "typography": "Small token labels identify the samples",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "ST-AB-10",
+    "film": "airbnb-design-system",
+    "start": 49,
+    "end": 54,
+    "semantic_scene_ids": [
+      "AB-10"
+    ],
+    "description": "A single white feature card presents a small tactile icon, headline and button, then joins a mosaic of related components and imagery. Card shapes and shadows provide consistent packaging across varied content.",
+    "principles": [
+      "screen-shaped-plane",
+      "neutral-stage",
+      "soft-shadow-separation",
+      "family-variation"
+    ],
+    "framing": "Unbezeled product card, then component mosaic",
+    "surface": "White rounded cards containing flat text, imagery and a dimensional icon",
+    "background": "White/light neutral",
+    "shadow": "Soft diffuse shadows around cards, stronger than their nearly matching background",
+    "typography": "Clear hierarchy: small category label, headline, supporting copy, dark CTA",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/airbnb-design-system/sheets/sheet-003.jpg"
+    ]
+  },
+  {
+    "id": "ST-OA-02",
+    "film": "openai-brand-2025",
+    "start": 6,
+    "end": 18,
+    "semantic_scene_ids": [
+      "OA-02"
+    ],
+    "description": "A black dot becomes rings and a varied dot population on a large white field. Small peripheral labels and the principles list remain secondary. Color arrives as a controlled variation of the same elementary shape.",
+    "principles": [
+      "neutral-stage",
+      "isolate-subject",
+      "flat-contrast",
+      "family-variation"
+    ],
+    "framing": "Unframed graphic specimen with extensive empty space",
+    "surface": "Flat circles and hairline rings; no modeled surface",
+    "background": "White",
+    "shadow": "No visible cast shadows; size and black/white contrast organize the frame",
+    "typography": "Tiny labels plus compact principles list, not a device interface",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-001.jpg"
+    ]
+  },
+  {
+    "id": "ST-OA-03",
+    "film": "openai-brand-2025",
+    "start": 18,
+    "end": 28,
+    "semantic_scene_ids": [
+      "OA-03"
+    ],
+    "description": "Large outlines, circles, tangents and vector handles explain letter contours; black filled glyphs then appear alongside their outline versions.",
+    "principles": [
+      "schematic-construction",
+      "type-as-subject",
+      "macro-detail",
+      "neutral-stage",
+      "flat-contrast"
+    ],
+    "framing": "Unframed type specimen, frequently cropped large",
+    "surface": "Fine drafting lines contrasted with solid black letters",
+    "background": "White",
+    "shadow": "No visible cast shadows or material highlights",
+    "typography": "Glyph shape is the subject; micro-annotations stay visually secondary",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-001.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "ST-OA-04",
+    "film": "openai-brand-2025",
+    "start": 28,
+    "end": 38,
+    "semantic_scene_ids": [
+      "OA-04"
+    ],
+    "description": "The typeface is shown as dense character coverage, an enlarged lowercase a, a weight ladder and multiple scripts. Diagram detail and bold editorial scale coexist without device chrome.",
+    "principles": [
+      "type-as-subject",
+      "schematic-construction",
+      "family-variation",
+      "macro-detail",
+      "neutral-stage",
+      "flat-contrast"
+    ],
+    "framing": "Full-frame glyph grids and asymmetric type specimens",
+    "surface": "Flat black typography and light construction lines",
+    "background": "White",
+    "shadow": "None conspicuous; scale and density replace depth cues",
+    "typography": "Weights, accents and scripts visibly demonstrate range",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-002.jpg"
+    ]
+  },
+  {
+    "id": "ST-OA-08",
+    "film": "openai-brand-2025",
+    "start": 65,
+    "end": 78,
+    "semantic_scene_ids": [
+      "OA-08"
+    ],
+    "description": "Large flat color circles become a grouped palette and then smaller dispersed dots. Their consistent geometry lets hue and population change without adding texture or shading.",
+    "principles": [
+      "isolated-component",
+      "neutral-stage",
+      "family-variation",
+      "flat-contrast",
+      "surface-comparison"
+    ],
+    "framing": "Unframed circles at multiple scales",
+    "surface": "Solid color fills, occasional thin circle outline, no modeled thickness",
+    "background": "White",
+    "shadow": "None conspicuous",
+    "typography": "Tiny centered sample labels are subordinate to color",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-004.jpg"
+    ]
+  },
+  {
+    "id": "ST-OA-09",
+    "film": "openai-brand-2025",
+    "start": 78,
+    "end": 92,
+    "semantic_scene_ids": [
+      "OA-09"
+    ],
+    "description": "Photography alternates among full-bleed landscapes, white-bordered images and asymmetrically paired crops. Distributed white text sometimes sits directly in the landscape; these are brand-image compositions, not device mockups.",
+    "principles": [
+      "image-as-composition",
+      "neutral-stage",
+      "flat-contrast"
+    ],
+    "framing": "Full bleed, inset rectangle, paired unequal crops; no hardware",
+    "surface": "Photographic image planes without conspicuous rendered thickness",
+    "background": "Nature and people imagery, or white around the image rectangles",
+    "shadow": "No conspicuous card shadows; crop boundaries and whitespace separate images",
+    "typography": "Small words distributed across landscapes; larger wordmark in one closing image",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-005.jpg"
+    ]
+  },
+  {
+    "id": "ST-OA-11",
+    "film": "openai-brand-2025",
+    "start": 98,
+    "end": 105,
+    "semantic_scene_ids": [
+      "OA-11"
+    ],
+    "description": "Research covers, typographic specimens and photography accumulate into an overlapping editorial collage. Saturated yellow, orange, blue and image texture enter together, while clean rectangular edges keep their identities.",
+    "principles": [
+      "image-as-composition",
+      "family-variation",
+      "flat-contrast"
+    ],
+    "framing": "Rectangular print-like artifacts overlap and crop at the film edges",
+    "surface": "Flat graphic/image planes; some translucent-looking color overlays",
+    "background": "Initially white, increasingly covered by the collage",
+    "shadow": "Occlusion and edge contrast establish stacking without conspicuous drop shadows",
+    "typography": "Large display type, research titles and tiny page text share one composition",
+    "confidence": "high for visible styling; semantic boundaries approximate; no rendering implementation inferred",
+    "evidence": [
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-005.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/sheets/sheet-006.jpg",
+      "/Users/jaytel/Developer/tilt/references/motion/local/openai-brand-2025/frames/frame-00104.jpg"
+    ]
+  }
+]

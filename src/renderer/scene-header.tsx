@@ -117,7 +117,7 @@ export function SceneHeader({
         <input
           ref={title}
           className="ui-input title-input"
-          aria-label="Scene name"
+          aria-label="Composition name"
           maxLength={100}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -157,15 +157,15 @@ export function SceneHeader({
         className="ui-button icon-button"
         data-variant="ghost"
         data-size="icon"
-        aria-label="Scene settings"
-        title="Scene settings"
+        aria-label="Composition settings"
+        title="Composition settings"
         aria-expanded={open}
         aria-controls="scene-settings"
         aria-haspopup="dialog"
         disabled={disabled}
         onClick={() => setOpen(!open)}
       >
-        <Icon name="settings" size={18} />
+        <Icon name="chevron" size={16} />
       </button>
       {open && (
         <div
@@ -174,7 +174,7 @@ export function SceneHeader({
           data-dialkit-popover-root
           className="ui-popover settings-popover"
           role="dialog"
-          aria-label="Scene settings"
+          aria-label="Composition settings"
           onBlur={(e) => {
             if (
               e.relatedTarget &&

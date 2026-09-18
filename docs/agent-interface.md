@@ -8,6 +8,8 @@ Run these from the project:
 
 ```sh
 npm run cli -- capabilities
+npm run cli -- skills
+npm run cli -- skill motion-design
 npm run cli -- views
 npm run cli -- context --fresh --view <viewer-id>
 npm run cli -- state --fresh --scene <scene-id>
@@ -16,6 +18,23 @@ npm run cli -- state --fresh --scene <scene-id>
 The CLI also accepts TILT_PROJECT, TILT_VIEW and TILT_SCENE. An explicit viewer pins an operation to that tab. When both scene and viewer are supplied for a viewer operation, they must agree. Without a viewer, a matching active viewer is preferred; an ambiguous scene match fails rather than selecting another tab.
 
 Files remain the normal way to author code, UI and assets. The CLI is useful for discovery, exact context, coordinated changes, playback and verification. No MCP configuration is required for coding agents with filesystem and shell access.
+
+## Skills and guidance across connections
+
+`.agents/skills/` is the maintained source for Tilt's skills. The build packages those exact files, selected authoring contracts and core type definitions into `dist/guidance.json`. The connected runtime serves the catalogue and content; remote clients never substitute guidance from their own checkout. Responses contain a bundle version and per-document SHA-256 hashes, so content parity can be checked.
+
+```sh
+npm run cli -- skills
+npm run cli -- skill motion-design
+npm run cli -- skill motion-design guides/timing.md
+npm run cli -- guide docs/camera.md
+```
+
+`skills` lists descriptions, entrypoints, available files and contract paths without loading every guide. `skill` is a convenient path shortcut; `guide` reads any document listed in the catalogue. All use the read-only `guidance` command over the normal authenticated `/api` connection. MCP exposes the same command as `tilt_guidance` and the catalogue as `tilt://guidance`. The tool description, MCP initialization instructions, CLI help and capabilities response all identify this discovery step. Document responses return resolved `links` that can be passed back as `path`; they are logical IDs, not paths on the agent's computer or scene-relative file paths.
+
+Start with workspace-context, then motion-design for creative motion work, and load only relevant supporting guides. The skill provides creative decisions; the other skills supply execution contracts. Examples written as `npm run cli -- ...` mean the connected Tilt CLI. External projects without Tilt's package scripts use `node /path/to/tilt/dist/cli.cjs ...`, from the project folder or with `TILT_PROJECT` set. New projects created by Tilt receive an `AGENTS.md` bootstrap with the installed CLI path. Opening an existing project never overwrites its instructions; it can use the connection's discovery entrypoints, or its owner can add the bootstrap to existing agent instructions.
+
+Local filesystem agents can read these same files directly. After changing guidance source, rebuild and start the updated runtime so CLI/MCP serve the new version. `AGENTS.md` and scene-authoring route filesystem agents to motion-design. Agents are not guaranteed to discover arbitrary CLI features automatically: a host must expose the tool description or give the agent the bootstrap instruction. Matching guidance, operations and review evidence removes avoidable access differences; it does not guarantee identical output quality across agents or models.
 
 ## Three kinds of state
 
@@ -120,7 +139,7 @@ Raw filesystem writes remain supported. The runtime serializes its own writes bu
 
 ## MCP
 
-Run dist/agent.cjs with TILT_PROJECT set to the project directory. All 33 public commands share their schemas with the runtime; this includes context, viewer targeting, camera/track edits, edit groups, history, captures and rendering. Tools accept actorId, sceneId and viewId where applicable. Read-only context/capability resources are available at tilt://context and tilt://capabilities. tilt_wait_for_change provides bounded waiting without requiring host support for resource subscriptions.
+Run dist/agent.cjs with TILT_PROJECT set to the project directory. Public commands share their schemas with the runtime; this includes guidance, context, viewer targeting, camera/track edits, edit groups, history, captures and rendering. Tools accept actorId, sceneId and viewId where applicable. Read-only resources are available at tilt://context, tilt://capabilities and tilt://guidance. Capabilities and guidance resources come from the connected runtime. tilt_wait_for_change provides bounded waiting without requiring host support for resource subscriptions.
 
 ## Remote connection boundary
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CompositionClipSchema } from "./compositions";
 import { CameraSettingsSchema } from "./camera";
 import { SourceQualitySchema } from "./quality";
 import { RenderMetricsSchema } from "./render-metrics";
@@ -39,6 +40,7 @@ export const ViewStateSchema = z.object({
   duration: z.number().finite().min(0).optional(),
   fps: z.number().finite().positive().optional(),
   timeline: TimelineContextSchema.optional(),
+  selectedClips: z.array(CompositionClipSchema).default([]),
   selectedTracks: z
     .array(
       z.object({
@@ -55,6 +57,7 @@ export const ViewStateSchema = z.object({
     .default([]),
   mode: z.enum(["source", "camera"]),
   camera: CameraSettingsSchema.optional(),
+  cameraId: z.string().optional(),
   sourceQuality: z.array(SourceQualitySchema).optional(),
   renderMetrics: RenderMetricsSchema.optional(),
   sourceStatus: z.array(SourceStatusSchema).optional(),
@@ -66,6 +69,8 @@ export const ViewStateSchema = z.object({
   error: z.string().max(3000).nullable(),
   documentRevision: z.string(),
   displayedRevision: z.string().nullable(),
+  dependencyRevision: z.string().optional(),
+  displayedDependencyRevision: z.string().optional(),
   viewport: z.object({
     width: z.number().int().min(0).max(20000),
     height: z.number().int().min(0).max(20000),
@@ -116,6 +121,7 @@ export type ViewRequest = {
   sourceId?: string;
   sceneId?: string;
   trackId?: string | null;
+  cameraId?: string;
   revision?: string;
   timeoutMs?: number;
 };

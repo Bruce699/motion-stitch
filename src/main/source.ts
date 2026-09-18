@@ -306,7 +306,7 @@ export class WebSource {
         ),
       this.spec.sampleTimeoutMs ?? 15000,
     );
-    const key = result.revision;
+    const key = JSON.stringify([result.revision, parameters]);
     this.currentRoute = result.route;
     if (key === this.lastKey && this.lastFrame) {
       this.status.reused = true;

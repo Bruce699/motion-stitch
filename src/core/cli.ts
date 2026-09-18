@@ -3,6 +3,8 @@ import { parseAgentCommand } from "./commands";
 export const cliHelp = [
   "Tilt agent CLI",
   "  context [--fresh] | views | state [--fresh] | capabilities",
+  "  skills | skill <name> [file] | guide <catalogue-path>",
+  "  Start authoring with skills; load workspace-context and motion-design as relevant.",
   "  watch [--count N] | wait-for-change <cursor> [--timeout MS]",
   "  seek <seconds> | play | pause | view <source|camera> [sourceId]",
   "  select-track <id|none> | wait-for-frame <revision> [--timeout MS] | capture [seconds]",
@@ -88,6 +90,17 @@ export function parseCLI(argv: string[]): {
     context: () => ({ type: "context" }),
     views: () => ({ type: "views" }),
     capabilities: () => ({ type: "capabilities" }),
+    skills: () => ({ type: "guidance" }),
+    skill: () => {
+      if (!args[0] || !/^[a-z0-9-]+$/.test(args[0])) throw new Error("Supply a skill name from skills");
+      const file = args[1] || "SKILL.md";
+      if (file.startsWith("/") || file.includes("\\") || file.split("/").some(part => !part || part === "." || part === "..")) throw new Error("Invalid skill file path");
+      return { type: "guidance", path: `.agents/skills/${args[0]}/${file}` };
+    },
+    guide: () => {
+      if (!args[0]) throw new Error("Supply a document path from skills");
+      return { type: "guidance", path: args[0] };
+    },
     history: () => ({ type: "history" }),
     undo: () => ({ type: "undo" }),
     redo: () => ({ type: "redo" }),

@@ -1,0 +1,1450 @@
+{
+  "schema_version": 1,
+  "method": {
+    "reviewed_overviews": 5,
+    "reviewed_intervals": 35,
+    "new_6fps_windows": 30,
+    "reused_6fps_windows": 5,
+    "frames_per_window": 24,
+    "sampling": "Purposive 4-second windows at 6 fps, visually inspected in temporal order. This is not a prevalence census and does not measure exact camera velocity.",
+    "timing": "Local reel seconds; dense sheet steps are 0.167 seconds. Scene map boundaries are semantic and approximate. CAM-01 ends9.8 and CAM-03 ends34.8 to exclude unrelated tail/cut.",
+    "ranking": "Count distinct supported films, then distinct referenced semantic scenes. Repeated windows in one scene do not increase scene count. No frame-count weighting.",
+    "interpretation": "Camera-state terms describe apparent motion relative to the subject. An orbit-like change can result from a rotating object or moving camera; zoom/scale/dolly are often indistinguishable. No original camera rig, focal length, isometric setting, velocity curve or percentage of moving footage is recovered.",
+    "splices": "All sequence pairs checked against local/analysis/our-splices.json; none cross a local edit. CAM-03 evidence sheet includes our34.8348 splice in its final image, excluded from its interval/conclusions."
+  },
+  "observations": [
+    {
+      "id": "CAM-01",
+      "film": "apple-liquid-glass",
+      "start": 6,
+      "end": 9.8,
+      "semantic_scene_ids": [
+        "LG-01"
+      ],
+      "description": "An extreme oblique glass-numeral detail drifts gently, then cuts to a wider 9:41 construction. The wider shot continues a quiet lateral relative move; the depth and optical edges remain the subject.",
+      "principles": [
+        "detail-framing",
+        "controlled-view-drift",
+        "oblique-depth-proof",
+        "frame-change-on-cut"
+      ],
+      "camera_state": "slow relative drift; internal cut to a new viewpoint",
+      "projection": "Oblique dimensional rendering with foreshortening and occlusion; focal length and rig unknown.",
+      "framing": "cropped numeral rim \u2192 wider but still cropped clock",
+      "motion_direction": "features drift left in wider shot; no inferred dolly",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-liquid-glass-006.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-02",
+      "film": "apple-liquid-glass",
+      "start": 14,
+      "end": 18,
+      "semantic_scene_ids": [
+        "LG-02"
+      ],
+      "description": "The dock is initially close and nearly frontal. After an internal cut around15.17, enlarged icons rapidly recede into a complete centered phone, then settle.",
+      "principles": [
+        "scale-reveals-context",
+        "move-then-hold",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "scale reduction and recentering followed by a reading hold",
+      "projection": "Near-frontal device view at end; 2D scale, focal zoom, and camera retreat cannot be distinguished on the blank backdrop.",
+      "framing": "dock crop \u2192 full phone with whitespace",
+      "motion_direction": "apparent retreat toward center; screen upright",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-liquid-glass-014.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-03",
+      "film": "apple-liquid-glass",
+      "start": 31,
+      "end": 34.8,
+      "semantic_scene_ids": [
+        "LG-04"
+      ],
+      "description": "The lens first moves right across a stationary paragraph. From about32.3 the whole paragraph enlarges while the lens travels back left/down. This separates local optical action from the broader framing move.",
+      "principles": [
+        "motion-within-stable-frame",
+        "detail-framing",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "initially stable frame; then push-in-like reframing plus independent lens motion",
+      "projection": "Flat frontal text plane; lens refraction is a local effect, not proof of camera perspective.",
+      "framing": "readable paragraph \u2192 enlarged cropped lines",
+      "motion_direction": "lens right, then left/down; global image enlargement",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-liquid-glass-031.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-04",
+      "film": "apple-liquid-glass",
+      "start": 79,
+      "end": 83,
+      "semantic_scene_ids": [
+        "LG-09"
+      ],
+      "description": "The Notes sheet keeps a similar low oblique orientation while the small toolbar separates and regroups over the flower. Gentle global drift exists, but the strongest change is local to the controls.",
+      "principles": [
+        "oblique-depth-proof",
+        "controlled-view-drift",
+        "motion-within-stable-frame"
+      ],
+      "camera_state": "restrained relative drift supporting independent component animation",
+      "projection": "Oblique plane, visible layer separation and shadows; not enough parallel-line evidence to certify orthographic/isometric.",
+      "framing": "oblique sheet and toolbar \u2192 same sheet slightly reframed",
+      "motion_direction": "small overall drift; toolbar moves independently",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-liquid-glass-079.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-05",
+      "film": "apple-liquid-glass",
+      "start": 118,
+      "end": 122,
+      "semantic_scene_ids": [
+        "LG-13"
+      ],
+      "description": "Large near petals overlap smaller far petals. An internal cut reveals an exploded stack; petals descend while the base rotates relative to the viewer toward a more readable icon.",
+      "principles": [
+        "oblique-depth-proof",
+        "relative-rotation",
+        "scale-reveals-context"
+      ],
+      "camera_state": "relative viewpoint/orientation change plus moving layers",
+      "projection": "Strong dimensional depth cues from occlusion, changing face exposure and near/far petals; perspective-looking, not a recovered projection.",
+      "framing": "immersed petal detail \u2192 exploded stack \u2192 assembled icon",
+      "motion_direction": "petals descend; base changes yaw/elevation relative to view",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-liquid-glass-118.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-06",
+      "film": "apple-liquid-glass",
+      "start": 128,
+      "end": 132,
+      "semantic_scene_ids": [
+        "LG-14"
+      ],
+      "description": "Three frontal phones briefly settle, then tip as a group before a cut to an oblique close pass over pale icon layers. The cut increases depth rather than preserving an exact trajectory.",
+      "principles": [
+        "frontal-reading-plane",
+        "move-then-hold",
+        "projection-contrast",
+        "relative-rotation"
+      ],
+      "camera_state": "short hold \u2192 group tilt \u2192 relative flyover-like close pass",
+      "projection": "Frontal triptych gives way to strong foreshortening/overlap among icons.",
+      "framing": "three readable phones \u2192 cropped depth-rich icons",
+      "motion_direction": "group leans; close pass travels along icon row",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-liquid-glass-128.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-07",
+      "film": "apple-ios-7",
+      "start": 3,
+      "end": 7,
+      "semantic_scene_ids": [
+        "I7-01"
+      ],
+      "description": "The iPad cover folds over the screen while the hardware corner remains the visual anchor. The entire assembly later drifts down out of frame; this could be object translation or a rising view.",
+      "principles": [
+        "motion-within-stable-frame",
+        "anchor-through-change",
+        "controlled-view-drift"
+      ],
+      "camera_state": "mostly anchored hardware with articulated cover; later relative vertical drift",
+      "projection": "Visible hardware thickness and foreshortened cover; specific projection indeterminate.",
+      "framing": "cropped top-left hardware corner \u2192 closed cover lower in frame",
+      "motion_direction": "cover swings; assembly drifts downward",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-ios-7-003.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-08",
+      "film": "apple-ios-7",
+      "start": 48,
+      "end": 52,
+      "semantic_scene_ids": [
+        "I7-04"
+      ],
+      "description": "A cropped lock-screen detail gives way to the full thin phone at an oblique angle. As icons animate onto the screen, its orientation turns closer to frontal and becomes easier to read.",
+      "principles": [
+        "relative-rotation",
+        "frontal-reading-plane",
+        "frame-change-on-cut"
+      ],
+      "camera_state": "cut to a wider product view followed by relative rotation toward front",
+      "projection": "Changing face and side visibility demonstrate relative rotation; camera orbit versus device turntable unknown.",
+      "framing": "lock-screen crop \u2192 full phone \u2192 nearly frontal home screen",
+      "motion_direction": "device remains around center while its visible side narrows",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-ios-7-048.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-09",
+      "film": "apple-ios-7",
+      "start": 100,
+      "end": 104,
+      "semantic_scene_ids": [
+        "I7-09"
+      ],
+      "description": "The framing finishes a quick scale reduction and settles on one frontal phone. Notification Center then drops over the home screen while the outer device remains stable.",
+      "principles": [
+        "move-then-hold",
+        "scale-reveals-context",
+        "frontal-reading-plane",
+        "motion-within-stable-frame",
+        "anchor-through-change"
+      ],
+      "camera_state": "brief reframing followed by locked device presentation",
+      "projection": "Near-frontal screen plane; no depth projection required to explain the UI slide.",
+      "framing": "large home-screen crop \u2192 entire screen in device",
+      "motion_direction": "global retreat stops; panel moves down inside bezel",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-ios-7-100.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-10",
+      "film": "apple-ios-7",
+      "start": 109,
+      "end": 113,
+      "semantic_scene_ids": [
+        "I7-09"
+      ],
+      "description": "Separated notification, icon and wallpaper planes converge while the view becomes progressively frontal. The oblique beginning makes layer order visible; the frontal ending restores the normal screen.",
+      "principles": [
+        "oblique-depth-proof",
+        "relative-rotation",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "layer convergence combined with relative rotation toward front",
+      "projection": "Oblique separated planes with depth overlap; no certified camera orbit or isometric geometry.",
+      "framing": "exploded oblique UI \u2192 flush near-frontal interface",
+      "motion_direction": "planes converge; side exposure narrows",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-ios-7-109.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-11",
+      "film": "apple-ios-7",
+      "start": 144,
+      "end": 148,
+      "semantic_scene_ids": [
+        "I7-12"
+      ],
+      "description": "The phone and wallpaper keep a stable screen-space frame while the icon grid changes and a folder opens. A small viewpoint bias remains, but the UI action supplies the major movement.",
+      "principles": [
+        "frontal-reading-plane",
+        "motion-within-stable-frame",
+        "anchor-through-change"
+      ],
+      "camera_state": "near-static product framing with local UI animation",
+      "projection": "Slightly oblique hardware; inner interface remains easily readable.",
+      "framing": "home-screen phone \u2192 same phone with folder state",
+      "motion_direction": "icons spread/recede independently; no meaningful camera travel established",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-ios-7-144.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-12",
+      "film": "apple-ios-7",
+      "start": 229,
+      "end": 233,
+      "semantic_scene_ids": [
+        "I7-20"
+      ],
+      "description": "A narrow oblique product crop drifts, then a cut changes to a much closer and more frontal icon grid. The second shot reveals higher icon rows through a slow vertical survey.",
+      "principles": [
+        "detail-framing",
+        "frame-change-on-cut",
+        "lateral-survey",
+        "projection-contrast"
+      ],
+      "camera_state": "slow relative drift; internal cut to a detail survey",
+      "projection": "Changing visible side of hardware before cut; near-frontal screen afterward.",
+      "framing": "thin side-biased phone \u2192 frontal icon close-up",
+      "motion_direction": "after cut image content shifts downward as higher rows enter",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-ios-7-229.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-13",
+      "film": "apple-yosemite",
+      "start": 0,
+      "end": 4,
+      "semantic_scene_ids": [
+        "YO-01"
+      ],
+      "description": "The three window-control circles grow on a fixed white stage. A closer framing moves attention onto red then yellow while the symbols are constructed. The underlying action can be entirely graphic.",
+      "principles": [
+        "detail-framing",
+        "frontal-reading-plane",
+        "lateral-survey"
+      ],
+      "camera_state": "graphic scale and horizontal reframing, not a proven camera move",
+      "projection": "Flat/front-facing construction artwork; no parallax or vanishing-point evidence.",
+      "framing": "three controls together \u2192 one control large with neighbors cropped",
+      "motion_direction": "first enlarge; then artwork shifts left to reveal yellow",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-yosemite-000.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-14",
+      "film": "apple-yosemite",
+      "start": 22,
+      "end": 26,
+      "semantic_scene_ids": [
+        "YO-04"
+      ],
+      "description": "The dock is surveyed from Finder through adjacent icons. Icons move left through the frame while individual replacements/assembly happen locally; a restrained angle change keeps the shelf dimensional.",
+      "principles": [
+        "lateral-survey",
+        "controlled-view-drift",
+        "motion-within-stable-frame"
+      ],
+      "camera_state": "lateral survey with slight relative roll/orientation change",
+      "projection": "Oblique dock surface and shading; the wallpaper is a flat image, not world-space parallax evidence.",
+      "framing": "left end of Dock \u2192 adjacent icon family at comparable scale",
+      "motion_direction": "icons travel right-to-left; view reads as surveying to right",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-yosemite-022.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-15",
+      "film": "apple-yosemite",
+      "start": 31,
+      "end": 35,
+      "semantic_scene_ids": [
+        "YO-04"
+      ],
+      "description": "The same rightward survey continues through media, store and utility icons at a readable, nearly constant scale, then accelerates into a close transition near the end.",
+      "principles": [
+        "lateral-survey",
+        "controlled-view-drift",
+        "detail-framing"
+      ],
+      "camera_state": "sustained lateral survey, followed by a rapid scale change",
+      "projection": "Predominantly frontal/low-oblique dock representation; camera versus translated composition not recoverable.",
+      "framing": "middle Dock family \u2192 Settings/Trash end \u2192 close transition",
+      "motion_direction": "content moves left; final framing enlarges rapidly",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-yosemite-031.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-16",
+      "film": "apple-yosemite",
+      "start": 36,
+      "end": 40,
+      "semantic_scene_ids": [
+        "YO-05"
+      ],
+      "description": "A large translucent Finder sidebar becomes smaller and gains window context as wallpaper imagery changes behind it. Near the end, the crop begins admitting the file grid.",
+      "principles": [
+        "scale-reveals-context",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "pullback-like reframing with independently changing background/content",
+      "projection": "Frontal layered desktop; changing photographic backgrounds must not be mistaken for camera parallax.",
+      "framing": "sidebar close-up \u2192 sidebar plus surrounding window",
+      "motion_direction": "overall scale reduces; additional content enters from right",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-yosemite-036.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-17",
+      "film": "apple-yosemite",
+      "start": 50,
+      "end": 54,
+      "semantic_scene_ids": [
+        "YO-07",
+        "YO-08"
+      ],
+      "description": "Notification Center slides away while Calendar and the desktop are revealed. A sustained scale reduction admits other windows, then the laptop bezel. The interface supplies continuity through multiple levels of context.",
+      "principles": [
+        "scale-reveals-context",
+        "continuous-spatial-handoff",
+        "anchor-through-change",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "independent panel exit plus continuous pullback-like framing",
+      "projection": "Frontal desktop resolves into physical laptop framing; exact zoom/dolly mechanism unknown.",
+      "framing": "clock-widget detail \u2192 desktop windows \u2192 laptop edge",
+      "motion_direction": "panel exits right; wider context expands around the center",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-yosemite-050.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-18",
+      "film": "apple-yosemite",
+      "start": 54,
+      "end": 58,
+      "semantic_scene_ids": [
+        "YO-08",
+        "YO-09"
+      ],
+      "description": "The complete laptop continues shrinking into a centered product view, nearly settles, then cuts to a centered Yosemite signature. The restrained end state prepares the mark rather than demanding continuous travel.",
+      "principles": [
+        "scale-reveals-context",
+        "move-then-hold",
+        "anchor-through-change",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "apparent retreat decelerates to near hold; centered cut to signature",
+      "projection": "Laptop body has perspective/foreshortening cues; blank setting prevents focal-length recovery.",
+      "framing": "large laptop \u2192 smaller complete laptop \u2192 small centered signature",
+      "motion_direction": "radial scale reduction; signature stays on the central axis",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/apple-yosemite-054.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-19",
+      "film": "airbnb-design-system",
+      "start": 17,
+      "end": 21,
+      "semantic_scene_ids": [
+        "AB-03"
+      ],
+      "description": "The framing jumps from button spacing to its enlarged corner curve. After the curve settles, a fast scale reduction reveals the button as part of a form card.",
+      "principles": [
+        "detail-framing",
+        "scale-reveals-context",
+        "move-then-hold",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "detail framing, settle, then pullback-like graphic move",
+      "projection": "Flat construction diagram and frontal card; no necessary physical camera.",
+      "framing": "spacing specimen \u2192 extreme radius detail \u2192 form card",
+      "motion_direction": "rapid reduction about the lower button area",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/airbnb-design-system-017.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-20",
+      "film": "airbnb-design-system",
+      "start": 27,
+      "end": 31,
+      "semantic_scene_ids": [
+        "AB-05"
+      ],
+      "description": "The suitcase is assembled in a centered product frame. A cut reveals stitching at extreme close range, where the threads animate but the framing is essentially held; another cut returns to the finished suitcase.",
+      "principles": [
+        "detail-framing",
+        "frame-change-on-cut",
+        "motion-within-stable-frame",
+        "anchor-through-change"
+      ],
+      "camera_state": "anchored assembly; held macro insert; wider reveal",
+      "projection": "Dimensional object and leather relief are visible; macro perspective/orthographic choice cannot be determined.",
+      "framing": "whole suitcase \u2192 leather/stitch macro \u2192 finished whole suitcase",
+      "motion_direction": "threads move along seam; scale discontinuities happen at cuts",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/airbnb-design-system-027.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-21",
+      "film": "airbnb-design-system",
+      "start": 31,
+      "end": 35,
+      "semantic_scene_ids": [
+        "AB-05",
+        "AB-06"
+      ],
+      "description": "The suitcase, gem, paw and bed occupy similar central product space across cuts. Several rotate subtly relative to the viewer. The bed then reduces into a row of increasingly detailed representations.",
+      "principles": [
+        "anchor-through-change",
+        "relative-rotation",
+        "scale-reveals-context",
+        "frame-change-on-cut"
+      ],
+      "camera_state": "matched central product framing; relative turntable-like movement; final scale reduction",
+      "projection": "Dimensional icon rendering, modest convergence; the bed is oblique but not proven isometric.",
+      "framing": "one large icon at a time \u2192 small comparison family",
+      "motion_direction": "local yaw changes; final icon reduces toward center",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/airbnb-design-system-031.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-22",
+      "film": "airbnb-design-system",
+      "start": 38,
+      "end": 42,
+      "semantic_scene_ids": [
+        "AB-07"
+      ],
+      "description": "A huge color swatch reduces to reveal the full palette grid. The grid is held while accessibility markers appear, then selected colors enlarge again. Framing scale follows the hierarchy of information.",
+      "principles": [
+        "scale-reveals-context",
+        "move-then-hold",
+        "frontal-reading-plane",
+        "detail-framing"
+      ],
+      "camera_state": "graphic pullback-like scale reveal, hold, then close emphasis",
+      "projection": "Flat grid/front-facing artwork; no perspective evidence.",
+      "framing": "one swatch \u2192 whole palette \u2192 selected colors large",
+      "motion_direction": "radial reduction followed by enlargement",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/airbnb-design-system-038.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-23",
+      "film": "airbnb-design-system",
+      "start": 49,
+      "end": 53,
+      "semantic_scene_ids": [
+        "AB-10"
+      ],
+      "description": "A small card changes into a taller feature card and is held while its illustrated content moves. Related cards accumulate around it as the view broadens slightly.",
+      "principles": [
+        "motion-within-stable-frame",
+        "anchor-through-change",
+        "scale-reveals-context",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "stable central card followed by restrained widening; local content animation",
+      "projection": "Front-facing cards with shadows; shadows alone do not prove a perspective camera.",
+      "framing": "one small card \u2192 feature card \u2192 surrounding card collection",
+      "motion_direction": "central content stays legible as peripheral items enter",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/airbnb-design-system-049.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-24",
+      "film": "airbnb-design-system",
+      "start": 53,
+      "end": 57,
+      "semantic_scene_ids": [
+        "AB-10",
+        "AB-11"
+      ],
+      "description": "An upright component collection cuts to oblique dimensional sample tiles. The tiles drift upward relative to frame before a white signature replaces them. Flat application and dimensional material presentation are deliberately distinct.",
+      "principles": [
+        "projection-contrast",
+        "controlled-view-drift",
+        "frame-change-on-cut"
+      ],
+      "camera_state": "flat survey \u2192 cut to angled relative drift \u2192 still signature",
+      "projection": "Oblique parallel-looking plates with thickness; orthographic-like appearance is not certified isometric.",
+      "framing": "frontal card wall \u2192 angled material samples \u2192 centered mark",
+      "motion_direction": "cards recede/shift; plates mainly upward; final mark stationary",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/airbnb-design-system-053.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-25",
+      "film": "openai-brand-2025",
+      "start": 6,
+      "end": 10,
+      "semantic_scene_ids": [
+        "OA-02"
+      ],
+      "description": "The dot, filled circle, construction rings and small dot replace one another around the same center. Page-edge labels remain fixed, showing that subject size changes happen inside a stable layout.",
+      "principles": [
+        "motion-within-stable-frame",
+        "anchor-through-change",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "locked editorial frame with independent shape/scale changes",
+      "projection": "Flat 2D graphic presentation; no evidence of orbit/dolly or perspective.",
+      "framing": "small dot \u2192 circle specimens \u2192 small dot",
+      "motion_direction": "radial shape changes around stable center",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/openai-brand-2025-006.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-26",
+      "film": "openai-brand-2025",
+      "start": 19,
+      "end": 23,
+      "semantic_scene_ids": [
+        "OA-03"
+      ],
+      "description": "Letter construction uses several deliberate magnifications: full circle/tangents, a cropped contour, then GPT outlines. Stationary marginal labels distinguish graphic reframing from a whole-frame camera push.",
+      "principles": [
+        "detail-framing",
+        "frontal-reading-plane",
+        "motion-within-stable-frame"
+      ],
+      "camera_state": "local magnification and cut/scale changes inside fixed editorial layout",
+      "projection": "Flat glyph geometry without depth cues.",
+      "framing": "circle construction \u2192 large contour crop \u2192 full GPT specimen",
+      "motion_direction": "content enlarges/reduces; margin furniture fixed",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/openai-brand-2025-019.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-27",
+      "film": "openai-brand-2025",
+      "start": 48,
+      "end": 52,
+      "semantic_scene_ids": [
+        "OA-06"
+      ],
+      "description": "The centered circle becomes an outline and is reduced/repositioned to form the O of a wordmark. Remaining letters build to its right while page-edge labels retain their positions.",
+      "principles": [
+        "scale-reveals-context",
+        "anchor-through-change",
+        "frontal-reading-plane",
+        "motion-within-stable-frame"
+      ],
+      "camera_state": "fixed frame; subject scale and position animate",
+      "projection": "Flat 2D outline/wordmark composition.",
+      "framing": "one large circle \u2192 small O \u2192 wordmark construction",
+      "motion_direction": "circle scales down and moves left within the final word",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/openai-brand-2025-048.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-28",
+      "film": "openai-brand-2025",
+      "start": 59,
+      "end": 63,
+      "semantic_scene_ids": [
+        "OA-07"
+      ],
+      "description": "Overlapping circles and the Blossom outline share a stable center. The mark enlarges in a short controlled step before handles and the filled black result are shown; the surrounding page stays fixed.",
+      "principles": [
+        "move-then-hold",
+        "frontal-reading-plane",
+        "anchor-through-change",
+        "motion-within-stable-frame"
+      ],
+      "camera_state": "fixed frame with local enlargement and held specimen",
+      "projection": "Flat geometric construction; interweaving is graphic topology, not evidence of a moving 3D camera.",
+      "framing": "small circle construction \u2192 larger contour specimen \u2192 filled mark",
+      "motion_direction": "radial local enlargement, then stable center",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/openai-brand-2025-059.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-29",
+      "film": "openai-brand-2025",
+      "start": 73,
+      "end": 77,
+      "semantic_scene_ids": [
+        "OA-08"
+      ],
+      "description": "Colored dots spread and multiply over the page, briefly fill its width, then converge into one dot. Different dots move independently while margin labels stay still. This is choreography of subjects, not demonstrated camera retreat.",
+      "principles": [
+        "motion-within-stable-frame",
+        "frontal-reading-plane",
+        "anchor-through-change"
+      ],
+      "camera_state": "locked editorial frame with distributed object motion",
+      "projection": "Flat circles; size differences alone do not establish depth or parallax.",
+      "framing": "sparse dot group \u2192 full field \u2192 one centered dot",
+      "motion_direction": "outward distribution followed by inward convergence",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/openai-brand-2025-073.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-30",
+      "film": "openai-brand-2025",
+      "start": 93,
+      "end": 97,
+      "semantic_scene_ids": [
+        "OA-10"
+      ],
+      "description": "The wordmark/clear-space specimen becomes a page box, whose dimensions and columns change. OpenAI, ChatGPT and Sora occupy alternate placements without oblique presentation.",
+      "principles": [
+        "frontal-reading-plane",
+        "motion-within-stable-frame",
+        "scale-reveals-context"
+      ],
+      "camera_state": "locked frame; layout geometry changes within it",
+      "projection": "Flat page diagrams, constant frontal presentation.",
+      "framing": "small wordmark specimen \u2192 page grid and layout variants",
+      "motion_direction": "box grows and changes aspect; marks reposition within page",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/camera/openai-brand-2025-093.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-31",
+      "film": "apple-ios-7",
+      "start": 112,
+      "end": 116,
+      "semantic_scene_ids": [
+        "I7-09",
+        "I7-10"
+      ],
+      "description": "Notification Center retracts, the home screen briefly reappears, then Messages opens. The outside phone is the stationary common frame across this content handoff; apparent zoom occurs inside the screen.",
+      "principles": [
+        "anchor-through-change",
+        "motion-within-stable-frame",
+        "continuous-spatial-handoff",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "stable outer device across semantic handoff",
+      "projection": "Frontal screen; inner app launch scale is distinct from whole-device camera framing.",
+      "framing": "notifications \u2192 home \u2192 message task, same device size",
+      "motion_direction": "panel up; icons scale away; app expands inside bezel",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/transitions/apple-ios-7-112.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-32",
+      "film": "openai-brand-2025",
+      "start": 17,
+      "end": 21,
+      "semantic_scene_ids": [
+        "OA-02",
+        "OA-03"
+      ],
+      "description": "Scattered dots reduce to one near the center-right; its circular motif becomes a much larger outline and letter-construction diagram. Page furniture stays fixed while the subject establishes the next content chapter.",
+      "principles": [
+        "anchor-through-change",
+        "continuous-spatial-handoff",
+        "frontal-reading-plane",
+        "motion-within-stable-frame"
+      ],
+      "camera_state": "fixed editorial camera/frame; motif and local scale change",
+      "projection": "Flat geometric presentation.",
+      "framing": "small dot \u2192 circle \u2192 glyph construction",
+      "motion_direction": "subject enlarges near its existing area; line geometry enters",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/transitions/openai-brand-2025-017.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-33",
+      "film": "airbnb-design-system",
+      "start": 19,
+      "end": 23,
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-04"
+      ],
+      "description": "The corner detail recedes to the form, framing travels upward to the phone header, then rapidly enlarges the back arrow before it becomes an icon-grid specimen on yellow. The new scene inherits an identifiable visual target, not an arbitrary camera destination.",
+      "principles": [
+        "detail-framing",
+        "scale-reveals-context",
+        "continuous-spatial-handoff",
+        "anchor-through-change",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "graphic pullback, vertical reframing, then push-in-like emphasis to matched subject",
+      "projection": "Predominantly frontal until slight device orientation; no recovered 3D path.",
+      "framing": "radius \u2192 full form \u2192 header arrow \u2192 isolated icon construction",
+      "motion_direction": "first retreat, then attention travels upward; final arrow enlargement",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/transitions/airbnb-design-system-019.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-34",
+      "film": "apple-yosemite",
+      "start": 18,
+      "end": 22,
+      "semantic_scene_ids": [
+        "YO-03",
+        "YO-04"
+      ],
+      "description": "A lateral pass along the menu bar reaches the O in Go. The O enlarges to fill the view and introduces the Finder icon, then the Dock/context grows around that icon and the lateral survey resumes.",
+      "principles": [
+        "lateral-survey",
+        "detail-framing",
+        "continuous-spatial-handoff",
+        "anchor-through-change",
+        "scale-reveals-context"
+      ],
+      "camera_state": "lateral survey \u2192 local aperture-like enlargement \u2192 context reveal",
+      "projection": "Flat menu typography becomes a slightly oblique Dock presentation.",
+      "framing": "menu type crop \u2192 expanding O \u2192 Finder icon \u2192 Dock",
+      "motion_direction": "leftward screen travel, expansion around O, then resumed leftward icon travel",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/transitions/apple-yosemite-018.jpg"
+      ],
+      "sample_fps": 6
+    },
+    {
+      "id": "CAM-35",
+      "film": "apple-liquid-glass",
+      "start": 11,
+      "end": 15,
+      "semantic_scene_ids": [
+        "LG-02"
+      ],
+      "description": "Photos petals cut to a Safari needle in a similar oversized material-study scale. The needle/compass resolves into its icon as the relative orientation levels and surrounding Dock appears. It is a combined object assembly and viewpoint change, not camera motion alone.",
+      "principles": [
+        "oblique-depth-proof",
+        "relative-rotation",
+        "scale-reveals-context",
+        "frame-change-on-cut",
+        "frontal-reading-plane"
+      ],
+      "camera_state": "cut between detail studies, then apparent retreat and leveling",
+      "projection": "Clear depth in detached needle and compass layers; converges toward frontal interface.",
+      "framing": "oversized Photos/Safari pieces \u2192 complete icon in Dock",
+      "motion_direction": "needle rotates independently; overall angle levels and scale reduces",
+      "confidence": "high for visible framing; medium for camera interpretation",
+      "evidence": [
+        "/Users/jaytel/Developer/tilt/references/motion/local/analysis/transitions/apple-liquid-glass-011.jpg"
+      ],
+      "sample_fps": 6
+    }
+  ],
+  "sequence_pairs": [
+    {
+      "id": "CP-01",
+      "film": "apple-yosemite",
+      "start": 18,
+      "end": 22,
+      "semantic_scene_ids": [
+        "YO-03",
+        "YO-04"
+      ],
+      "observation_ids": [
+        "CAM-34"
+      ],
+      "relationship": "Lateral menu survey switches into centered O enlargement; Finder then reopens lateral Dock travel. A pivot in movement type is bridged by a recognizable glyph.",
+      "our_splice": false
+    },
+    {
+      "id": "CP-02",
+      "film": "apple-yosemite",
+      "start": 50,
+      "end": 54,
+      "semantic_scene_ids": [
+        "YO-07",
+        "YO-08"
+      ],
+      "observation_ids": [
+        "CAM-17"
+      ],
+      "relationship": "Notification panel exits right while expanding context admits the calendar/desktop. Local object exit and global widening do different jobs without requiring a matching cut.",
+      "our_splice": false
+    },
+    {
+      "id": "CP-03",
+      "film": "apple-yosemite",
+      "start": 54,
+      "end": 58,
+      "semantic_scene_ids": [
+        "YO-08",
+        "YO-09"
+      ],
+      "observation_ids": [
+        "CAM-18"
+      ],
+      "relationship": "Retreat into a centered complete laptop slows before centered signature. Shared screen center, quiet endpoint and whitespace provide continuity across the cut.",
+      "our_splice": false
+    },
+    {
+      "id": "CP-04",
+      "film": "apple-ios-7",
+      "start": 112,
+      "end": 116,
+      "semantic_scene_ids": [
+        "I7-09",
+        "I7-10"
+      ],
+      "observation_ids": [
+        "CAM-31"
+      ],
+      "relationship": "The device view remains stable while Notifications gives way to a Messages task through home. Complement is consistency of outer framing, not a paired orbit.",
+      "our_splice": false
+    },
+    {
+      "id": "CP-05",
+      "film": "airbnb-design-system",
+      "start": 19,
+      "end": 23,
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-04"
+      ],
+      "observation_ids": [
+        "CAM-33"
+      ],
+      "relationship": "Retreat from radius to form reverses into enlargement toward header arrow. The arrow survives the change to a yellow icon-grid scene, making the reversal purposeful.",
+      "our_splice": false
+    },
+    {
+      "id": "CP-06",
+      "film": "airbnb-design-system",
+      "start": 53,
+      "end": 57,
+      "semantic_scene_ids": [
+        "AB-10",
+        "AB-11"
+      ],
+      "observation_ids": [
+        "CAM-24"
+      ],
+      "relationship": "Frontal component collection cuts to angled, drifting sample plates, then a held mark. Deliberate projection/motion contrast separates applications from material recap.",
+      "our_splice": false
+    },
+    {
+      "id": "CP-07",
+      "film": "openai-brand-2025",
+      "start": 17,
+      "end": 21,
+      "semantic_scene_ids": [
+        "OA-02",
+        "OA-03"
+      ],
+      "observation_ids": [
+        "CAM-32"
+      ],
+      "relationship": "The stable page frame persists; the remaining dot becomes larger circular construction. Graphic subject continuity handles the chapter change without a world-space camera.",
+      "our_splice": false
+    }
+  ],
+  "ranked_observations": [
+    {
+      "principle": "frontal-reading-plane",
+      "film_count": 5,
+      "semantic_scene_count": 22,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass",
+        "apple-yosemite",
+        "openai-brand-2025"
+      ],
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-04",
+        "AB-07",
+        "AB-10",
+        "I7-04",
+        "I7-09",
+        "I7-10",
+        "I7-12",
+        "LG-02",
+        "LG-04",
+        "LG-14",
+        "OA-02",
+        "OA-03",
+        "OA-06",
+        "OA-07",
+        "OA-08",
+        "OA-10",
+        "YO-01",
+        "YO-05",
+        "YO-07",
+        "YO-08",
+        "YO-09"
+      ],
+      "observation_ids": [
+        "CAM-02",
+        "CAM-03",
+        "CAM-06",
+        "CAM-08",
+        "CAM-09",
+        "CAM-10",
+        "CAM-11",
+        "CAM-13",
+        "CAM-16",
+        "CAM-17",
+        "CAM-18",
+        "CAM-19",
+        "CAM-22",
+        "CAM-23",
+        "CAM-25",
+        "CAM-26",
+        "CAM-27",
+        "CAM-28",
+        "CAM-29",
+        "CAM-30",
+        "CAM-31",
+        "CAM-32",
+        "CAM-33",
+        "CAM-35"
+      ]
+    },
+    {
+      "principle": "scale-reveals-context",
+      "film_count": 5,
+      "semantic_scene_count": 17,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass",
+        "apple-yosemite",
+        "openai-brand-2025"
+      ],
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-04",
+        "AB-05",
+        "AB-06",
+        "AB-07",
+        "AB-10",
+        "I7-09",
+        "LG-02",
+        "LG-13",
+        "OA-06",
+        "OA-10",
+        "YO-03",
+        "YO-04",
+        "YO-05",
+        "YO-07",
+        "YO-08",
+        "YO-09"
+      ],
+      "observation_ids": [
+        "CAM-02",
+        "CAM-05",
+        "CAM-09",
+        "CAM-16",
+        "CAM-17",
+        "CAM-18",
+        "CAM-19",
+        "CAM-21",
+        "CAM-22",
+        "CAM-23",
+        "CAM-27",
+        "CAM-30",
+        "CAM-33",
+        "CAM-34",
+        "CAM-35"
+      ]
+    },
+    {
+      "principle": "motion-within-stable-frame",
+      "film_count": 5,
+      "semantic_scene_count": 15,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass",
+        "apple-yosemite",
+        "openai-brand-2025"
+      ],
+      "semantic_scene_ids": [
+        "AB-05",
+        "AB-10",
+        "I7-01",
+        "I7-09",
+        "I7-10",
+        "I7-12",
+        "LG-04",
+        "LG-09",
+        "OA-02",
+        "OA-03",
+        "OA-06",
+        "OA-07",
+        "OA-08",
+        "OA-10",
+        "YO-04"
+      ],
+      "observation_ids": [
+        "CAM-03",
+        "CAM-04",
+        "CAM-07",
+        "CAM-09",
+        "CAM-11",
+        "CAM-14",
+        "CAM-20",
+        "CAM-23",
+        "CAM-25",
+        "CAM-26",
+        "CAM-27",
+        "CAM-28",
+        "CAM-29",
+        "CAM-30",
+        "CAM-31",
+        "CAM-32"
+      ]
+    },
+    {
+      "principle": "detail-framing",
+      "film_count": 5,
+      "semantic_scene_count": 11,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass",
+        "apple-yosemite",
+        "openai-brand-2025"
+      ],
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-04",
+        "AB-05",
+        "AB-07",
+        "I7-20",
+        "LG-01",
+        "LG-04",
+        "OA-03",
+        "YO-01",
+        "YO-03",
+        "YO-04"
+      ],
+      "observation_ids": [
+        "CAM-01",
+        "CAM-03",
+        "CAM-12",
+        "CAM-13",
+        "CAM-15",
+        "CAM-19",
+        "CAM-20",
+        "CAM-22",
+        "CAM-26",
+        "CAM-33",
+        "CAM-34"
+      ]
+    },
+    {
+      "principle": "move-then-hold",
+      "film_count": 5,
+      "semantic_scene_count": 8,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass",
+        "apple-yosemite",
+        "openai-brand-2025"
+      ],
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-07",
+        "I7-09",
+        "LG-02",
+        "LG-14",
+        "OA-07",
+        "YO-08",
+        "YO-09"
+      ],
+      "observation_ids": [
+        "CAM-02",
+        "CAM-06",
+        "CAM-09",
+        "CAM-18",
+        "CAM-19",
+        "CAM-22",
+        "CAM-28"
+      ]
+    },
+    {
+      "principle": "anchor-through-change",
+      "film_count": 4,
+      "semantic_scene_count": 19,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-yosemite",
+        "openai-brand-2025"
+      ],
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-04",
+        "AB-05",
+        "AB-06",
+        "AB-10",
+        "I7-01",
+        "I7-09",
+        "I7-10",
+        "I7-12",
+        "OA-02",
+        "OA-03",
+        "OA-06",
+        "OA-07",
+        "OA-08",
+        "YO-03",
+        "YO-04",
+        "YO-07",
+        "YO-08",
+        "YO-09"
+      ],
+      "observation_ids": [
+        "CAM-07",
+        "CAM-09",
+        "CAM-11",
+        "CAM-17",
+        "CAM-18",
+        "CAM-20",
+        "CAM-21",
+        "CAM-23",
+        "CAM-25",
+        "CAM-27",
+        "CAM-28",
+        "CAM-29",
+        "CAM-31",
+        "CAM-32",
+        "CAM-33",
+        "CAM-34"
+      ]
+    },
+    {
+      "principle": "continuous-spatial-handoff",
+      "film_count": 4,
+      "semantic_scene_count": 10,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-yosemite",
+        "openai-brand-2025"
+      ],
+      "semantic_scene_ids": [
+        "AB-03",
+        "AB-04",
+        "I7-09",
+        "I7-10",
+        "OA-02",
+        "OA-03",
+        "YO-03",
+        "YO-04",
+        "YO-07",
+        "YO-08"
+      ],
+      "observation_ids": [
+        "CAM-17",
+        "CAM-31",
+        "CAM-32",
+        "CAM-33",
+        "CAM-34"
+      ]
+    },
+    {
+      "principle": "controlled-view-drift",
+      "film_count": 4,
+      "semantic_scene_count": 6,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass",
+        "apple-yosemite"
+      ],
+      "semantic_scene_ids": [
+        "AB-10",
+        "AB-11",
+        "I7-01",
+        "LG-01",
+        "LG-09",
+        "YO-04"
+      ],
+      "observation_ids": [
+        "CAM-01",
+        "CAM-04",
+        "CAM-07",
+        "CAM-14",
+        "CAM-15",
+        "CAM-24"
+      ]
+    },
+    {
+      "principle": "frame-change-on-cut",
+      "film_count": 3,
+      "semantic_scene_count": 8,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass"
+      ],
+      "semantic_scene_ids": [
+        "AB-05",
+        "AB-06",
+        "AB-10",
+        "AB-11",
+        "I7-04",
+        "I7-20",
+        "LG-01",
+        "LG-02"
+      ],
+      "observation_ids": [
+        "CAM-01",
+        "CAM-08",
+        "CAM-12",
+        "CAM-20",
+        "CAM-21",
+        "CAM-24",
+        "CAM-35"
+      ]
+    },
+    {
+      "principle": "relative-rotation",
+      "film_count": 3,
+      "semantic_scene_count": 7,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass"
+      ],
+      "semantic_scene_ids": [
+        "AB-05",
+        "AB-06",
+        "I7-04",
+        "I7-09",
+        "LG-02",
+        "LG-13",
+        "LG-14"
+      ],
+      "observation_ids": [
+        "CAM-05",
+        "CAM-06",
+        "CAM-08",
+        "CAM-10",
+        "CAM-21",
+        "CAM-35"
+      ]
+    },
+    {
+      "principle": "projection-contrast",
+      "film_count": 3,
+      "semantic_scene_count": 4,
+      "films": [
+        "airbnb-design-system",
+        "apple-ios-7",
+        "apple-liquid-glass"
+      ],
+      "semantic_scene_ids": [
+        "AB-10",
+        "AB-11",
+        "I7-20",
+        "LG-14"
+      ],
+      "observation_ids": [
+        "CAM-06",
+        "CAM-12",
+        "CAM-24"
+      ]
+    },
+    {
+      "principle": "oblique-depth-proof",
+      "film_count": 2,
+      "semantic_scene_count": 5,
+      "films": [
+        "apple-ios-7",
+        "apple-liquid-glass"
+      ],
+      "semantic_scene_ids": [
+        "I7-09",
+        "LG-01",
+        "LG-02",
+        "LG-09",
+        "LG-13"
+      ],
+      "observation_ids": [
+        "CAM-01",
+        "CAM-04",
+        "CAM-05",
+        "CAM-10",
+        "CAM-35"
+      ]
+    },
+    {
+      "principle": "lateral-survey",
+      "film_count": 2,
+      "semantic_scene_count": 4,
+      "films": [
+        "apple-ios-7",
+        "apple-yosemite"
+      ],
+      "semantic_scene_ids": [
+        "I7-20",
+        "YO-01",
+        "YO-03",
+        "YO-04"
+      ],
+      "observation_ids": [
+        "CAM-12",
+        "CAM-13",
+        "CAM-14",
+        "CAM-15",
+        "CAM-34"
+      ]
+    }
+  ]
+}

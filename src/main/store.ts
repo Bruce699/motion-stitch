@@ -297,14 +297,25 @@ export class SceneStore extends EventEmitter {
       "-" +
       randomUUID().slice(0, 8);
     const dir = path.join(this.root, "scenes", slug);
-    await fs.cp(path.join(this.root, "scenes", "interface"), dir, {
-      recursive: true,
-      filter: (s) => !s.includes("node_modules"),
+    await fs.mkdir(dir, { recursive: true });
+    const doc = SceneSchema.parse({
+      version: 1,
+      id: slug,
+      name,
+      fps: DEFAULT_FRAME_RATE,
+      duration: 8,
+      size: this.scene?.size ?? { width: 1920, height: 1080 },
+      background: "#000000",
+      camera: { projection: "orthographic", preset: "front", side: "right" },
+      sources: [],
+      parameters: {},
+      tracks: [],
+      clips: [],
     });
-    const doc = SceneSchema.parse(await readJSON(path.join(dir, "scene.json")));
-    doc.id = slug;
-    doc.name = name;
-    doc.fps = DEFAULT_FRAME_RATE;
+    await atomicWrite(
+      path.join(dir, "scene.ts"),
+      `export default function createComposition() { return { sample() {} }; }\n`,
+    );
     await atomicWrite(
       path.join(dir, "scene.json"),
       JSON.stringify(doc, null, 2) + "\n",

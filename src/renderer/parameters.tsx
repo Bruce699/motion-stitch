@@ -134,13 +134,19 @@ export function ColorValue({
   );
 }
 
-function ParameterControl({
+export function ParameterControl({
   name,
   parameter: p,
   sceneId,
   reportError,
+  onValue,
+  exposed,
+  onExpose,
 }: {
   name: string;
+  exposed?: boolean;
+  onExpose?: () => void;
+  onValue?: (value: ParameterValue) => Promise<unknown>;
   parameter: Parameter;
   sceneId: string;
   reportError: (error: unknown) => void;
@@ -167,7 +173,11 @@ function ParameterControl({
   };
   const change = (value: ParameterValue) => {
     setDraft(value);
-    enqueue(() => call({ type: "set_parameter", sceneId, key: name, value }));
+    enqueue(() =>
+      onValue
+        ? onValue(value)
+        : call({ type: "set_parameter", sceneId, key: name, value }),
+    );
   };
   const begin = () => {
     if (active.current) return;
@@ -322,7 +332,21 @@ function ParameterControl({
       />
     );
   })();
-  return <div className="parameter-control">{content}</div>;
+  return (
+    <div className="parameter-control">
+      {content}
+      {onExpose && (
+        <button
+          className="expose-control"
+          aria-label={`${exposed ? "Stop exposing" : "Expose"} ${p.label}`}
+          aria-pressed={exposed}
+          onClick={onExpose}
+        >
+          {exposed ? "Exposed" : "Expose"}
+        </button>
+      )}
+    </div>
+  );
 }
 
 export function ParameterPanel({
@@ -334,14 +358,17 @@ export function ParameterPanel({
   fps,
   onDeselect,
   camera,
+  cameraId,
   cameraGizmo,
   lensPreview,
   sources,
   sceneId,
   reportError,
   disabled,
+  exposedParameters,
 }: {
   mode: "source" | "camera";
+  exposedParameters?: string[];
   parameters: Record<string, Parameter>;
   tracks: SceneDocument["tracks"];
   selectedId?: string;
@@ -349,6 +376,7 @@ export function ParameterPanel({
   fps: number;
   onDeselect: () => void;
   camera?: CameraSettings;
+  cameraId?: string;
   cameraGizmo?: React.ReactNode;
   lensPreview?: LensPreview;
   sources: SceneDocument["sources"];
@@ -375,6 +403,7 @@ export function ParameterPanel({
     void queueControlEdit(async () => {
       await call({
         type: "set_track",
+        sceneId,
         id: selected.id,
         base: { start: selected.start, end: selected.end },
         timing: { start: selected.start, end: selected.end, [edge]: value },
@@ -439,6 +468,17 @@ export function ParameterPanel({
                   key={sceneId + key}
                   name={key}
                   parameter={parameters[key]}
+                  exposed={exposedParameters?.includes(key)}
+                  onExpose={() => {
+                    void queueControlEdit(() =>
+                      call({
+                        type: "expose_parameter",
+                        sceneId,
+                        key,
+                        exposed: !exposedParameters?.includes(key),
+                      }),
+                    ).catch(reportError);
+                  }}
                   sceneId={sceneId}
                   reportError={reportError}
                 />
@@ -457,6 +497,7 @@ export function ParameterPanel({
           {group.name === "Camera" && (
             <CameraControls
               camera={camera}
+              cameraId={cameraId}
               sources={sources}
               sceneId={sceneId}
               reportError={reportError}
@@ -468,6 +509,17 @@ export function ParameterPanel({
               key={sceneId + ":" + key + ":" + parameter.type + ":" + disabled}
               name={key}
               parameter={parameter}
+              exposed={exposedParameters?.includes(key)}
+              onExpose={() => {
+                void queueControlEdit(() =>
+                  call({
+                    type: "expose_parameter",
+                    sceneId,
+                    key,
+                    exposed: !exposedParameters?.includes(key),
+                  }),
+                ).catch(reportError);
+              }}
               sceneId={sceneId}
               reportError={reportError}
             />

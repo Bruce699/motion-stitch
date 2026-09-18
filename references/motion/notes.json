@@ -1,0 +1,753 @@
+{
+  "apple-liquid-glass": [
+    {
+      "scene_id": "LG-01",
+      "start": 0,
+      "end": 10,
+      "note": "Glass landscape becomes clock detail. Broad blue and green surfaces give way to close relief of the lock-screen numerals. The object is initially read as material before it is read as interface.",
+      "tags": [
+        "material-demonstration",
+        "detail-and-context"
+      ]
+    },
+    {
+      "scene_id": "LG-02",
+      "start": 10,
+      "end": 18.7187,
+      "note": "Dimensional app icons resolve into the phone. Photos petals and the Safari needle receive enlarged product treatment, then the dock and complete home screen show their practical scale.",
+      "tags": [
+        "detail-and-context",
+        "family-variation",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "LG-03",
+      "start": 18.7187,
+      "end": 30.2969,
+      "note": "One material across the device family. Mac Dock, Watch, television and a device lineup establish breadth; spatial interfaces extend that language into an environment. This is a family demonstration despite multiple shots.",
+      "tags": [
+        "family-variation",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "LG-04",
+      "start": 30.2969,
+      "end": 34.8348,
+      "note": "Text magnifier optical demonstration. The rounded lens travels across the same paragraph. Enlarged text and distortion at its edge make a small optical behavior the subject.",
+      "tags": [
+        "change-one-variable",
+        "material-demonstration"
+      ]
+    },
+    {
+      "scene_id": "LG-05",
+      "start": 34.8348,
+      "end": 44,
+      "note": "Naming the glass material. Dark close-ups of edges and a changing rounded silhouette lead to a pale translucent Liquid Glass title. The restrained object and light study is one material-introduction beat.",
+      "tags": [
+        "material-demonstration",
+        "isolate-subject",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "LG-06",
+      "start": 44,
+      "end": 53,
+      "note": "The material becomes controls. Slider, switch, tab selection, camera mode control and slide-to-answer reuse rounded translucent forms. Many subjects are short examples of the same control-material claim.",
+      "tags": [
+        "family-variation",
+        "system-in-context",
+        "material-demonstration"
+      ]
+    },
+    {
+      "scene_id": "LG-07",
+      "start": 53,
+      "end": 61.9619,
+      "note": "Glass adapts to lock-screen content. The same playback container sits over floral and green artwork; clock numerals are inspected close, then returned to the phone. Content makes the surface legible.",
+      "tags": [
+        "context-changes-material",
+        "detail-and-context"
+      ]
+    },
+    {
+      "scene_id": "LG-08",
+      "start": 61.9619,
+      "end": 75.2085,
+      "note": "Content-first media and browser controls. A landscape movie receives a control overlay; a compact photo-menu control changes shape; TV and Safari show compact chrome over rich imagery. This demonstrates a shared rule across apps, rather than a single app task.",
+      "tags": [
+        "family-variation",
+        "action-response",
+        "context-changes-material"
+      ]
+    },
+    {
+      "scene_id": "LG-09",
+      "start": 75.2085,
+      "end": 91.7583,
+      "note": "Notes toolbar as a separate adaptive layer. On one oblique note surface, the white bottom bar gives way to floating glass controls, those controls regroup, content scrolls under them, and a menu expands and retracts. The stable note plane supports a sequence of related states.",
+      "tags": [
+        "depth-explains-hierarchy",
+        "action-response",
+        "context-changes-material"
+      ]
+    },
+    {
+      "scene_id": "LG-10",
+      "start": 91.7583,
+      "end": 106.473,
+      "note": "Adaptive control sizes and surfaces. News scrolls beneath its toolbar; a drawing button expands into a tool tray; Maps search sits above the map and a larger library panel. These are three shots in a control-adaptation proof sequence.",
+      "tags": [
+        "family-variation",
+        "action-response",
+        "depth-explains-hierarchy"
+      ]
+    },
+    {
+      "scene_id": "LG-11",
+      "start": 106.473,
+      "end": 113.013,
+      "note": "Music navigation compacts during scrolling. The bottom player and navigation change their grouping as the content scrolls, then the broader navigation returns. Content movement is the input to chrome adaptation.",
+      "tags": [
+        "action-response",
+        "context-changes-material",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "LG-12",
+      "start": 113.013,
+      "end": 118,
+      "note": "Lock-screen layers accumulate. One centered phone builds a stack of playback and notification cards over the portrait, then shows Control Center. The shared device remains the reference frame.",
+      "tags": [
+        "progressive-assembly",
+        "depth-explains-hierarchy"
+      ]
+    },
+    {
+      "scene_id": "LG-13",
+      "start": 118,
+      "end": 125,
+      "note": "Photos icon construction and icon themes. Large colored petals are separated in depth, descend onto their base in sequence, and resolve into an icon among neighboring apps. The family changes to a darker appearance.",
+      "tags": [
+        "construction-revealed",
+        "progressive-assembly",
+        "detail-and-context",
+        "family-variation"
+      ]
+    },
+    {
+      "scene_id": "LG-14",
+      "start": 125,
+      "end": 137.3372,
+      "note": "Personalization and device-family breadth. Individual themed home screens expand into a phone matrix; pale glass icons and widgets demonstrate another appearance, followed by a full device lineup.",
+      "tags": [
+        "family-variation",
+        "sparse-to-dense",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "LG-15",
+      "start": 137.3372,
+      "end": 147.1136,
+      "note": "Final functional examples. Spotlight expands to files, followed by phone theming, desktop controls, contact cards, window controls and Camera. A rapid feature recap, with an incoming splice and one internal splice made by our edit.",
+      "tags": [
+        "family-variation",
+        "action-response",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "LG-16",
+      "start": 147.1136,
+      "end": 156.122633,
+      "note": "Home-screen and brand resolution. The phone returns to its home screen, holds, then large colored background forms clear away for a small glass Apple mark.",
+      "tags": [
+        "readable-settle",
+        "motif-reuse"
+      ]
+    }
+  ],
+  "apple-ios-7": [
+    {
+      "scene_id": "I7-01",
+      "start": 0,
+      "end": 16,
+      "note": "iPad cover construction and utility. The cover opens and folds into a stand as the device changes orientation. The coherent subject is the cover and its utility, not each view.",
+      "tags": [
+        "action-response",
+        "isolate-subject"
+      ]
+    },
+    {
+      "scene_id": "I7-02",
+      "start": 16,
+      "end": 38,
+      "note": "MacBook physical detail and screen. A thin laptop profile receives a slow close inspection, the charging connector approaches its edge, and the screen and Dock complete the product demonstration.",
+      "tags": [
+        "detail-and-context",
+        "action-response"
+      ]
+    },
+    {
+      "scene_id": "I7-03",
+      "start": 38,
+      "end": 43.333333,
+      "note": "EarPods shape. EarPods rotate into an enlarged view and fade into the white field. A short isolated hardware detail.",
+      "tags": [
+        "isolate-subject"
+      ]
+    },
+    {
+      "scene_id": "I7-04",
+      "start": 43.333333,
+      "end": 54,
+      "note": "New phone and home-screen reveal. Lock-screen type begins at close range; the phone rotates and withdraws to reveal the home screen, then allows the full product to read.",
+      "tags": [
+        "detail-and-context",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "I7-05",
+      "start": 54,
+      "end": 63,
+      "note": "Control Center reveal. The drawer rises over the home screen, pauses, then is inspected closer so its translucency and controls can be read.",
+      "tags": [
+        "action-response",
+        "depth-explains-hierarchy",
+        "detail-and-context"
+      ]
+    },
+    {
+      "scene_id": "I7-06",
+      "start": 63,
+      "end": 79,
+      "note": "A shared visual language across utility apps. Clock, alarms, compass, calculator, calendar, reminders and Music form one survey of new type, line symbols, color and controls. The fast cuts support family resemblance.",
+      "tags": [
+        "family-variation",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "I7-07",
+      "start": 79,
+      "end": 84,
+      "note": "Mail typography becomes a specification. A simple Mail layout grows into enlarged text with baseline, leading and size annotations. The reading interface becomes an explanation of its design.",
+      "tags": [
+        "detail-and-context",
+        "construction-revealed"
+      ]
+    },
+    {
+      "scene_id": "I7-08",
+      "start": 84,
+      "end": 100,
+      "note": "Icons built from reusable geometry. Construction guides and isolated components assemble a succession of app icons. Photos petals accumulate around a center, then the completed icon resolves into the home screen.",
+      "tags": [
+        "construction-revealed",
+        "progressive-assembly",
+        "family-variation",
+        "detail-and-context"
+      ]
+    },
+    {
+      "scene_id": "I7-09",
+      "start": 100,
+      "end": 115,
+      "note": "The interface has distinct layers. Notification Center overlays the home screen; the composition separates into notification, icons and wallpaper planes, then recombines. Physical separation explains a software hierarchy.",
+      "tags": [
+        "depth-explains-hierarchy",
+        "action-response",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "I7-10",
+      "start": 115,
+      "end": 127,
+      "note": "Content inside lighter app chrome. Messages/photo composition, Photos collections and Music lists show imagery and content occupying the interface. The phone and chrome supply context while content changes.",
+      "tags": [
+        "family-variation",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "I7-11",
+      "start": 127,
+      "end": 141,
+      "note": "Weather has an atmospheric state. London, Paris and Mount Rainier weather change within the same application structure. An enlarged snowy forecast shows detailed type and conditions over an animated background.",
+      "tags": [
+        "family-variation",
+        "change-one-variable",
+        "detail-and-context"
+      ]
+    },
+    {
+      "scene_id": "I7-12",
+      "start": 141,
+      "end": 153,
+      "note": "Wallpaper remains present through folders. The home screen shifts in perspective over a portrait wallpaper; a folder expands and preserves a softened connection to the image beneath it.",
+      "tags": [
+        "context-changes-material",
+        "depth-explains-hierarchy",
+        "action-response"
+      ]
+    },
+    {
+      "scene_id": "I7-13",
+      "start": 153,
+      "end": 166,
+      "note": "Safari chrome and scrolling. A full phone view becomes a closer browser view; scrolling moves content while the bottom toolbar is shown, then makes room for the page.",
+      "tags": [
+        "action-response",
+        "detail-and-context"
+      ]
+    },
+    {
+      "scene_id": "I7-14",
+      "start": 166,
+      "end": 172,
+      "note": "Video playback controls recede. A landscape phone shows playback controls over the movie, then the controls withdraw and the content carries the frame.",
+      "tags": [
+        "action-response",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "I7-15",
+      "start": 172,
+      "end": 183,
+      "note": "Wallpaper tint compared across three phones. Three phones show different wallpaper colors, then matching passcode, home-screen and Control Center states. Synchronized state changes expose the different background influence.",
+      "tags": [
+        "change-one-variable",
+        "context-changes-material",
+        "family-variation"
+      ]
+    },
+    {
+      "scene_id": "I7-16",
+      "start": 183,
+      "end": 195,
+      "note": "App switching returns to a message task. App cards are browsed in the switcher; a message card expands to the full screen, then a text conversation continues. The sequence has a task destination.",
+      "tags": [
+        "action-response",
+        "depth-explains-hierarchy",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "I7-17",
+      "start": 195,
+      "end": 208.866667,
+      "note": "Camera modes and filters. One camera interface moves between capture mode, filter grid and a selected treatment, then returns to the home screen. The same coastal composition makes changes comparable.",
+      "tags": [
+        "action-response",
+        "change-one-variable",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "I7-18",
+      "start": 208.866667,
+      "end": 215.333333,
+      "note": "Safari address and discovery. A full-screen browser view scrolls and exposes the address field and a favorites grid. This is a separately selected source segment; the incoming join is ours.",
+      "tags": [
+        "action-response",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "I7-19",
+      "start": 215.333333,
+      "end": 221,
+      "note": "Music playback and purchase. Artwork, now-playing text and a purchase state are shown close enough to read. A separately selected source segment; the incoming join is ours.",
+      "tags": [
+        "action-response",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "I7-20",
+      "start": 221,
+      "end": 244.5,
+      "note": "Home-screen beauty reprise. The phone and icons are inspected through oblique and close views before the frontal home screen settles. Repeated content now acts as a product summary.",
+      "tags": [
+        "detail-and-context",
+        "motif-reuse",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "I7-21",
+      "start": 244.5,
+      "end": 248.133333,
+      "note": "Apple signature. Small Apple mark on a white field with a closing fade. The incoming cut to the logo was made by our edit.",
+      "tags": [
+        "isolate-subject",
+        "readable-settle"
+      ]
+    }
+  ],
+  "apple-yosemite": [
+    {
+      "scene_id": "YO-01",
+      "start": 0,
+      "end": 6,
+      "note": "Window control geometry. Three colored window controls are enlarged and inspected in sequence. Inner marks make their familiar function explicit.",
+      "tags": [
+        "isolate-subject",
+        "family-variation"
+      ]
+    },
+    {
+      "scene_id": "YO-02",
+      "start": 6,
+      "end": 15,
+      "note": "Shared line-glyph vocabulary. Arrows, icon/list/column/cover views and the share symbol transform through related line parts. A single semantic survey of system symbols with repeated readable arrivals.",
+      "tags": [
+        "family-variation",
+        "progressive-assembly",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "YO-03",
+      "start": 15,
+      "end": 21,
+      "note": "Finder typography and menu bar. An enlarged menu-bar label appears as outline construction and filled type, then the composition travels through the menu toward Finder.",
+      "tags": [
+        "construction-revealed",
+        "detail-and-context"
+      ]
+    },
+    {
+      "scene_id": "YO-04",
+      "start": 21,
+      "end": 35,
+      "note": "Redesigned Dock family. The viewpoint travels across a row of recognizable app icons against the same wallpaper and Dock surface. Sequential emphasis lets many siblings read as one family.",
+      "tags": [
+        "family-variation",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "YO-05",
+      "start": 35,
+      "end": 44,
+      "note": "Finder materials and file organization. AirDrop is isolated, then located in a translucent sidebar; wallpaper and selection changes prove the surface effect, and the full file window gives those details a use.",
+      "tags": [
+        "detail-and-context",
+        "context-changes-material",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "YO-06",
+      "start": 44,
+      "end": 47,
+      "note": "Messages window. The close conversation list resolves into the whole Messages window with its embedded photo and thread.",
+      "tags": [
+        "detail-and-context",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "YO-07",
+      "start": 47,
+      "end": 51,
+      "note": "Notification information stack. Schedule entries and world clocks are revealed by movement through the dark information panel. The beat is the panel and its content hierarchy.",
+      "tags": [
+        "system-in-context",
+        "family-variation"
+      ]
+    },
+    {
+      "scene_id": "YO-08",
+      "start": 51,
+      "end": 58,
+      "note": "Windows belong to one desktop. Calendar, Messages and other windows become a layered desktop composition; the view withdraws to a whole MacBook and settles.",
+      "tags": [
+        "detail-and-context",
+        "sparse-to-dense",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "YO-09",
+      "start": 58,
+      "end": 60.893,
+      "note": "Yosemite signature. OS X Yosemite mark and name close on the pale background.",
+      "tags": [
+        "isolate-subject",
+        "readable-settle"
+      ]
+    }
+  ],
+  "airbnb-design-system": [
+    {
+      "scene_id": "AB-01",
+      "start": 0,
+      "end": 10,
+      "note": "Cereal type construction and weight family. An introductory title gives way to typed Cereal naming, enlarged letter geometry and a full stack of named font weights. One typographic capability has several views.",
+      "tags": [
+        "construction-revealed",
+        "family-variation",
+        "isolate-subject"
+      ]
+    },
+    {
+      "scene_id": "AB-02",
+      "start": 10,
+      "end": 14,
+      "note": "A shared layout spans screens. App screens resolve into a coordinated layout with blue construction lines, then return as a collection of interfaces.",
+      "tags": [
+        "system-in-context",
+        "family-variation",
+        "construction-revealed"
+      ]
+    },
+    {
+      "scene_id": "AB-03",
+      "start": 14,
+      "end": 22,
+      "note": "Chips, spacing and rounded corners. Category chips separate, a single component is examined with spacing lines, and a rounded-corner study leads to the profile sheet. The shared content is component construction.",
+      "tags": [
+        "construction-revealed",
+        "detail-and-context",
+        "progressive-assembly"
+      ]
+    },
+    {
+      "scene_id": "AB-04",
+      "start": 22,
+      "end": 26.5,
+      "note": "Line icons on a common grid. Arrow variants, airplane and suitcase are compared in the same colored square with the same construction grid.",
+      "tags": [
+        "family-variation",
+        "change-one-variable",
+        "construction-revealed"
+      ]
+    },
+    {
+      "scene_id": "AB-05",
+      "start": 26.5,
+      "end": 32,
+      "note": "Suitcase becomes a crafted object. Leather-looking strips wrap the suitcase outline, the object resolves, the shot inspects stitching, and decorative stickers arrive. Several cuts deepen one icon rather than introducing new scenes.",
+      "tags": [
+        "construction-revealed",
+        "progressive-assembly",
+        "material-demonstration",
+        "detail-and-context"
+      ]
+    },
+    {
+      "scene_id": "AB-06",
+      "start": 32,
+      "end": 38,
+      "note": "Dimensional icon family and detail levels. Gem, furry paw and bed expand the material vocabulary. A progression from tiny symbol to furnished room then enters a listing-editor interface.",
+      "tags": [
+        "family-variation",
+        "material-demonstration",
+        "detail-and-context",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "AB-07",
+      "start": 38,
+      "end": 45,
+      "note": "Color tokens become message avatars. A palette table exposes selected swatches; colored circles become letter avatars and collect into a Messages interface. The same colors survive the abstraction change.",
+      "tags": [
+        "construction-revealed",
+        "progressive-assembly",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "AB-08",
+      "start": 45,
+      "end": 46.733333,
+      "note": "Surface tokens over moving content. Light and dark material samples remain above aerial ocean imagery, demonstrating different readable surface treatments. The next join is our edit.",
+      "tags": [
+        "change-one-variable",
+        "material-demonstration",
+        "context-changes-material"
+      ]
+    },
+    {
+      "scene_id": "AB-09",
+      "start": 46.733333,
+      "end": 49,
+      "note": "Listing composition becomes a compact item. A phone-like listing surface leads to a compact product/item card. The abrupt start after the surface study is our splice.",
+      "tags": [
+        "detail-and-context",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "AB-10",
+      "start": 49,
+      "end": 54,
+      "note": "Cards assemble a component collection. A feature card receives room to read before related cards and UI blocks accumulate around it. The family grows from one recognizable example.",
+      "tags": [
+        "sparse-to-dense",
+        "progressive-assembly",
+        "readable-settle",
+        "family-variation"
+      ]
+    },
+    {
+      "scene_id": "AB-11",
+      "start": 54,
+      "end": 58,
+      "note": "System samples and closing mark. Colored dimensional sample panels recap earlier icon, type and palette studies before the Airbnb mark closes on white.",
+      "tags": [
+        "motif-reuse",
+        "family-variation",
+        "readable-settle"
+      ]
+    }
+  ],
+  "openai-brand-2025": [
+    {
+      "scene_id": "OA-01",
+      "start": 0,
+      "end": 6,
+      "note": "A prompt introduces the dot. A tiny black dot accompanies typing until the complete question can read, then remains as the central object.",
+      "tags": [
+        "isolate-subject",
+        "action-response",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "OA-02",
+      "start": 6,
+      "end": 18,
+      "note": "One dot expresses the brand principles. A single circle becomes concentric lines and a field of dots. Density, regularity, size and color changes correspond to the displayed simplicity, space, imperfection and vivid labels.",
+      "tags": [
+        "change-one-variable",
+        "family-variation",
+        "progressive-assembly"
+      ]
+    },
+    {
+      "scene_id": "OA-03",
+      "start": 18,
+      "end": 28,
+      "note": "Letterforms explained through geometry. Circles, tangents and Bezier handles become GPT contours, then outline and filled glyph specimens are compared. Construction rather than decoration carries the beat.",
+      "tags": [
+        "construction-revealed",
+        "change-one-variable",
+        "family-variation"
+      ]
+    },
+    {
+      "scene_id": "OA-04",
+      "start": 28,
+      "end": 38,
+      "note": "Typeface breadth and weights. Accent characters grow into a character set, an enlarged a is paired with its construction, and font weights and multilingual lines reveal the system range.",
+      "tags": [
+        "family-variation",
+        "construction-revealed",
+        "sparse-to-dense"
+      ]
+    },
+    {
+      "scene_id": "OA-05",
+      "start": 38,
+      "end": 48,
+      "note": "Typography in editorial motion. Oversized characters, dense research paragraphs, model names and dates move through asymmetric compositions. This is expressive editorial application after the controlled specimen.",
+      "tags": [
+        "system-in-context",
+        "family-variation"
+      ]
+    },
+    {
+      "scene_id": "OA-06",
+      "start": 48,
+      "end": 58,
+      "note": "The wordmark is constructed and extended. A black circle becomes the O construction, the complete OpenAI wordmark resolves, and ChatGPT and Research show related named applications.",
+      "tags": [
+        "construction-revealed",
+        "progressive-assembly",
+        "family-variation",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "OA-07",
+      "start": 58,
+      "end": 65,
+      "note": "Blossom geometry. Overlapping circles resolve into the interwoven Blossom outline; vector handles emphasize the contours before the final black mark is shown at different sizes.",
+      "tags": [
+        "construction-revealed",
+        "progressive-assembly",
+        "isolate-subject",
+        "readable-settle"
+      ]
+    },
+    {
+      "scene_id": "OA-08",
+      "start": 65,
+      "end": 78,
+      "note": "Palette from one circle to a population. Large round color specimens become a smaller group, then a larger collection of dots before reducing to one again.",
+      "tags": [
+        "family-variation",
+        "change-one-variable",
+        "sparse-to-dense",
+        "motif-reuse"
+      ]
+    },
+    {
+      "scene_id": "OA-09",
+      "start": 78,
+      "end": 92,
+      "note": "Photography and editorial placement. The dot becomes an image aperture; nature and people imagery alternate between full-frame and offset crops with spatially distributed text. Several photographic shots belong to one image-language chapter.",
+      "tags": [
+        "system-in-context",
+        "family-variation",
+        "motif-reuse"
+      ]
+    },
+    {
+      "scene_id": "OA-10",
+      "start": 92,
+      "end": 98,
+      "note": "Clear space becomes the page grid. Wordmark spacing circles are shown, then the mark shrinks into a page whose columns are drawn. Alternate placements demonstrate the same layout system.",
+      "tags": [
+        "construction-revealed",
+        "detail-and-context",
+        "change-one-variable"
+      ]
+    },
+    {
+      "scene_id": "OA-11",
+      "start": 98,
+      "end": 105,
+      "note": "Applications accumulate into a brand world. Research covers, photography, type specimens and posters enter an increasingly dense overlapping composition. Prior chapters are now usable artifacts.",
+      "tags": [
+        "sparse-to-dense",
+        "progressive-assembly",
+        "motif-reuse",
+        "system-in-context"
+      ]
+    },
+    {
+      "scene_id": "OA-12",
+      "start": 105,
+      "end": 110,
+      "note": "Brand signature. Blossom clears to a typed OpenAI wordmark and a final held mark.",
+      "tags": [
+        "motif-reuse",
+        "readable-settle",
+        "isolate-subject"
+      ]
+    }
+  ]
+}

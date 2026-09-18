@@ -8,10 +8,10 @@ Animation behavior stays in scene code. There is no effect catalogue, private wi
 
 ```json
 [
-  { "id": "settle", "label": "Cards settle", "kind": "group", "color": "#94b7a6",
+  { "id": "settle", "label": "Cards settle", "kind": "group", "color": "#00bca6",
     "start": 0, "end": 6, "durationLabel": "Settle time", "parameterKeys": ["lift"] },
   { "id": "settle-payment", "label": "Payment", "kind": "animation", "parentId": "settle",
-    "color": "#94b7a6", "start": 1, "end": 5,
+    "color": "#00bca6", "start": 1, "end": 5,
     "targets": [{ "kind": "layer", "sourceId": "ui", "layerId": "payment" }] }
 ]
 ```
@@ -21,6 +21,12 @@ Store this array in `scene.json.tracks`; declare `lift` in `parameters` using th
 `parentId` references a group. IDs are unique across the scene, groups can nest, and cycles or children outside their parent's time interval fail validation. File order orders siblings. Existing flat tracks remain valid. `targets` identifies declared source layers, the camera (`{"kind":"camera"}`), or authored Three.js objects (`{"kind":"object","id":"hero"}`). Object IDs are scene-owned; scene code must resolve them. Targets are semantic references, not automatic transforms. The same target may participate in different animation tracks.
 
 All times are absolute seconds. Moving a group shifts every descendant and cue; resizing scales their times proportionally. Child edits stay within their parent. This is one file-backed history operation. Root edits snap to frames; descendants preserve proportional timing, including subframe offsets. Cue `keys` remain visual markers, not executable keyframes.
+
+## Track colors
+
+Choose label colors from the shared palette in `src/core/track-colors.ts`: blue `#047efe`, orange `#ff6600`, teal `#00bca6`, red `#ff1c32`, pink `#ff2796`, purple `#8c51fe`, amber `#ff9800`, and brown `#976639`. These are the supplied reference swatches converted to sRGB with a small saturation lift. Store the chosen hex in each track or clip's `color`; the timeline displays that saved value, so reordering or renaming never changes it. Keep a coordinated group and its children the same color; use another color for an independent action. New composition clips default to teal. Custom hex colors remain supported.
+
+Child bars inherit their root group's hue in the editor. Each nesting level mixes in 22% more black in dark mode or white in light mode, capped at 55% total tint. Siblings have the same tint; nested groups step down with their depth. This styling never rewrites saved colors or changes scene rendering.
 
 ## Executable timing
 

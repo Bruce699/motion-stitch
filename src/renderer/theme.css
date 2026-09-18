@@ -32,11 +32,12 @@
   --codex-shadow-md: 0px 2px 4px -1px #00000014;
   --codex-shadow-xl: 0px 8px 16px -4px #0000001f;
   --tilt-timeline-clip-overlay: rgba(0, 0, 0, 0.28);
+  --tilt-timeline-child-tint: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --codex-color-surface: #181818;
+    --codex-color-surface: #141414;
     --codex-color-surface-secondary: #141414;
     --codex-color-surface-tertiary: rgb(40, 40, 40);
     --codex-color-surface-elevated-secondary: rgb(45, 45, 45);
@@ -65,6 +66,7 @@
     --codex-shadow-md: 0px 2px 4px -1px #00000014;
     --codex-shadow-xl: 0px 8px 16px -4px #0000001f;
     --tilt-timeline-clip-overlay: transparent;
+    --tilt-timeline-child-tint: #000000;
   }
 }
 

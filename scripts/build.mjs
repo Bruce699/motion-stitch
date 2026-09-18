@@ -1,6 +1,8 @@
 import { build } from "esbuild";
 import { build as vite } from "vite";
 import fs from "node:fs/promises";
+import { buildGuidance } from "./build-guidance.mjs";
+await buildGuidance(process.cwd(), "dist/guidance.json");
 await Promise.all([
   build({
     entryPoints: ["src/main/main.ts", "src/main/agent.ts", "src/main/cli.ts"],

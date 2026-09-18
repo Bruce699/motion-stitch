@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ParameterValueSchema } from "./parameters";
 import { ReviewOptions } from "./review";
 
 // One public command vocabulary for the runtime, CLI discovery and MCP.
@@ -47,6 +48,12 @@ export const agentCommands = {
     "tilt_capabilities",
     "Discover the shared command schemas, runtime capabilities and workflow.",
     {},
+    true,
+  ),
+  guidance: command(
+    "tilt_guidance",
+    "Discover Tilt skills and authoring documents before scene work. Omit path for the catalogue; read a returned path for exact content and linked guide paths. Start with workspace-context and, for creative motion, motion-design. Same library for local and remote agents; no project filesystem required.",
+    { path: z.string().min(1).max(500).optional() },
     true,
   ),
   state: command(
@@ -108,6 +115,71 @@ export const agentCommands = {
     "Replace the scene document against the revision from state, preserving validation and history.",
     { scene: z.record(z.string(), z.unknown()), revision },
   ),
+  add_camera: command(
+    "tilt_add_camera",
+    "Duplicate a camera without changing the output camera.",
+    {
+      name: z.string().min(1),
+      from: id.optional(),
+      revision: revision.optional(),
+    },
+  ),
+  camera_metadata: command(
+    "tilt_camera_metadata",
+    "Rename a camera or make it the output camera.",
+    {
+      cameraId: id,
+      name: z.string().min(1).max(100).optional(),
+      makeDefault: z.boolean().optional(),
+      revision: revision.optional(),
+    },
+  ),
+  add_clip: command(
+    "tilt_add_clip",
+    "Reference another composition in this timeline.",
+    { compositionId: sceneId, start: time, revision: revision.optional() },
+  ),
+  set_clip: command(
+    "tilt_set_clip",
+    "Edit one composition clip; overrides never mutate the source.",
+    {
+      id,
+      patch: z.record(z.string(), z.unknown()),
+      revision: revision.optional(),
+    },
+  ),
+  trim_clip: command(
+    "tilt_trim_clip",
+    "Move or trim a clip without stretching its source animation.",
+    { id, timing, base: timing.optional(), revision: revision.optional() },
+  ),
+  split_clip: command(
+    "tilt_split_clip",
+    "Split a reference while preserving source continuity.",
+    { id, time, revision: revision.optional() },
+  ),
+  remove_clip: command(
+    "tilt_remove_clip",
+    "Remove a clip from this composition.",
+    { id, revision: revision.optional() },
+  ),
+  expose_parameter: command(
+    "tilt_expose_parameter",
+    "Expose a control to containing compositions.",
+    { key: id, exposed: z.boolean(), revision: revision.optional() },
+  ),
+  clip_parameter: command(
+    "tilt_clip_parameter",
+    "Override, reset or expose a nested composition control.",
+    {
+      id,
+      key: id,
+      value: ParameterValueSchema.optional(),
+      reset: z.boolean().optional(),
+      expose: z.boolean().optional(),
+      revision: revision.optional(),
+    },
+  ),
   set_parameter: command(
     "tilt_set_parameter",
     "Set one declared scene control through the same validation/history as the editor. Supply revision to reject concurrent changes.",
@@ -116,7 +188,11 @@ export const agentCommands = {
   set_camera: command(
     "tilt_set_camera",
     "Patch authored camera settings through the shared camera contract.",
-    { patch: z.record(z.string(), z.unknown()), revision: revision.optional() },
+    {
+      patch: z.record(z.string(), z.unknown()),
+      cameraId: id.optional(),
+      revision: revision.optional(),
+    },
   ),
   set_track: command(
     "tilt_set_track",
@@ -156,7 +232,11 @@ export const agentCommands = {
   view: command(
     "tilt_view",
     "Switch the selected viewer between camera and source inspection.",
-    { mode: z.enum(["source", "camera"]), sourceId: id.optional() },
+    {
+      mode: z.enum(["source", "camera"]),
+      sourceId: id.optional(),
+      cameraId: id.optional(),
+    },
   ),
   select_track: command(
     "tilt_select_track",

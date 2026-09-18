@@ -5,6 +5,7 @@ import type { CueTrack } from "./Timeline";
 // DialTimeline's pointer capture and edge-drag interaction, with Tilt's file commit.
 export function TimelineClip({
   track,
+  color = track.color,
   duration,
   bounds,
   fps,
@@ -16,6 +17,7 @@ export function TimelineClip({
   onCommit,
 }: {
   track: CueTrack;
+  color?: string;
   duration: number;
   bounds?: TrackTiming;
   fps: number;
@@ -85,7 +87,7 @@ export function TimelineClip({
       style={{
         left: (value.start - viewStart) * pxPerSecond,
         width: (value.end - value.start) * pxPerSecond,
-        background: track.color,
+        background: color,
       }}
       onDoubleClick={(e) => {
         e.stopPropagation();

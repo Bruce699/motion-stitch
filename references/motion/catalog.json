@@ -1,0 +1,53 @@
+[
+  {
+    "id": "apple-liquid-glass",
+    "title": "Apple — Liquid Glass / iOS 26",
+    "company": "Apple",
+    "source_url": "https://www.youtube.com/watch?v=jGztGfRujSE",
+    "input": "~/Downloads/Liquid Glass UI Reel/UI Motion Reel - 4K.mp4",
+    "edit_list": "~/Downloads/Liquid Glass UI Reel/review/edit-list.json",
+    "version": "UI motion edit; presenters, hands and standalone live action removed",
+    "tags": ["glass", "transparency", "refraction", "blur", "depth", "layers", "icons", "device mockups", "contextual controls"]
+  },
+  {
+    "id": "apple-ios-7",
+    "title": "Apple — Introducing iOS 7",
+    "company": "Apple",
+    "source_url": "https://www.youtube.com/watch?v=4xzLr7xSr-g",
+    "input": "~/Downloads/iOS 7 UI Reel/iOS 7 UI Motion Reel - HD.mp4",
+    "edit_list": "~/Downloads/iOS 7 UI Reel/review/edit-list.json",
+    "version": "UI motion edit; includes animated product mockups",
+    "tags": ["icon construction", "grids", "layers", "parallax", "translucency", "typography", "device mockups", "UI transitions"]
+  },
+  {
+    "id": "apple-yosemite",
+    "title": "Apple — Introducing OS X Yosemite",
+    "company": "Apple",
+    "source_url": "https://www.youtube.com/watch?v=yB1vA_pzIQw",
+    "input": "~/Downloads/OS X Yosemite UI Reel/OS X Yosemite UI Motion Reel - 1080p.mp4",
+    "edit_list": "~/Downloads/OS X Yosemite UI Reel/review/edit-list.json",
+    "version": "Complete UI film; original video bitstream retained",
+    "tags": ["desktop", "icons", "windows", "typography", "translucency", "MacBook", "UI transitions"]
+  },
+  {
+    "id": "airbnb-design-system",
+    "title": "Airbnb — Design System",
+    "company": "Airbnb",
+    "source_url": "https://www.linkedin.com/videos/cedfunches_designsystems-productdesign-branddesign-activity-7343286915288207361-B8xj/",
+    "input": "~/Downloads/Airbnb UI Reel/Airbnb UI Motion Reel - 720p.mp4",
+    "edit_list": "~/Downloads/Airbnb UI Reel/review/edit-list.json",
+    "version": "UI motion edit; two seconds of full-frame cooking footage removed",
+    "tags": ["design system", "typography", "icons", "materials", "transparency", "cards", "phone mockups", "component assembly"]
+  },
+  {
+    "id": "openai-brand-2025",
+    "title": "OpenAI — 2025 Brand Sizzle Reel",
+    "company": "OpenAI",
+    "source_url": "https://openai.com/brand/",
+    "player_url": "https://player.vimeo.com/video/1052474875?h=a2764571e8",
+    "input": "~/Downloads/OpenAI Brand Reel/OpenAI - 2025 Brand Film - 1080p.mp4",
+    "version": "Complete original brand film with audio; no cuts",
+    "ocr_replacements": {"OpenAl": "OpenAI"},
+    "tags": ["brand system", "typography", "OpenAI Sans", "wordmark", "logo", "Blossom", "dots", "grids", "color", "layout"]
+  }
+]

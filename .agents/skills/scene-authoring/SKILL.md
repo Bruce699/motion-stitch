@@ -5,8 +5,10 @@ description: Create or edit a Tilt scene, its parameters, timing and executable 
 
 # Author a scene
 
+For creative direction, choreography, timing, framing, transitions or treatment, first consult [motion-design](../motion-design/SKILL.md) and its relevant guides. Use the current source and requested outcome to choose the approach; this execution contract does not prescribe a visual style.
+
 1. Read `README.md`, `src/core/runtime.ts`, `src/core/schema.ts`, and the active scene's files. Read `.tilt/context.json` and use `npm run cli -- state` for the current document and revision. Understand the current choreography before changing it.
-2. The primitive is a scene folder. Keep UI, fixture data, imported assets and custom shader modules inside it. Use relative paths. Treat app source and scene composition as separate concerns.
+2. The primitive is a composition, stored compatibly in a scene folder. Read `docs/compositions.md` for nested clips, exposed controls and named cameras. Keep UI, fixture data, imported assets and custom shader modules inside it. Use relative paths. Treat app source and scene composition as separate concerns.
 3. Export a factory from `scene.ts`, receiving `{THREE, world, camera, surfaces, createLayeredSource, document, motion}`. Return `{sample(frame), dispose?}`. Do allocation and timeline compilation in the factory; do only sampling and necessary property updates in `sample`. Use `createLayeredSource` for declared browser layers; follow the `ui-layers` skill instead of rebuilding capture/alignment per scene.
 4. Derive every animated property from absolute `frame.time`. No accumulated deltas, independent timers, wall-clock time or unseeded random numbers. A frame at t=2 must be identical after t=7 or t=0.5. Async sample must resolve after all required work.
 5. Declare useful controls in `scene.json.parameters`. Follow `parameter-controls` for numbers, colors, toggles, choices and XYZ values. Use stable keys, short labels and meaningful groups/ranges. Read typed values from `sample`'s `controls` helper. Controls can feed any authored behavior; do not add bespoke inspector widgets for each effect.

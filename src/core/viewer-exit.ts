@@ -8,6 +8,7 @@ export const ViewerExitPatchSchema = z
       .min(1)
       .max(256)
       .regex(/^[a-z0-9-]+$/),
+    cameraId: z.string().min(1).optional(),
     patch: z
       .object({
         depthOfField: z

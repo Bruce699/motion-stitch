@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "id": "test-aec70cfb",
+  "name": "test",
+  "duration": 8,
+  "fps": 60,
+  "size": {
+    "width": 1920,
+    "height": 1080
+  },
+  "background": "#000000",
+  "entry": "scene.ts",
+  "camera": {
+    "projection": "orthographic",
+    "preset": "front",
+    "side": "right"
+  },
+  "clips": [],
+  "sources": [],
+  "parameters": {},
+  "tracks": []
+}
