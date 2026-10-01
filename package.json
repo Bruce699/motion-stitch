@@ -15,7 +15,8 @@
     "test:layers": "node scripts/verify-layer-capture.mjs",
     "test:transfer": "node scripts/verify-frame-transfer.mjs",
     "setup:url": "node scripts/setup-url.mjs",
-    "remove:url": "node scripts/setup-url.mjs --remove"
+    "remove:url": "node scripts/setup-url.mjs --remove",
+    "demo:loop-search": "node scripts/start.mjs --direct --project examples/loop-search"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",

@@ -4,27 +4,57 @@ Tilt is an agent-first motion workspace built around **projects and compositions
 
 The editor gives people and agents a shared clock, browser surfaces, a compositor, inspection and reliable rendering. It should make bespoke work easy: an agent can write a shader, adapt an unusual interface or construct a 3D composition without waiting for a new effect. Files are the source of truth; the editor and agents change the same files. The existing `scenes/`, `scene.json` and `scene.ts` filenames remain compatible. See [projects and compositions](docs/compositions.md) for the reference, camera, timing and export contracts.
 
-## Run
+## Run the Electron app
 
-Requires Node 24+ and FFmpeg/FFprobe on PATH. On macOS, `brew install ffmpeg` provides both.
+Tilt currently runs locally. The Electron runtime manages project files, browser capture and video export; the editor opens in an Electron desktop window. Node.js 24+ and FFmpeg/FFprobe on PATH are required. Electron is installed by `npm ci`—there is no separate Electron installation step. macOS is the primary tested platform.
 
 ```sh
+# macOS prerequisites (using Homebrew)
+brew install node@24 ffmpeg
+
+# Clone the private repo with an account that has access
+git clone https://github.com/jaytel0/tilt.git
+cd tilt
 npm ci
+
+# Build and launch the desktop Electron app on a local port
+npm start -- --direct
+```
+
+Use a Node version manager or Homebrew's printed PATH instructions if `node --version` does not report 24 or newer. Keep the launching terminal open; Ctrl+C stops that runtime. Closing the editor window leaves the runtime running, so `npm start -- --direct` reopens it. To stop it explicitly, run `npm run cli -- stop` from another terminal in this folder.
+
+### Loop Search demo
+
+From the repository root after `npm ci`:
+
+```sh
+npm run demo:loop-search
+```
+
+This builds Tilt and opens the bundled **Loop Search** project in Electron. Press Space or Play to watch the 15-second sequence. The React source, packaged browser assets, native macOS cursor, controls and editable timeline are included in [examples/loop-search](examples/loop-search/README.md). The demo requires no Loop account or API key. Its browser bundle is checked in, so no second dependency install is required to run it.
+
+To open another project:
+
+```sh
+npm start -- --direct --project /path/to/project
+```
+
+### Optional browser viewer
+
+```sh
+npm start -- --direct --browser
+```
+
+Open the localhost URL printed in the terminal. This runs the same local Electron backend and uses your browser for the editor. It is not a hosted web service.
+
+### Optional local HTTPS address
+
+```sh
 npm run setup:url
 npm start
 ```
 
-The one-time URL setup installs a loopback-only [Portless](https://github.com/vercel-labs/portless) HTTPS proxy on port 443 and trusts its local certificate authority. Administrator approval is required. It starts again after reboot and maps the registered `tilt.video` route to this Mac in `/etc/hosts`. Public DNS and Vercel remain unchanged; on this Mac the domain opens the local app. No deployment is needed to see local changes. Remove this shared Portless service with `npm run remove:url` if it is no longer needed; Portless cleans up its hosts entries when the proxy stops.
-
-`npm start` builds and opens the desktop viewer at **[tilt.localhost](https://tilt.video)**. To run without a desktop window:
-
-```sh
-npm start -- --browser
-```
-
-Open `https://tilt.video` in Codex or any browser while Tilt is running. The address stays the same across restarts even when the internal port changes. The local Electron runtime supplies Chromium source capture, files, history and rendering to both viewers. Starting again reuses the running instance. Closing a viewer leaves the runtime running; `npm run cli -- stop` stops it. `npm run cli -- desktop` opens the desktop viewer again. `Tilt.command` remains a double-click launcher. Restart after changing editor/runtime code. No account, model key, built-in agent or MCP server is required.
-
-For isolated verification without the local domain setup, `npm start -- --direct --browser` skips Portless and uses a direct loopback port. The CLI always uses its private loopback connection. Source capture and detached export workers keep their isolated local servers. The proxy starts at boot; Tilt itself still starts with `npm start` or `Tilt.command`.
+This configures the local `https://tilt.video` address using Portless. Setup requires administrator approval for its local HTTPS proxy, certificate and hosts mapping; it does not publish a website or change public DNS. Stop an existing direct-port runtime before switching to this mode. Use `npm run remove:url` to remove the shared local service. The direct-port commands above need none of this setup.
 
 Drag in either Perspective or Orthographic camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In Isometric or 2D, dragging pans. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline combines playback and one time readout with its ruler. Drag to scrub; pinch or Option/Alt-wheel to zoom around the pointer; scroll sideways to pan. Double-click the ruler to fit the scene. With the ruler focused, +/− zoom and 0 fits. Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. New scenes default to 60 fps; the available rates are 30 and 60 fps. The right panel contains parameter controls and the shared camera controls. Render writes an MP4 to `exports/`.
 

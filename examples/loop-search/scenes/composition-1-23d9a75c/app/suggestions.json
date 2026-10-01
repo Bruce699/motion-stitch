@@ -1,0 +1,3336 @@
+{
+  "images": [
+    {
+      "id": "6aa6c2b73c9caf3f6fa4bba8",
+      "src": "/savee-demo/b43bd3e21e51836d7217.jpg",
+      "url": "https://savee.com/i/oEqH0w3/",
+      "title": "appear",
+      "width": 816,
+      "height": 1080,
+      "colors": [
+        {
+          "color": "#0C0D0D",
+          "amount": 0.6729208493497555
+        },
+        {
+          "color": "#49BF72",
+          "amount": 0.28734799526940974
+        },
+        {
+          "color": "#206630",
+          "amount": 0.020954792524103472
+        },
+        {
+          "color": "#1954A6",
+          "amount": 0.018709636182235242
+        }
+      ]
+    },
+    {
+      "id": "6aa6b9d43c9caf3f6f6815b0",
+      "src": "/savee-demo/a68b504208ae507af23c.jpg",
+      "url": "https://savee.com/i/yRS4eG5/",
+      "title": "PixelSerifFont",
+      "width": 1378,
+      "height": 1080,
+      "colors": [
+        {
+          "color": "#0D0D0D",
+          "amount": 0.9221653297253992
+        },
+        {
+          "color": "#3EB371",
+          "amount": 0.0591369942952304
+        },
+        {
+          "color": "#26633C",
+          "amount": 0.012871088441856597
+        }
+      ]
+    },
+    {
+      "id": "6a9c5b2d3c9caf3f27384c1e",
+      "src": "/savee-demo/965db2771a37b3c72247.jpg",
+      "url": "https://savee.com/i/D-r9GLL/",
+      "title": "General User Interface Engine",
+      "width": 1624,
+      "height": 1080,
+      "colors": [
+        {
+          "color": "#FAFAFA",
+          "amount": 0.6016270671390374
+        },
+        {
+          "color": "#333F4F",
+          "amount": 0.3503744621900688
+        },
+        {
+          "color": "#93C5D9",
+          "amount": 0.04004188772837526
+        }
+      ]
+    },
+    {
+      "id": "6a99daac3c9caf3f19b85c3f",
+      "src": "/savee-demo/1755d1238598aa639148.jpg",
+      "url": "https://savee.com/i/RKhCcE-/",
+      "title": "Frame 2",
+      "width": 1793,
+      "height": 1683,
+      "colors": [
+        {
+          "color": "#E3DCDA",
+          "amount": 0.41799233465958097
+        },
+        {
+          "color": "#355796",
+          "amount": 0.35738571547814474
+        },
+        {
+          "color": "#BF9534",
+          "amount": 0.08167726273615092
+        },
+        {
+          "color": "#943570",
+          "amount": 0.07478923791769845
+        },
+        {
+          "color": "#7E90C2",
+          "amount": 0.06815544920842492
+        }
+      ]
+    },
+    {
+      "id": "6a960aba3c9caf3efac3ba7e",
+      "src": "/savee-demo/2da8a808f42fe6b5adbb.jpg",
+      "url": "https://savee.com/i/QxpFXaO/",
+      "title": "HQ8eUsIWwAElqGB",
+      "width": 2048,
+      "height": 1536,
+      "colors": [
+        {
+          "color": "#453C31",
+          "amount": 0.6260233779754862
+        },
+        {
+          "color": "#D9D8CE",
+          "amount": 0.22219137998297137
+        },
+        {
+          "color": "#9C8D78",
+          "amount": 0.08574661704159209
+        },
+        {
+          "color": "#ADB39F",
+          "amount": 0.06258120114261218
+        }
+      ]
+    },
+    {
+      "id": "6a95f51e3c9caf3efa0edada",
+      "src": "/savee-demo/34bb78934b8f06af2d74.jpg",
+      "url": "https://savee.com/i/Njxrxwk/",
+      "title": "bookshelf",
+      "width": 1372,
+      "height": 1080,
+      "colors": [
+        {
+          "color": "#E6E7E8",
+          "amount": 0.5388455290765938
+        },
+        {
+          "color": "#28437D",
+          "amount": 0.1931025808769322
+        },
+        {
+          "color": "#5E94BD",
+          "amount": 0.14386556566460756
+        },
+        {
+          "color": "#692732",
+          "amount": 0.1149940129980128
+        }
+      ]
+    },
+    {
+      "id": "6a93b0203c9caf3eeba2d63d",
+      "src": "/savee-demo/b41f1850feb74f5fb9a0.jpg",
+      "url": "https://savee.com/i/FHU3XQm/",
+      "title": "Recent \u2014 Design Inspiration",
+      "width": 640,
+      "height": 360,
+      "colors": [
+        {
+          "color": "#FAFAFA",
+          "amount": 0.514103215475402
+        },
+        {
+          "color": "#050505",
+          "amount": 0.4843318473415244
+        }
+      ]
+    },
+    {
+      "id": "6a93b0193c9caf3eeba1cbfd",
+      "src": "/savee-demo/246ecc0dc74e10b93953.jpg",
+      "url": "https://savee.com/i/F-4Ij9q/",
+      "title": "Dear Young Desginer",
+      "width": 1280,
+      "height": 1765,
+      "colors": [
+        {
+          "color": "#FAE1E1",
+          "amount": 0.5493571390464673
+        },
+        {
+          "color": "#E80505",
+          "amount": 0.425817580424306
+        },
+        {
+          "color": "#DE5B5D",
+          "amount": 0.02148204790781214
+        }
+      ]
+    },
+    {
+      "id": "6a889f7a3c9caf3ea6217423",
+      "src": "/savee-demo/5620a8903b86dd1ce4e0.jpg",
+      "url": "https://savee.com/i/LgNcsA1/",
+      "title": "\uf4c1 Kinetic Text Scan",
+      "width": 716,
+      "height": 954,
+      "colors": [
+        {
+          "color": "#FAF8EB",
+          "amount": 0.7643783946474
+        },
+        {
+          "color": "#332F23",
+          "amount": 0.18645279324507735
+        },
+        {
+          "color": "#AD955E",
+          "amount": 0.0266348693838073
+        },
+        {
+          "color": "#87693E",
+          "amount": 0.016368140718558296
+        }
+      ]
+    },
+    {
+      "id": "6a889f363c9caf3ea61fb788",
+      "src": "/savee-demo/369d8325fb494514cd7c.jpg",
+      "url": "https://savee.com/i/2uSGdcc/",
+      "title": "HP1 P4SXcAApF2W",
+      "width": 1024,
+      "height": 694,
+      "colors": [
+        {
+          "color": "#97B1DE",
+          "amount": 0.6298587487702658
+        },
+        {
+          "color": "#2262B5",
+          "amount": 0.3489838961466352
+        }
+      ]
+    },
+    {
+      "id": "6a889b993c9caf3ea5ffca48",
+      "src": "/savee-demo/6562cb04899c0f80d6c7.jpg",
+      "url": "https://savee.com/i/r-Y2U_-/",
+      "title": "IMG 0589",
+      "width": 2400,
+      "height": 3200,
+      "colors": [
+        {
+          "color": "#669CED",
+          "amount": 0.4556048817895741
+        },
+        {
+          "color": "#0E0F26",
+          "amount": 0.2659647553819498
+        },
+        {
+          "color": "#CF0426",
+          "amount": 0.24469434359048345
+        },
+        {
+          "color": "#9E0521",
+          "amount": 0.03215103567578986
+        }
+      ]
+    },
+    {
+      "id": "6a8891a83c9caf3ea5af0c84",
+      "src": "/savee-demo/bd63f434bb739ff76ba1.jpg",
+      "url": "https://savee.com/i/2pZmOsZ/",
+      "title": "HQOyv0VacAAgvu9",
+      "width": 768,
+      "height": 1024,
+      "colors": [
+        {
+          "color": "#8A7A62",
+          "amount": 0.6468565600690879
+        },
+        {
+          "color": "#E8E1E3",
+          "amount": 0.11712060452990633
+        },
+        {
+          "color": "#2B1210",
+          "amount": 0.1043539410050593
+        },
+        {
+          "color": "#5E2020",
+          "amount": 0.07784247807640722
+        },
+        {
+          "color": "#DEBC92",
+          "amount": 0.05382641631953928
+        }
+      ]
+    },
+    {
+      "id": "6a860abd3c9caf3e9408f436",
+      "src": "/savee-demo/0abe35db98e787e511c2.jpg",
+      "url": "https://savee.com/i/h-WwhTn/",
+      "title": "466 likes, 33 comments   lukehoban.co.nz on July 23, 2026: \"Website design for @mouthwash.magazine ISSUE NO. 1 Renaissance\n\nCreative direction: @abrahamcampillo & @valeriestt \u2028Design direction: @benmingo & @nat.wrk \nWeb development: @gardenvarietyny @rafacobiella \n\nLive at mouthwashmagazine.com\".",
+      "width": 720,
+      "height": 900,
+      "colors": [
+        {
+          "color": "#3D3730",
+          "amount": 0.5318769636235399
+        },
+        {
+          "color": "#FAFAFA",
+          "amount": 0.44807616984059867
+        },
+        {
+          "color": "#786761",
+          "amount": 0.016306812514368104
+        }
+      ]
+    },
+    {
+      "id": "6a8239b63c9caf3e77ec3a29",
+      "src": "/savee-demo/a393d1a68e815b58797b.jpg",
+      "url": "https://savee.com/i/o-r7vOv/",
+      "title": "344509250870289.6a2936f20e814",
+      "width": 2400,
+      "height": 1600,
+      "colors": [
+        {
+          "color": "#161716",
+          "amount": 0.5156518478928517
+        },
+        {
+          "color": "#DEDEB4",
+          "amount": 0.4552158201644876
+        },
+        {
+          "color": "#888A83",
+          "amount": 0.024409894782185564
+        }
+      ]
+    },
+    {
+      "id": "6a8239ae3c9caf3e77ebaff4",
+      "src": "/savee-demo/d0cc6422486e1e7cdab9.jpg",
+      "url": "https://savee.com/i/HjWYrz-/",
+      "title": "0691fa250870289.6a2936f20fc03",
+      "width": 2400,
+      "height": 1600,
+      "colors": [
+        {
+          "color": "#EDEDED",
+          "amount": 0.5757400740090473
+        },
+        {
+          "color": "#050505",
+          "amount": 0.4115740719398497
+        }
+      ]
+    },
+    {
+      "id": "6a8239aa3c9caf3e77eb1261",
+      "src": "/savee-demo/0db8bd7a96a2f176795f.jpg",
+      "url": "https://savee.com/i/hukVFW2/",
+      "title": "894a20250870289.6a2936f20c40b",
+      "width": 2400,
+      "height": 1600,
+      "colors": [
+        {
+          "color": "#1C1C1C",
+          "amount": 0.6136897158060972
+        },
+        {
+          "color": "#EBEBEB",
+          "amount": 0.18969182524507008
+        },
+        {
+          "color": "#9C9C9C",
+          "amount": 0.16788567506536697
+        },
+        {
+          "color": "#B5B5B5",
+          "amount": 0.015463817055225822
+        },
+        {
+          "color": "#858585",
+          "amount": 0.013268966828239939
+        }
+      ]
+    },
+    {
+      "id": "6a6e12093c9caf3d811044ed",
+      "src": "/savee-demo/1a97b54aeb58addead0c.jpg",
+      "url": "https://savee.com/i/zmB8o65/",
+      "title": "163ebaa848e9ca9eda09d565b2950fc0",
+      "width": 608,
+      "height": 1081,
+      "colors": [
+        {
+          "color": "#1C1313",
+          "amount": 0.6761437455899163
+        },
+        {
+          "color": "#C45147",
+          "amount": 0.29543837040318455
+        },
+        {
+          "color": "#61342C",
+          "amount": 0.026622610382884066
+        }
+      ]
+    },
+    {
+      "id": "6a5682993c9caf3b17980223",
+      "src": "/savee-demo/934bf2a50097c3a843bc.jpg",
+      "url": "https://savee.com/i/GdOs9fS/",
+      "title": "original 9be2ec992cfc1d336d3c991bd09fd7f0",
+      "width": 2400,
+      "height": 1800,
+      "colors": [
+        {
+          "color": "#E4E7ED",
+          "amount": 0.43268180945722373
+        },
+        {
+          "color": "#545139",
+          "amount": 0.35521065494134985
+        },
+        {
+          "color": "#7A745C",
+          "amount": 0.16480099110076996
+        },
+        {
+          "color": "#918E8C",
+          "amount": 0.0465019338706099
+        }
+      ]
+    },
+    {
+      "id": "6a567e503c9caf3b17520ede",
+      "src": "/savee-demo/6aac159c7539fe852554.jpg",
+      "url": "https://savee.com/i/_-PsQK2/",
+      "title": "Photo shared by Sivan Roshianu on June 18, 2026 tagging @sivanmolokoroshianu. May be an image of insect, fork and text.",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "color": "#B6BFBA",
+          "amount": 0.6498458845988034
+        },
+        {
+          "color": "#18262E",
+          "amount": 0.3006615904155419
+        },
+        {
+          "color": "#697B7D",
+          "amount": 0.024621145165905543
+        },
+        {
+          "color": "#6B442E",
+          "amount": 0.018049817813907257
+        }
+      ]
+    },
+    {
+      "id": "6a567e273c9caf3b174e7922",
+      "src": "/savee-demo/bf94e089040f45c53559.jpg",
+      "url": "https://savee.com/i/EjASxdL/",
+      "title": "untitled (72)",
+      "width": 1542,
+      "height": 1928,
+      "colors": [
+        {
+          "color": "#B01F1A",
+          "amount": 0.6333447632946162
+        },
+        {
+          "color": "#2B140F",
+          "amount": 0.35952627911792484
+        }
+      ]
+    },
+    {
+      "id": "6a5667043c9caf3b167e7fce",
+      "src": "/savee-demo/d91dbfd399346be12095.jpg",
+      "url": "https://savee.com/i/pGmb8Ar/",
+      "title": "original a39522bca0f4f153623476d41b27341f",
+      "width": 1440,
+      "height": 1920,
+      "colors": [
+        {
+          "color": "#ADADA8",
+          "amount": 0.4848330105315829
+        },
+        {
+          "color": "#212121",
+          "amount": 0.46228261859928427
+        },
+        {
+          "color": "#594942",
+          "amount": 0.04208016086674994
+        }
+      ]
+    },
+    {
+      "id": "6a5666fb3c9caf3b167d8139",
+      "src": "/savee-demo/999fec934d2ceade310c.jpg",
+      "url": "https://savee.com/i/dmCbhCu/",
+      "title": "original 0e4473b2221887fbea82c9f619f84f87",
+      "width": 941,
+      "height": 1010,
+      "colors": [
+        {
+          "color": "#402826",
+          "amount": 0.8278121665980855
+        },
+        {
+          "color": "#C5D6DE",
+          "amount": 0.11457388791551304
+        },
+        {
+          "color": "#8EA3AB",
+          "amount": 0.03901500622815723
+        },
+        {
+          "color": "#7A574D",
+          "amount": 0.012196226053247486
+        }
+      ]
+    },
+    {
+      "id": "6a5666883c9caf3b1679ff29",
+      "src": "/savee-demo/3b84485b4c241df1e268.jpg",
+      "url": "https://savee.com/i/Ng1Qi9k/",
+      "title": "original f0f34a8400b6e734cbe36e8dbca22297",
+      "width": 1179,
+      "height": 1069,
+      "colors": [
+        {
+          "color": "#EDE8DD",
+          "amount": 0.8219236719524353
+        },
+        {
+          "color": "#8F5359",
+          "amount": 0.16827974393760875
+        }
+      ]
+    },
+    {
+      "id": "6a5666803c9caf3b16783a15",
+      "src": "/savee-demo/a46aa683232ddd31df91.jpg",
+      "url": "https://savee.com/i/yVFdu3m/",
+      "title": "original 06e91ae3046568f4ccdfa5c0d9c68538",
+      "width": 736,
+      "height": 1027,
+      "colors": [
+        {
+          "color": "#21151E",
+          "amount": 0.4768532739389149
+        },
+        {
+          "color": "#CF4F48",
+          "amount": 0.45649432845319743
+        },
+        {
+          "color": "#ADA79E",
+          "amount": 0.06499751524093034
+        }
+      ]
+    },
+    {
+      "id": "6a56667c3c9caf3b16785c99",
+      "src": "/savee-demo/4493a908b5036eb97629.jpg",
+      "url": "https://savee.com/i/3HERUww/",
+      "title": "original 3853916e242ad37faea40bb6d73306e7",
+      "width": 1080,
+      "height": 1352,
+      "colors": [
+        {
+          "color": "#194D24",
+          "amount": 0.7813933663340941
+        },
+        {
+          "color": "#D1D6C7",
+          "amount": 0.20062876538845933
+        },
+        {
+          "color": "#608A67",
+          "amount": 0.015507433102992916
+        }
+      ]
+    },
+    {
+      "id": "6a5665aa3c9caf3b1670e037",
+      "src": "/savee-demo/2fc431430003be5423f7.jpg",
+      "url": "https://savee.com/i/cNUqNDt/",
+      "title": "original 4679320aaff5a6fd04f69a16c97433ba",
+      "width": 564,
+      "height": 720,
+      "colors": [
+        {
+          "color": "#3B5DA1",
+          "amount": 0.42758876262042356
+        },
+        {
+          "color": "#E3DAD3",
+          "amount": 0.4215050489839382
+        },
+        {
+          "color": "#8A94BF",
+          "amount": 0.0635512351033582
+        },
+        {
+          "color": "#994D42",
+          "amount": 0.04833706720518027
+        },
+        {
+          "color": "#AB8D35",
+          "amount": 0.03901788608709979
+        }
+      ]
+    },
+    {
+      "id": "6a5665a63c9caf3b166fffa2",
+      "src": "/savee-demo/7b50f919788adeb3ab60.jpg",
+      "url": "https://savee.com/i/dNVZFs-/",
+      "title": "original 6c9e99c8fa738a924dfbd756e4293423",
+      "width": 1186,
+      "height": 1920,
+      "colors": [
+        {
+          "color": "#92A4A8",
+          "amount": 0.8005945955822888
+        },
+        {
+          "color": "#DDDECE",
+          "amount": 0.1979233143594224
+        }
+      ]
+    },
+    {
+      "id": "6a5664f23c9caf3b165b7061",
+      "src": "/savee-demo/f4cf6d8710b4679f0bce.jpg",
+      "url": "https://savee.com/i/2xs9Rj-/",
+      "title": "original 66abd8c6de0a525aaf53a533fdece682",
+      "width": 800,
+      "height": 800,
+      "colors": [
+        {
+          "color": "#242F38",
+          "amount": 0.7509286763157479
+        },
+        {
+          "color": "#6D91A6",
+          "amount": 0.17714422099515018
+        },
+        {
+          "color": "#527082",
+          "amount": 0.052290298541783096
+        },
+        {
+          "color": "#7D9688",
+          "amount": 0.01800709708719693
+        }
+      ]
+    },
+    {
+      "id": "6a5664663c9caf3b16454af6",
+      "src": "/savee-demo/f8f500cb633c95b0a76a.jpg",
+      "url": "https://savee.com/i/CcT2URo/",
+      "title": "webmy nike total 90",
+      "width": 1200,
+      "height": 1500,
+      "colors": [
+        {
+          "color": "#D6CFC3",
+          "amount": 0.9217257545562894
+        },
+        {
+          "color": "#8F6846",
+          "amount": 0.05312028794949907
+        },
+        {
+          "color": "#A69680",
+          "amount": 0.024549643400728228
+        }
+      ]
+    },
+    {
+      "id": "6a5614323c9caf3b131f67b1",
+      "src": "/savee-demo/2ec653da8d9b7a5b5897.jpg",
+      "url": "https://savee.com/i/VrjpMPk/",
+      "title": "HMuwY9eWQAAzpd0",
+      "width": 458,
+      "height": 750,
+      "colors": [
+        {
+          "color": "#1F2529",
+          "amount": 0.508220921998042
+        },
+        {
+          "color": "#E8DFBC",
+          "amount": 0.4112272091936892
+        },
+        {
+          "color": "#78BA3A",
+          "amount": 0.0445703896683572
+        },
+        {
+          "color": "#E0314C",
+          "amount": 0.022865224513940175
+        },
+        {
+          "color": "#495B9E",
+          "amount": 0.013116254625971376
+        }
+      ]
+    },
+    {
+      "id": "6a56146a3c9caf3b1321ed25",
+      "title": "HNJwAk4WMAA4VG3",
+      "src": "/savee-demo/4484c82244fd14bf0696.avif",
+      "url": "https://savee.com/i/5G0TGTv/",
+      "width": 2280,
+      "height": 3000,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#B2BFBE",
+          "amount": 0.4479108485711997
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#106CC2",
+          "amount": 0.3342544033757315
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#451210",
+          "amount": 0.2166354556335494
+        }
+      ]
+    },
+    {
+      "id": "6a56142f3c9caf3b131f7e98",
+      "title": "HNCxm2VWAAAag4m",
+      "src": "/savee-demo/2bb65f2913d9ebbab65b.avif",
+      "url": "https://savee.com/i/Jb_Y7tJ/",
+      "width": 2369,
+      "height": 3000,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#1A662F",
+          "amount": 0.5814387418520078
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D4D3CB",
+          "amount": 0.40495071167580304
+        }
+      ]
+    },
+    {
+      "id": "6a5593223c9caf3b0f102a1f",
+      "title": "HInCL10XUAA1Lt2",
+      "src": "/savee-demo/c9e11b3558216e44a542.avif",
+      "url": "https://savee.com/i/Et5P_op/",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#078A53",
+          "amount": 0.664301854404262
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#EDF0EF",
+          "amount": 0.31620571546756804
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#2B2B2B",
+          "amount": 0.01769547185948884
+        }
+      ]
+    },
+    {
+      "id": "6a55931c3c9caf3b0f0fae80",
+      "title": "HFXol AXUAAApfN",
+      "src": "/savee-demo/145d78f28c0faeb567ce.avif",
+      "url": "https://savee.com/i/52_VAzg/",
+      "width": 1080,
+      "height": 1440,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#8D95B8",
+          "amount": 0.4678013520445811
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#08080A",
+          "amount": 0.44502675666915975
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#425EC2",
+          "amount": 0.07540258522781736
+        }
+      ]
+    },
+    {
+      "id": "6a5593183c9caf3b0f0fda7a",
+      "title": "HFtuX5YXQAA23jg",
+      "src": "/savee-demo/d2a306b9cb5eae024ea2.avif",
+      "url": "https://savee.com/i/w48hSNW/",
+      "width": 2400,
+      "height": 2400,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#F0F0F0",
+          "amount": 0.640953865148798
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#050505",
+          "amount": 0.3460968568406462
+        }
+      ]
+    },
+    {
+      "id": "6a5593143c9caf3b0f0e3644",
+      "title": "HFYFHeza8AEgm0v",
+      "src": "/savee-demo/669fde824ae9edd277aa.avif",
+      "url": "https://savee.com/i/RjATzd_/",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#2E2020",
+          "amount": 0.3869358122757872
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#E8B599",
+          "amount": 0.3072050238653682
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9AA6DB",
+          "amount": 0.22037322978548385
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7085B5",
+          "amount": 0.055794726869878
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7D6336",
+          "amount": 0.02969120720348275
+        }
+      ]
+    },
+    {
+      "id": "6a5593103c9caf3b0f0e76ad",
+      "title": "HFs16ARWQAAfxof",
+      "src": "/savee-demo/d9e3a6a4988a3ca094d8.avif",
+      "url": "https://savee.com/i/nc-dtW9/",
+      "width": 1080,
+      "height": 1294,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#E66747",
+          "amount": 0.6027358241125192
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#1F1813",
+          "amount": 0.31920701089582526
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#875242",
+          "amount": 0.03594656357009772
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7A85A1",
+          "amount": 0.028338425094986297
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9E9C99",
+          "amount": 0.013772176326571437
+        }
+      ]
+    },
+    {
+      "id": "6a55930c3c9caf3b0f0eb34c",
+      "title": "HFX6ap9WYAAeT3l",
+      "src": "/savee-demo/e2c4a9de91e8497e97c7.avif",
+      "url": "https://savee.com/i/f4lNxBh/",
+      "width": 1080,
+      "height": 1348,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAFAFA",
+          "amount": 0.8435796657202108
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#2C1E7D",
+          "amount": 0.15057811477358732
+        }
+      ]
+    },
+    {
+      "id": "6a55930a3c9caf3b0f0dd0e9",
+      "title": "HFs1 cNX0AAfydU",
+      "src": "/savee-demo/aa408f29fee8344b990a.avif",
+      "url": "https://savee.com/i/bmbl8-E/",
+      "width": 1080,
+      "height": 1294,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#9E9E9E",
+          "amount": 0.6011787398874124
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#050505",
+          "amount": 0.3824988908013606
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#5C5C5C",
+          "amount": 0.01300830404314704
+        }
+      ]
+    },
+    {
+      "id": "6a5593083c9caf3b0f0df064",
+      "title": "G youpoacAAZEHC",
+      "src": "/savee-demo/1f765f786111fe65fd2b.avif",
+      "url": "https://savee.com/i/IZZBgqT/",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#5BF707",
+          "amount": 0.4236739417498776
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D8EBE6",
+          "amount": 0.4090120031454473
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#ECF716",
+          "amount": 0.1523296586991894
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9AF511",
+          "amount": 0.012729170066816026
+        }
+      ]
+    },
+    {
+      "id": "6a5593003c9caf3b0f0c8986",
+      "title": "G youphaIAAtQcM",
+      "src": "/savee-demo/904ed5e0c9545dd029e6.avif",
+      "url": "https://savee.com/i/la7IFO_/",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#CED3DE",
+          "amount": 0.787704005766035
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9BF218",
+          "amount": 0.1852058120887524
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#5CF2E3",
+          "amount": 0.014813399154394728
+        }
+      ]
+    },
+    {
+      "id": "6a54d9853c9caf3b079bf23b",
+      "title": "MRI Scanner",
+      "src": "/savee-demo/0a6574cc3f29f18161e9.avif",
+      "url": "https://savee.com/i/ZsvoZI-/",
+      "width": 1452,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#0E1012",
+          "amount": 0.503067944435752
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#5D8BB3",
+          "amount": 0.45746425403512425
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C8C9C7",
+          "amount": 0.03511452696218438
+        }
+      ]
+    },
+    {
+      "id": "6a5407ed3c9caf3b014afbed",
+      "title": "81 likes, 1 comments   bureau.nicolasleuliet on June 19, 2026: \"Always available for new (net)work.\n\n\u2197 bureau@nicolasleuliet.com\".",
+      "src": "/savee-demo/096ff1116a794e0ee47a.avif",
+      "url": "https://savee.com/i/PuTeh-Z/",
+      "width": 720,
+      "height": 900,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#F2F2F2",
+          "amount": 0.9941491563937236
+        }
+      ]
+    },
+    {
+      "id": "6a53ca2d3c9caf3aff7a5b86",
+      "title": "HNAqGqSWwAARe e",
+      "src": "/savee-demo/de79d442c3b232bb9c49.avif",
+      "url": "https://savee.com/i/3ID5MHS/",
+      "width": 1536,
+      "height": 1024,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#52493C",
+          "amount": 0.6228800856779858
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D9D8D7",
+          "amount": 0.31716258732378794
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#948D81",
+          "amount": 0.04240492608580613
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#AAABA6",
+          "amount": 0.013296222141292321
+        }
+      ]
+    },
+    {
+      "id": "6a5280113c9caf3af74a0550",
+      "title": "ny vs ny poster",
+      "src": "/savee-demo/b4e30f1f6e0e825e4b46.avif",
+      "url": "https://savee.com/i/f20cGjy/",
+      "width": 566,
+      "height": 800,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAFAFA",
+          "amount": 0.6563485075139854
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#050505",
+          "amount": 0.3388689168797075
+        }
+      ]
+    },
+    {
+      "id": "6a52800e3c9caf3af74aa2d1",
+      "title": "bookashade love poster",
+      "src": "/savee-demo/f07166bc3090413adc87.avif",
+      "url": "https://savee.com/i/GcCRVox/",
+      "width": 567,
+      "height": 800,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#049424",
+          "amount": 0.5035925915323619
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#FA0505",
+          "amount": 0.4930939226519337
+        }
+      ]
+    },
+    {
+      "id": "6a5110733c9caf3aec981b80",
+      "title": "C9A585C7 10DB 4A82 B6F7 EA77EFA2B24F",
+      "src": "/savee-demo/edfd1bb2f7656ff5bfbc.avif",
+      "url": "https://savee.com/i/f2U5ZWl/",
+      "width": 1085,
+      "height": 1450,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#CFCDC8",
+          "amount": 0.6073327411562862
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#2E2925",
+          "amount": 0.23204109582157867
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#A87840",
+          "amount": 0.05788242177707828
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7D4B2C",
+          "amount": 0.054066397153530364
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9C8870",
+          "amount": 0.04867734409152653
+        }
+      ]
+    },
+    {
+      "id": "6a5110683c9caf3aec96503e",
+      "title": "5BD60096 B193 4332 98E2 5EBAA02B55AB",
+      "src": "/savee-demo/ec943b55399c377a4012.avif",
+      "url": "https://savee.com/i/ycjHxWJ/",
+      "width": 1085,
+      "height": 1450,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#D4CBC1",
+          "amount": 0.6317736493055754
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#2E241F",
+          "amount": 0.22537943332220609
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7A4321",
+          "amount": 0.059255885309533705
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#A88A6C",
+          "amount": 0.05022923389971712
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#A66E37",
+          "amount": 0.03336179816296764
+        }
+      ]
+    },
+    {
+      "id": "6a510fcd3c9caf3aec8a0a9b",
+      "title": "Flow State",
+      "src": "/savee-demo/8ea7db245f649d3f32f1.avif",
+      "url": "https://savee.com/i/wh2-T1R/",
+      "width": 1830,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#E1E8ED",
+          "amount": 0.5091708556744696
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#4D68A3",
+          "amount": 0.487362527374246
+        }
+      ]
+    },
+    {
+      "id": "6a4ead143c9caf3ad10e363e",
+      "title": "fecb92e87d40ee1a8ba69f02dbfe3c63690f5cbb 10238x7678",
+      "src": "/savee-demo/2cff77fddb408de814dc.avif",
+      "url": "https://savee.com/i/pyf2oxW/",
+      "width": 2400,
+      "height": 1800,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#CCB095",
+          "amount": 0.5810530525729444
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#4A2913",
+          "amount": 0.24712943736449655
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6E3A18",
+          "amount": 0.10113183820719725
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#996F2F",
+          "amount": 0.04910757971981261
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#DFE6E3",
+          "amount": 0.0215780921355492
+        }
+      ]
+    },
+    {
+      "id": "6a4eacf73c9caf3ad10d512c",
+      "title": "a2b13640db3e114dbee33df7d53117ab006cc71d 5647x3764",
+      "src": "/savee-demo/f6f1ac725d561adbe914.avif",
+      "url": "https://savee.com/i/6OLuB_K/",
+      "width": 2400,
+      "height": 1600,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#8F5D39",
+          "amount": 0.6905817153987014
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#241C0F",
+          "amount": 0.13606917160888476
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D9CAB6",
+          "amount": 0.11665350062057266
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D1AA8A",
+          "amount": 0.049041261923393115
+        }
+      ]
+    },
+    {
+      "id": "6a4b68d03c9caf3a6bdbbdf8",
+      "title": "original c0ed18278e4fc8a6046c8e4bacf0aa26",
+      "src": "/savee-demo/3de9d5c6f5823d366b31.avif",
+      "url": "https://savee.com/i/GesZOsV/",
+      "width": 720,
+      "height": 720,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#F0F0F0",
+          "amount": 0.5741107531116273
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#4F4F4F",
+          "amount": 0.3369926203889973
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7D7D7D",
+          "amount": 0.040211605705026264
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#737373",
+          "amount": 0.03441320554047749
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#858585",
+          "amount": 0.014271815253871662
+        }
+      ]
+    },
+    {
+      "id": "6a43a0aa3c9caf3a04b9d19d",
+      "title": "ACgW6RXH9yv1nQLU6SrXo94nYc",
+      "src": "/savee-demo/60cfa01de73defa50853.avif",
+      "url": "https://savee.com/i/InAxdpN/",
+      "width": 864,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#382C2B",
+          "amount": 0.6039612553440218
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D68591",
+          "amount": 0.36175043636078386
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#942836",
+          "amount": 0.016491100496410414
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#97C28A",
+          "amount": 0.012930104625248786
+        }
+      ]
+    },
+    {
+      "id": "6a3f8fba3c9caf39d4b42d86",
+      "title": "TYPO | Are.na",
+      "src": "/savee-demo/850c066a00669f81120d.avif",
+      "url": "https://savee.com/i/bg9gpit/",
+      "width": 608,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAF9F7",
+          "amount": 0.6165829802566831
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C2A386",
+          "amount": 0.3580253459229027
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#CCBAA7",
+          "amount": 0.017082623036083065
+        }
+      ]
+    },
+    {
+      "id": "6a3f8fb83c9caf39d4b4cdaf",
+      "title": "alt tf 1767974460 3806367653016295913 55416471537",
+      "src": "/savee-demo/711e09cb2eb274e330f1.avif",
+      "url": "https://savee.com/i/_BVcpOn/",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#D65F15",
+          "amount": 0.5079233141785248
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#304520",
+          "amount": 0.47360802544095515
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7D5320",
+          "amount": 0.010450143820854137
+        }
+      ]
+    },
+    {
+      "id": "6a3d266b3c9caf3989ef9aa7",
+      "title": "Kylie Jenner sticking her tongue out, wearing the new Meta Glasses, with star shaped glitter on her tongue",
+      "src": "/savee-demo/0c9b0b82cd8387189a70.avif",
+      "url": "https://savee.com/i/2hLYOec/",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#261813",
+          "amount": 0.5351382248405347
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C28A70",
+          "amount": 0.46262901435705844
+        }
+      ]
+    },
+    {
+      "id": "6a3c16533c9caf397b59d3f6",
+      "title": "HLiTmoQXMAAPZSX",
+      "src": "/savee-demo/7c74051a6d9fd2b72b52.avif",
+      "url": "https://savee.com/i/YtKc1-3/",
+      "width": 1229,
+      "height": 1536,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#EBE6E4",
+          "amount": 0.6696440640912491
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#302E2C",
+          "amount": 0.26675623585941294
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#929294",
+          "amount": 0.04566726442636604
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7D565D",
+          "amount": 0.0106385685493586
+        }
+      ]
+    },
+    {
+      "id": "6a3c16473c9caf397b5806f7",
+      "title": "HLiTbmgbIAATh4o",
+      "src": "/savee-demo/2feb4b3093d274fa428d.avif",
+      "url": "https://savee.com/i/drNkwYa/",
+      "width": 1229,
+      "height": 1536,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#D9C6C3",
+          "amount": 0.6070894245342981
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#1F1B18",
+          "amount": 0.2522075001222315
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6E4438",
+          "amount": 0.07020974918104923
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#946F65",
+          "amount": 0.04508140615068694
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#805749",
+          "amount": 0.02541192001173422
+        }
+      ]
+    },
+    {
+      "id": "6a3aa1923c9caf396ba5f4b8",
+      "title": "original d24b912449cb58f54efeceeb1fec6856",
+      "src": "/savee-demo/9acedc1c5ac886f43cb8.avif",
+      "url": "https://savee.com/i/S8jBqTG/",
+      "width": 1179,
+      "height": 1471,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#170404",
+          "amount": 0.44672490434101014
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#DE0D22",
+          "amount": 0.4463845542961458
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#3B0606",
+          "amount": 0.057228312998277624
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6B090C",
+          "amount": 0.04964160108912014
+        }
+      ]
+    },
+    {
+      "id": "6a3aa1883c9caf396ba51958",
+      "title": "original 83ef7d6584d62d64ca80b42a491178c6",
+      "src": "/savee-demo/e3255688cab3d9b220e2.avif",
+      "url": "https://savee.com/i/0nQVXnD/",
+      "width": 2160,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#261515",
+          "amount": 0.7207011159297463
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C2A09F",
+          "amount": 0.15974694599992914
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#8C5656",
+          "amount": 0.10982992544687512
+        }
+      ]
+    },
+    {
+      "id": "6a353aeb3c9caf391edf4cf3",
+      "title": "7e77055da5174bdbb4a1f623f333ae36.HD 1080p 3.3Mbps 79589500.optimized",
+      "src": "/savee-demo/42153413b5d971e53dab.avif",
+      "url": "https://savee.com/i/rzGGIEV/",
+      "width": 1308,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#EBEBED",
+          "amount": 0.6451122441995757
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#101112",
+          "amount": 0.34474117673898663
+        }
+      ]
+    },
+    {
+      "id": "6a3445553c9caf3918c9cf60",
+      "title": "ant2hem screen13 16 9",
+      "src": "/savee-demo/83dfe81f8ce7003fa13c.avif",
+      "url": "https://savee.com/i/qscREgx/",
+      "width": 2400,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#780404",
+          "amount": 0.6032109266495398
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#290404",
+          "amount": 0.2374800571121132
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D64118",
+          "amount": 0.0891426452492009
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#BA1F04",
+          "amount": 0.07005842858721174
+        }
+      ]
+    },
+    {
+      "id": "6a3325c73c9caf3911278f68",
+      "title": "Photo shared by teenage engineering on May 25, 2026 tagging @marcusprice svenskbas, @nellyhinas, @pbeatgirl, @djbogdonit, @orestesgomez, @tradgarden, @izzylindqwister, @swedish tiger sound, @rigofuego, @itsshimmering, @koodes k, @josephinemoriko, @emblaeliza, @preciouskargo , @ph4tness, and @eve plus pol. May be a graphic of poster and text that says 'teenage engineering \u5165 27.05.2026 tr\u00e4dg\u00e1rden'.",
+      "src": "/savee-demo/570e9144d584d3da40a0.avif",
+      "url": "https://savee.com/i/L1ItCkD/",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#DBD9D3",
+          "amount": 0.5030586029579004
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#F24E24",
+          "amount": 0.482827482087064
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#242422",
+          "amount": 0.010517388170011395
+        }
+      ]
+    },
+    {
+      "id": "6a3175b53c9caf3905178b69",
+      "title": "original bc69416a4200e3ade17e7ce6d3944af8",
+      "src": "/savee-demo/e95d5546b95ae46003ec.avif",
+      "url": "https://savee.com/i/WYXdgzj/",
+      "width": 1320,
+      "height": 1629,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#2D2A2E",
+          "amount": 0.4540509075421608
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#EDE9E4",
+          "amount": 0.3608944171814807
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#4C4A4F",
+          "amount": 0.14833574684120934
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6087B3",
+          "amount": 0.03633922942446344
+        }
+      ]
+    },
+    {
+      "id": "6a3175ae3c9caf390517c99f",
+      "title": "original 8aa22fee0489faa5a8c26a092e38c558",
+      "src": "/savee-demo/f4b7a97106960600c7b6.avif",
+      "url": "https://savee.com/i/DGFLDcO/",
+      "width": 480,
+      "height": 360,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#0A0A0A",
+          "amount": 0.6151044705719052
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#E8E8E8",
+          "amount": 0.37986494718957003
+        }
+      ]
+    },
+    {
+      "id": "6a3147223c9caf39031bd410",
+      "title": "We just shipped a faster, more fluid photo attach experience in ChatGPT!\n\nThe attach menu now transitions smoothly into the camera, captures happen more quickly, and selected images move directly into the composer, making the whole flow feel like one continuous action.",
+      "src": "/savee-demo/605ac8e37f74866dc499.avif",
+      "url": "https://savee.com/i/ZgYTNOY/",
+      "width": 608,
+      "height": 1081,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#6E635B",
+          "amount": 0.5975639123021839
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#CCC0C8",
+          "amount": 0.30921788969994307
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#171715",
+          "amount": 0.046468272266052116
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#98C5D9",
+          "amount": 0.032149825944238784
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#80A0BD",
+          "amount": 0.014600099787582232
+        }
+      ]
+    },
+    {
+      "id": "6a2de0063c9caf38eb4c67b4",
+      "title": "HKtwDULWgAAqPTu",
+      "src": "/savee-demo/19502cf75c90e6464e00.avif",
+      "url": "https://savee.com/i/hJMYFdA/",
+      "width": 1536,
+      "height": 2048,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#262016",
+          "amount": 0.4793601595574271
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C2C0C2",
+          "amount": 0.34212750737118125
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#889DA8",
+          "amount": 0.1004571955941545
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#708694",
+          "amount": 0.04583642820823211
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6F7063",
+          "amount": 0.03221870926900503
+        }
+      ]
+    },
+    {
+      "id": "6a2ddf1e3c9caf38eb48bf0b",
+      "title": "HKpUpyvXsAAEvlg",
+      "src": "/savee-demo/840ded0966a4fcdfdc02.avif",
+      "url": "https://savee.com/i/NJEVEOL/",
+      "width": 1183,
+      "height": 1184,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#EBF9FA",
+          "amount": 0.38812628831127394
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C25036",
+          "amount": 0.34018484916841235
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#38230F",
+          "amount": 0.236242531764989
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#B89E2C",
+          "amount": 0.02756935978324378
+        }
+      ]
+    },
+    {
+      "id": "6a2d97ad3c9caf38ea1657f9",
+      "title": "Feels incredible to share the work we\u2019ve done this year, excited to have been a big part in bringing to life a more powerful and personal Siri.",
+      "src": "/savee-demo/e353963bf91170809a8c.avif",
+      "url": "https://savee.com/i/j1hXewt/",
+      "width": 1920,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#214A5C",
+          "amount": 0.5787108988668795
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#EFEDF0",
+          "amount": 0.3500065348016878
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#856D5A",
+          "amount": 0.030793683734132223
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9E876D",
+          "amount": 0.022065055765390987
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#A1978F",
+          "amount": 0.018423826831909424
+        }
+      ]
+    },
+    {
+      "id": "6a2c173e3c9caf38e3848fca",
+      "title": "original a61a7b8afa0e086807cd6e70588b34cc",
+      "src": "/savee-demo/b4a4ebb359763e4b8985.avif",
+      "url": "https://savee.com/i/Rwds343/",
+      "width": 1200,
+      "height": 1200,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#F2F2F2",
+          "amount": 0.4999738465089972
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#262626",
+          "amount": 0.4912887952167706
+        }
+      ]
+    },
+    {
+      "id": "6a1c4e4f3c9caf387c3d5acc",
+      "title": "N\u00e3o foi fornecido texto alternativo para esta imagem",
+      "src": "/savee-demo/7a4d107fe3b984a73511.avif",
+      "url": "https://savee.com/i/svjkDAF/",
+      "width": 750,
+      "height": 1159,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#E04A2F",
+          "amount": 0.34167008000539895
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D5E8F0",
+          "amount": 0.32858039011246926
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#414544",
+          "amount": 0.2845007340310346
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D991AD",
+          "amount": 0.03901782935043818
+        }
+      ]
+    },
+    {
+      "id": "6a15b28a3c9caf3839aaf178",
+      "title": "HJMjO16XsAAd 47",
+      "src": "/savee-demo/c2a084b18af16b044928.avif",
+      "url": "https://savee.com/i/JOUDUjX/",
+      "width": 980,
+      "height": 1453,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#C4A095",
+          "amount": 0.5545001766322611
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#211B19",
+          "amount": 0.38105345050833733
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#806F65",
+          "amount": 0.05829020740471672
+        }
+      ]
+    },
+    {
+      "id": "6a11e31b3c9caf3825041681",
+      "title": "ARB8",
+      "src": "/savee-demo/7cde29f967225e8753fe.avif",
+      "url": "https://savee.com/i/kaEqJIF/",
+      "width": 1388,
+      "height": 1786,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAFAFA",
+          "amount": 0.7958779188147121
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#424242",
+          "amount": 0.18435575406003302
+        }
+      ]
+    },
+    {
+      "id": "6a11e00a3c9caf3824fa899a",
+      "title": "04 numbers",
+      "src": "/savee-demo/e70f456cfb2c9075eef7.avif",
+      "url": "https://savee.com/i/5jDbj8O/",
+      "width": 864,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#3F8F67",
+          "amount": 0.5361224324765868
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#F2F0F0",
+          "amount": 0.36498684548561205
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#97C29B",
+          "amount": 0.07377031631493598
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#1F4237",
+          "amount": 0.01345219423546907
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#AECFC1",
+          "amount": 0.01166821148739611
+        }
+      ]
+    },
+    {
+      "id": "6a11dfbe3c9caf3824fabf70",
+      "title": "03 charts",
+      "src": "/savee-demo/f5da53417d1fe491c2de.avif",
+      "url": "https://savee.com/i/LqwgEJi/",
+      "width": 2048,
+      "height": 2560,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#332B21",
+          "amount": 0.9360010119427128
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#BAA897",
+          "amount": 0.04153661902997993
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#857C72",
+          "amount": 0.02010362773408142
+        }
+      ]
+    },
+    {
+      "id": "6a0e67273c9caf381515686f",
+      "title": "X",
+      "src": "/savee-demo/274120ce25d745e87021.avif",
+      "url": "https://savee.com/i/xSNmL7u/",
+      "width": 1206,
+      "height": 760,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#221E24",
+          "amount": 0.9250150022082941
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#A19FA6",
+          "amount": 0.06488092648906983
+        }
+      ]
+    },
+    {
+      "id": "6a0e66d33c9caf381514ee0d",
+      "title": "1,812 likes, 110 comments   wannerstedt on April 30, 2026: \"  Soft Logic  \nA personal exploration of form, motion, and intuitive transformation.\n\nAnother fun collab with the brilliant @echoic audio \n.\n.\n#wannerstedt #cinema4d #redshift #3d #shipthework\".",
+      "src": "/savee-demo/c6633408a0e2999e36c8.avif",
+      "url": "https://savee.com/i/pcS_drZ/",
+      "width": 720,
+      "height": 900,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#BDA599",
+          "amount": 0.5576927747607572
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#26120F",
+          "amount": 0.2831767385891096
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#5C382C",
+          "amount": 0.09323592551687897
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#75513E",
+          "amount": 0.05945448701316834
+        }
+      ]
+    },
+    {
+      "id": "6a0e66873c9caf381513000f",
+      "title": "THE NORTH FACE X IKB :: Behance",
+      "src": "/savee-demo/05713f19f8ed0d210229.avif",
+      "url": "https://savee.com/i/kDO_g8W/",
+      "width": 800,
+      "height": 450,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#638D94",
+          "amount": 0.4683024050212441
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#0F2026",
+          "amount": 0.4681228623981087
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#195061",
+          "amount": 0.044764809787516444
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#326B73",
+          "amount": 0.01852794880166808
+        }
+      ]
+    },
+    {
+      "id": "6a0e65c53c9caf38150f781d",
+      "title": "GPae93Va0AkrrsN (1920\u00d71280)",
+      "src": "/savee-demo/ee46f6dce842f2382b5e.avif",
+      "url": "https://savee.com/i/fGuXeZB/",
+      "width": 1920,
+      "height": 1280,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#465D6B",
+          "amount": 0.7508034509697445
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9BB4BF",
+          "amount": 0.18596122413890329
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#1C242B",
+          "amount": 0.05083938764740223
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7492A3",
+          "amount": 0.012286539876627417
+        }
+      ]
+    },
+    {
+      "id": "6a0e65a23c9caf38150fc42e",
+      "title": "Pin page",
+      "src": "/savee-demo/51bfb5b93231cb0efde4.avif",
+      "url": "https://savee.com/i/Hb0qLwJ/",
+      "width": 564,
+      "height": 871,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#050405",
+          "amount": 0.514278864596139
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C9C6CF",
+          "amount": 0.3924458779084058
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#DE7E35",
+          "amount": 0.06159110117017116
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#788DC2",
+          "amount": 0.029705113179838247
+        }
+      ]
+    },
+    {
+      "id": "6a0e47303c9caf3814775a92",
+      "title": "Shopify Studio",
+      "src": "/savee-demo/3fbf1f8ef916b7307e48.avif",
+      "url": "https://savee.com/i/uv4ZsGo/",
+      "width": 2400,
+      "height": 2400,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#30180B",
+          "amount": 0.5905067530609378
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#CFA88A",
+          "amount": 0.32003058953530067
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7D4C2D",
+          "amount": 0.07535502875878751
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#909FA3",
+          "amount": 0.010629035280459864
+        }
+      ]
+    },
+    {
+      "id": "6a0ca0463c9caf380a059f40",
+      "title": "MW magazine sizzle",
+      "src": "/savee-demo/0111461d0abd51c0e922.avif",
+      "url": "https://savee.com/i/d6DW0Cu/",
+      "width": 810,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAF6F5",
+          "amount": 0.5740007639795786
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#211E1A",
+          "amount": 0.3909436624369866
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6B615C",
+          "amount": 0.019248032846101527
+        }
+      ]
+    },
+    {
+      "id": "6a0c878e3c9caf380928fb2c",
+      "title": "dinamo editions arizona horsegiirl animation crop 1400 optimized",
+      "src": "/savee-demo/0a74291b9302f541bf91.avif",
+      "url": "https://savee.com/i/XGvqUJf/",
+      "width": 1400,
+      "height": 1022,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#E6E4DF",
+          "amount": 0.7308141854935309
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#615E58",
+          "amount": 0.23177202080521292
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#827E72",
+          "amount": 0.02362901956155526
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#8F8D83",
+          "amount": 0.01261616172363351
+        }
+      ]
+    },
+    {
+      "id": "6a08874b3c9caf37ee2cefa6",
+      "title": "f65cd446 dc03 4b69 880c 6feb2081bc7b",
+      "src": "/savee-demo/1aedab1ee51cfd914aa9.avif",
+      "url": "https://savee.com/i/ReNQhZT/",
+      "width": 1179,
+      "height": 1464,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#111211",
+          "amount": 0.6052816181037921
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#DEE2E3",
+          "amount": 0.3789014586278106
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#8D9394",
+          "amount": 0.012981487479498994
+        }
+      ]
+    },
+    {
+      "id": "6a0887483c9caf37ee2c05a7",
+      "title": "original 56f0497dd49cec3a3de449a01419a40f",
+      "src": "/savee-demo/8bff18f894973d0f5223.avif",
+      "url": "https://savee.com/i/WLnAOVV/",
+      "width": 1810,
+      "height": 1195,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#EDECE8",
+          "amount": 0.7780065005838316
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#44453F",
+          "amount": 0.18824042887612843
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#969590",
+          "amount": 0.016818429726648456
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#65827A",
+          "amount": 0.014555393756964578
+        }
+      ]
+    },
+    {
+      "id": "6a0762813c9caf37e8ccf9ab",
+      "title": "HIN Pc9XMAAnTaa",
+      "src": "/savee-demo/25b627f7c026e272d9d6.avif",
+      "url": "https://savee.com/i/NpBZGGN/",
+      "width": 900,
+      "height": 1200,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#EDECE6",
+          "amount": 0.5396560096713594
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#171716",
+          "amount": 0.39669838848467337
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#B52D18",
+          "amount": 0.06077706767635186
+        }
+      ]
+    },
+    {
+      "id": "6a07627b3c9caf37e8cbdf1e",
+      "title": "HIN MMhW4AA4Hqx",
+      "src": "/savee-demo/d0961cf095d0a86731f3.avif",
+      "url": "https://savee.com/i/NSGe9ZF/",
+      "width": 900,
+      "height": 1200,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#CC6C18",
+          "amount": 0.5411529452942792
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#FAF7EB",
+          "amount": 0.45444707939988094
+        }
+      ]
+    },
+    {
+      "id": "6a0762753c9caf37e8cbe31b",
+      "title": "HIN AP1XYAAsVXm",
+      "src": "/savee-demo/9be93d81e4c14c8962e9.avif",
+      "url": "https://savee.com/i/NOvNLWb/",
+      "width": 900,
+      "height": 1200,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#171716",
+          "amount": 0.5463742137780383
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#F0F0EB",
+          "amount": 0.44834967300937806
+        }
+      ]
+    },
+    {
+      "id": "6a0762703c9caf37e8cb4b1e",
+      "title": "HIN AP1W8AAl0xP",
+      "src": "/savee-demo/011402659fb0a57535da.avif",
+      "url": "https://savee.com/i/K7puG5n/",
+      "width": 900,
+      "height": 1200,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#DBD7CC",
+          "amount": 0.5961917064690678
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#262629",
+          "amount": 0.23376314516447314
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#646466",
+          "amount": 0.10721401025155963
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6B5B3A",
+          "amount": 0.032394275283926174
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#4D3D2D",
+          "amount": 0.03043686283097326
+        }
+      ]
+    },
+    {
+      "id": "6a0745b73c9caf37e82d78de",
+      "title": "8882eb247740417.69e43134b2fa1",
+      "src": "/savee-demo/ad5660e358d5416247cd.avif",
+      "url": "https://savee.com/i/aPnSar1/",
+      "width": 2400,
+      "height": 1597,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#F2F2F2",
+          "amount": 0.9427825049880362
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#A6A6A6",
+          "amount": 0.03725952841745975
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#BDBDBD",
+          "amount": 0.01209603976123961
+        }
+      ]
+    },
+    {
+      "id": "6a07425b3c9caf37e81fef58",
+      "title": "CleanShot 2026 05 15 at 11.56.32@2x",
+      "src": "/savee-demo/e9b03f56705c0d96b7c9.avif",
+      "url": "https://savee.com/i/DjCzfRG/",
+      "width": 2784,
+      "height": 1722,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "rgba(0, 0, 0, 0)",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "6a0734093c9caf37e7ad5259",
+      "title": "JasmineDowling 1 ezgif.com resize",
+      "src": "/savee-demo/bbbec99129d7460d911f.avif",
+      "url": "https://savee.com/i/EJiW7yY/",
+      "width": 380,
+      "height": 674,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#69452F",
+          "amount": 0.4593308939329252
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C2B7AE",
+          "amount": 0.3019904344223995
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#261510",
+          "amount": 0.20606415126742297
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#AB7B60",
+          "amount": 0.030742990898833138
+        }
+      ]
+    },
+    {
+      "id": "6a0733a13c9caf37e7aa7a57",
+      "title": "LucesDeBohemia cafeteria restaurante Vigo NtsxLFs",
+      "src": "/savee-demo/15c79b4e163c581b0820.avif",
+      "url": "https://savee.com/i/JDHcPBI/",
+      "width": 2182,
+      "height": 3000,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAFAFA",
+          "amount": 0.5392930003384003
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#295EA3",
+          "amount": 0.4286126976407638
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#98B9D9",
+          "amount": 0.030643422819084207
+        }
+      ]
+    },
+    {
+      "id": "6a07339b3c9caf37e7a972af",
+      "title": "Arganzuela cerveceria Madrid rbyiGF6",
+      "src": "/savee-demo/bdd6dc5c9449df0fd705.avif",
+      "url": "https://savee.com/i/F4kgvHi/",
+      "width": 2182,
+      "height": 3000,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAFAFA",
+          "amount": 0.825062609834413
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#36B541",
+          "amount": 0.1561589400993207
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#98D698",
+          "amount": 0.017596007371422015
+        }
+      ]
+    },
+    {
+      "id": "6a07339a3c9caf37e7a92dc8",
+      "title": "CafeBarElParque cafe bar Alcala La Real Jaen d60CDL8",
+      "src": "/savee-demo/7e59679c2ceaa5811ddc.avif",
+      "url": "https://savee.com/i/HdRG11M/",
+      "width": 2182,
+      "height": 3000,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAFAFA",
+          "amount": 0.7699322299884449
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#F24B5F",
+          "amount": 0.213122769481056
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#F79CA3",
+          "amount": 0.01611278630716877
+        }
+      ]
+    },
+    {
+      "id": "6a07330d3c9caf37e7a6f3d7",
+      "title": "Little Troop Bon Elliot 08",
+      "src": "/savee-demo/55861e2096f9a02ad763.avif",
+      "url": "https://savee.com/i/1Hqf_on/",
+      "width": 2400,
+      "height": 1626,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#C5C6C9",
+          "amount": 0.5216240416305882
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#171517",
+          "amount": 0.28759413116576893
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#AB220F",
+          "amount": 0.15193882475204148
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#A8674D",
+          "amount": 0.025712692185515935
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#787474",
+          "amount": 0.013130310266085512
+        }
+      ]
+    },
+    {
+      "id": "6a0732a13c9caf37e7a39230",
+      "title": "05 Blurr Bureau YesApples Copyright Blurr Bureau 2026",
+      "src": "/savee-demo/a8f878616cf832441677.avif",
+      "url": "https://savee.com/i/0S2tOJP/",
+      "width": 2400,
+      "height": 1403,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#323321",
+          "amount": 0.4877580256403323
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D6BC87",
+          "amount": 0.42421269347094703
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#8F622C",
+          "amount": 0.04919000034763934
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#96A898",
+          "amount": 0.034674637983619146
+        }
+      ]
+    },
+    {
+      "id": "6a0732963c9caf37e7a35317",
+      "title": "01 Stoemp Studio MAD Brussels Copyright Stoemp Studio Laetita Bica Pie",
+      "src": "/savee-demo/c43fe2e14213769480c1.avif",
+      "url": "https://savee.com/i/MgdjTDj/",
+      "width": 1916,
+      "height": 1672,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#A19798",
+          "amount": 0.5267415794938006
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#292625",
+          "amount": 0.28892188096415056
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#802E2A",
+          "amount": 0.13493678307868673
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#F2EFED",
+          "amount": 0.02668096222474832
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#754F42",
+          "amount": 0.022718794238613782
+        }
+      ]
+    },
+    {
+      "id": "6a07328e3c9caf37e7a3f315",
+      "title": "ezgif.com video to gif converter 1 IxjqEa3",
+      "src": "/savee-demo/86eddb821748a90329b1.avif",
+      "url": "https://savee.com/i/twY9OO6/",
+      "width": 800,
+      "height": 1000,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#853C32",
+          "amount": 0.5820036250812436
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#E3FA34",
+          "amount": 0.3868158856448342
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#C7BEB7",
+          "amount": 0.024982368181321456
+        }
+      ]
+    },
+    {
+      "id": "6a01ec8b3c9caf37c67f18f1",
+      "title": "Made on Yafa",
+      "src": "/savee-demo/ef3561add0e693b142d6.avif",
+      "url": "https://savee.com/i/yOvg2uZ/",
+      "width": 608,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#46494D",
+          "amount": 0.5658489988886839
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D8DFE6",
+          "amount": 0.26942406446589584
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#B3BEC7",
+          "amount": 0.10682217390143293
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9DA5B0",
+          "amount": 0.038124432904003795
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#93989E",
+          "amount": 0.01978032983998349
+        }
+      ]
+    },
+    {
+      "id": "69ff54d73c9caf37bb7c9980",
+      "title": "Offsite IG Carousel 01",
+      "src": "/savee-demo/07f69fb81e4963e3eca8.avif",
+      "url": "https://savee.com/i/G0ozDBe/",
+      "width": 2400,
+      "height": 3000,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#0F0F08",
+          "amount": 0.5311051583251286
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#E8E8E8",
+          "amount": 0.4574294796218916
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#858583",
+          "amount": 0.010859436947914974
+        }
+      ]
+    },
+    {
+      "id": "69f8f6cc3c9caf379698605f",
+      "title": "5a7889699edc2609048e186f894cfd95.gif (800\u00d7800)",
+      "src": "/savee-demo/183ec2c019b3d0d41a15.avif",
+      "url": "https://savee.com/i/at_cLjA/",
+      "width": 800,
+      "height": 800,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#C23F30",
+          "amount": 0.463313910454959
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#1C0606",
+          "amount": 0.30516098557398297
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#700E0A",
+          "amount": 0.23074295719752888
+        }
+      ]
+    },
+    {
+      "id": "69f1098e3c9caf375871c5cd",
+      "title": "original e62b3c16552be8c64b92f8c56ea62c82",
+      "src": "/savee-demo/edd7b0e323a2f9aa1f59.avif",
+      "url": "https://savee.com/i/_BYhmnA/",
+      "width": 736,
+      "height": 736,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#43473D",
+          "amount": 0.5407678660423871
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D0D1D9",
+          "amount": 0.29214844832486225
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#B0C1D1",
+          "amount": 0.12908047195360575
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#967F5F",
+          "amount": 0.03668053429800021
+        }
+      ]
+    },
+    {
+      "id": "69eced953c9caf37407bb7bb",
+      "title": "HGoNtguXoAAFCqw",
+      "src": "/savee-demo/b2ef8e3eaaca130a697e.avif",
+      "url": "https://savee.com/i/KjShraJ/",
+      "width": 1000,
+      "height": 1208,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#A1A09A",
+          "amount": 0.8241501125658786
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#40301A",
+          "amount": 0.08197721777063438
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#5E3D21",
+          "amount": 0.0461833928704517
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#D9CCC3",
+          "amount": 0.026710565041058017
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#665B3E",
+          "amount": 0.020978711751977366
+        }
+      ]
+    },
+    {
+      "id": "69e7ab123c9caf3720ede1d7",
+      "title": "GT Mechanik",
+      "src": "/savee-demo/f2020aa6d540bb950d06.avif",
+      "url": "https://savee.com/i/JtEIjYs/",
+      "width": 2400,
+      "height": 1767,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#15590D",
+          "amount": 0.42253747030693756
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#EAEBE6",
+          "amount": 0.25022201868518135
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9CA818",
+          "amount": 0.1686452175172627
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#E34292",
+          "amount": 0.15086818301351018
+        }
+      ]
+    },
+    {
+      "id": "69de6fc93c9caf36e84619f5",
+      "title": "HFkWo1gWgAAHEmY",
+      "src": "/savee-demo/0939d64f58289e2f60f6.avif",
+      "url": "https://savee.com/i/Vf-sTw5/",
+      "width": 1080,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#92989C",
+          "amount": 0.45879060600372235
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#FA9B16",
+          "amount": 0.3886048699351312
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#8C5E2D",
+          "amount": 0.15244009682599094
+        }
+      ]
+    },
+    {
+      "id": "69d668fe3c9caf36bc644b93",
+      "title": "schick toikka flow festival 04 uv4x3gpd",
+      "src": "/savee-demo/7ad6572a44c18124799f.avif",
+      "url": "https://savee.com/i/M9jxEqW/",
+      "width": 1920,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#080808",
+          "amount": 0.5309414755803884
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#FAFAFA",
+          "amount": 0.4637509439813273
+        }
+      ]
+    },
+    {
+      "id": "69d668703c9caf36bc5e3820",
+      "title": "schick toikka sakara 08 ti2d3gea",
+      "src": "/savee-demo/c96c03e50093098de362.avif",
+      "url": "https://savee.com/i/LV8ot53/",
+      "width": 1080,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#FAFAFA",
+          "amount": 0.5383900660291965
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#0D0D0D",
+          "amount": 0.45134318054938766
+        }
+      ]
+    },
+    {
+      "id": "69d6646c3c9caf36bc38d5bf",
+      "title": "Instagram",
+      "src": "/savee-demo/98f8307de6e07952bdc1.avif",
+      "url": "https://savee.com/i/vNxa0dR/",
+      "width": 720,
+      "height": 900,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#111A1C",
+          "amount": 0.42476984751225116
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7BA5B8",
+          "amount": 0.38499879007366455
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#4E7285",
+          "amount": 0.12237004469054584
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#658D9C",
+          "amount": 0.06775461951213833
+        }
+      ]
+    },
+    {
+      "id": "69d469443c9caf36af6f21d8",
+      "title": "Motion is all you need \ud83e\udef6",
+      "src": "/savee-demo/44242ff394f9117bfd04.avif",
+      "url": "https://savee.com/i/y-e1N5r/",
+      "width": 1920,
+      "height": 960,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#031BA3",
+          "amount": 0.5993419387496837
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#E3AAC8",
+          "amount": 0.3971391481127685
+        }
+      ]
+    },
+    {
+      "id": "69d3ffbf3c9caf36ad2b8ce7",
+      "title": "HE51F9nbMAAPzOA",
+      "src": "/savee-demo/a6083df8181214cc8ae4.avif",
+      "url": "https://savee.com/i/q-ClZtN/",
+      "width": 900,
+      "height": 1200,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#19211B",
+          "amount": 0.49149655635630807
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6ED169",
+          "amount": 0.39931354049465223
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#A37141",
+          "amount": 0.10147009974104795
+        }
+      ]
+    },
+    {
+      "id": "69d3fdfd3c9caf36ad21ac6b",
+      "title": "Sidekick",
+      "src": "/savee-demo/e54a1794767c0a908595.avif",
+      "url": "https://savee.com/i/LZ1KzLx/",
+      "width": 1310,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#EDEDED",
+          "amount": 0.6714976790505416
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#101112",
+          "amount": 0.31953630005698075
+        }
+      ]
+    },
+    {
+      "id": "69ce7aa73c9caf36931c8bad",
+      "title": "Shopify Design",
+      "src": "/savee-demo/7b14cd07bc64846a651d.avif",
+      "url": "https://savee.com/i/JxEtZlp/",
+      "width": 1920,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#F5F5F5",
+          "amount": 0.9828181734318738
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#BA7B66",
+          "amount": 0.013743646512443837
+        }
+      ]
+    },
+    {
+      "id": "69ca8ca33c9caf36778788aa",
+      "title": "HD9cecgW0AACI7g",
+      "src": "/savee-demo/6b69e509da05ce4fba8b.avif",
+      "url": "https://savee.com/i/2Z5BjQu/",
+      "width": 1199,
+      "height": 497,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#0C1617",
+          "amount": 0.6345135230190894
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#558185",
+          "amount": 0.19797244781471018
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#3B5052",
+          "amount": 0.11234630522805238
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#717861",
+          "amount": 0.04974516587363942
+        }
+      ]
+    },
+    {
+      "id": "69c6b5b93c9caf366719f86b",
+      "title": "HENHet XoAAGI1P",
+      "src": "/savee-demo/43d2cd42ca8b3adb6e44.avif",
+      "url": "https://savee.com/i/AaLjXhF/",
+      "width": 1440,
+      "height": 1800,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#050505",
+          "amount": 0.7196339363714239
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#BDBDBD",
+          "amount": 0.24086692733292056
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#595959",
+          "amount": 0.01653477858917924
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7D7D7D",
+          "amount": 0.013918786346968836
+        }
+      ]
+    },
+    {
+      "id": "69c6b3463c9caf3667097cac",
+      "title": "HEbD9iwXQAASwEQ",
+      "src": "/savee-demo/a7b44fad742beae8b08c.avif",
+      "url": "https://savee.com/i/HGI58AR/",
+      "width": 928,
+      "height": 1152,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#A9AD99",
+          "amount": 0.6860120450041511
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#1B1C14",
+          "amount": 0.23671312787157045
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#616B59",
+          "amount": 0.035685386657265186
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#4D4232",
+          "amount": 0.02800575513377232
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#585C3F",
+          "amount": 0.013583685333240917
+        }
+      ]
+    },
+    {
+      "id": "69bc6dd43c9caf3626911750",
+      "title": "trffe",
+      "src": "/savee-demo/ed05195013881923e591.avif",
+      "url": "https://savee.com/i/yeoZsri/",
+      "width": 1622,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#050505",
+          "amount": 0.9564294723419156
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#B8B4B2",
+          "amount": 0.03677550952456821
+        }
+      ]
+    },
+    {
+      "id": "69bc5eaa3c9caf3625e600b5",
+      "title": "HDvNhedXAAA2iMl",
+      "src": "/savee-demo/67426322172cbc307785.avif",
+      "url": "https://savee.com/i/orSVTpl/",
+      "width": 2400,
+      "height": 1798,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#1E3442",
+          "amount": 0.516542453989734
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#CDD4C3",
+          "amount": 0.33113916153721124
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#0881D1",
+          "amount": 0.11112409043678335
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#5BB9DE",
+          "amount": 0.033988558915898845
+        }
+      ]
+    },
+    {
+      "id": "69baf8b43c9caf361cb7dfa6",
+      "title": "G7 paslWkAMC05X",
+      "src": "/savee-demo/4e2730e6e4071e129cf3.avif",
+      "url": "https://savee.com/i/i2JAUcs/",
+      "width": 1000,
+      "height": 1317,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#E0DCDA",
+          "amount": 0.6101487604299051
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#394599",
+          "amount": 0.30182885117512476
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#B78ABA",
+          "amount": 0.04628291895507524
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#B847BA",
+          "amount": 0.03576158607019401
+        }
+      ]
+    },
+    {
+      "id": "69baf5f43c9caf361ca3b2c2",
+      "title": "HDpJichbEAA1ZPv",
+      "src": "/savee-demo/b5459771499240805cce.avif",
+      "url": "https://savee.com/i/Joa4IhO/",
+      "width": 1080,
+      "height": 720,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#E8E8E8",
+          "amount": 0.8617128445966385
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#6B3B2D",
+          "amount": 0.1187555149147625
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#9C908A",
+          "amount": 0.014741729291637007
+        }
+      ]
+    },
+    {
+      "id": "69ad85213c9caf35b61937d2",
+      "title": "6b088a244366507.6995e2233a552",
+      "src": "/savee-demo/25ab776ae56244eb391c.avif",
+      "url": "https://savee.com/i/nvdz828/",
+      "width": 2400,
+      "height": 1600,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#CED0D6",
+          "amount": 0.5966379451041488
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#3A393D",
+          "amount": 0.3638773804357928
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#999CA3",
+          "amount": 0.025870943800381976
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#7B7A80",
+          "amount": 0.011949933977781758
+        }
+      ]
+    },
+    {
+      "id": "69acbcc13c9caf35b2988cbf",
+      "title": "view",
+      "src": "/savee-demo/0eac48e0e0c52a39514f.avif",
+      "url": "https://savee.com/i/8RkyR6c/",
+      "width": 1374,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#0F0F0D",
+          "amount": 0.8634110879344418
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#AB9E96",
+          "amount": 0.12791777130414703
+        }
+      ]
+    },
+    {
+      "id": "699df8083c9caf354ee3f896",
+      "title": "HB7qCbOawAIR3Pt",
+      "src": "/savee-demo/2a92473c6676149ba6b3.avif",
+      "url": "https://savee.com/i/3-DcSD0/",
+      "width": 1600,
+      "height": 939,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "rgba(0, 0, 0, 0)",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "6993240c3c9caf3501559287",
+      "title": "original 8d3442bf5a59e1a697ad7639998fd3af",
+      "src": "/savee-demo/2bfea49902347090ba97.avif",
+      "url": "https://savee.com/i/nCOpSYI/",
+      "width": 864,
+      "height": 684,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#F2BBD3",
+          "amount": 0.5464030610169316
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#050404",
+          "amount": 0.450247010101563
+        }
+      ]
+    },
+    {
+      "id": "698b71533c9caf34d13c5f2e",
+      "title": "HAzCBqQaAAEOIJB",
+      "src": "/savee-demo/163690711e73011cb09c.avif",
+      "url": "https://savee.com/i/KmXFP_H/",
+      "width": 2400,
+      "height": 1350,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "rgba(0, 0, 0, 0)",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "698a43f73c9caf34bf84a6d1",
+      "title": "HAdkBWcacAEy0O ",
+      "src": "/savee-demo/31e9866e74c70d68c8df.avif",
+      "url": "https://savee.com/i/3um6_Yj/",
+      "width": 2400,
+      "height": 1593,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#E9F0E9",
+          "amount": 0.5626055721322548
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#11A4D9",
+          "amount": 0.41028857298843485
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#66C0DE",
+          "amount": 0.023160831166420155
+        }
+      ]
+    },
+    {
+      "id": "697406583c9caf3423a6f929",
+      "title": "Shop",
+      "src": "/savee-demo/b8b71a16901302a5f719.avif",
+      "url": "https://savee.com/i/EcMhV4q/",
+      "width": 864,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "rgba(0, 0, 0, 0)",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "693c702d3c9caf3314670ba7",
+      "title": "Instagram",
+      "src": "/savee-demo/812bd5828c2d50b4f213.avif",
+      "url": "https://savee.com/i/OcLoql5/",
+      "width": 608,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#38110C",
+          "amount": 0.5619238194864078
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#E0C9BF",
+          "amount": 0.4324947133896445
+        }
+      ]
+    },
+    {
+      "id": "6920a28f3c9caf3297adab92",
+      "title": "COLLINS",
+      "src": "/savee-demo/2b58006f4bf6e8950dfa.avif",
+      "url": "https://savee.com/i/Mhj6Bc8/",
+      "width": 1080,
+      "height": 1080,
+      "colors": [
+        {
+          "__typename": "AssetColor",
+          "color": "#E09E6E",
+          "amount": 0.4990579366328975
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#0D0706",
+          "amount": 0.4762518664267214
+        },
+        {
+          "__typename": "AssetColor",
+          "color": "#B80606",
+          "amount": 0.024566561030172445
+        }
+      ]
+    }
+  ],
+  "total": 3045,
+  "available": 129,
+  "limited": true,
+  "source": "saves",
+  "fetchedAt": "2026-09-13T21:43:08.028Z"
+}

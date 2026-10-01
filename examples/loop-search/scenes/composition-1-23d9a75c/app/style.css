@@ -1,0 +1,16 @@
+*{box-sizing:border-box;margin:0;padding:0}html,body,#root{width:100%;height:100%;overflow:hidden}body{background:#0a0a0a;font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}button,input{font:inherit}button{cursor:pointer}
+.svsi-root{--svsi-font-family:Inter,Arial,sans-serif;--svsi-zoom:1.2;--svsi-muted-opacity:.75;--svsi-bottom:200px;--svsi-ambient:#333}
+/* The original translucent material over its uniform dark backdrop, baked so
+   independently lifted controls never sample a different background. */
+.svsi-root .svsi-glass{background:#191919;-webkit-backdrop-filter:none;backdrop-filter:none}
+.svsi-root .svsi-glass::before{display:none}
+
+.svsi-stack{transform:scale(1.2);transform-origin:bottom center}
+.svsi-root{--svsi-text-muted:#b7b7b7}
+.svsi-root[data-capture=true] .svsi-search-form>input,.svsi-root[data-capture=true] .svsi-search-form>button{opacity:var(--capture-content-opacity,1)!important}
+.svsi-elevation{display:none}
+.svsi-root .svsi-glass{box-shadow:0 18px 48px -10px rgb(0 0 0 / .20),0 3px 12px -3px rgb(0 0 0 / .10)}
+
+.sequence-cursor{display:none;position:fixed;z-index:1000;pointer-events:none;object-fit:contain}
+.svsi-root.sequence-caret .svsi-search-form input{caret-color:transparent}
+.svsi-root.sequence-caret .svsi-search-form::after{content:'';position:absolute;left:var(--sequence-caret-x,105px);height:19px;top:50%;transform:translateY(-50%);width:1px;background:#eee;pointer-events:none}

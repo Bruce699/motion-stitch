@@ -1,0 +1,22 @@
+{
+  "name": "loop-search-tilt",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "preview": "node preview.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "motion": "13.2.0",
+    "lucide-react": "0.544.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.0",
+    "typescript": "5.9.3",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3"
+  }
+}

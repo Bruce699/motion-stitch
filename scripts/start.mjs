@@ -3,14 +3,24 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 import electron from "electron";
 import {
-  project,
+  project as installation,
   portless,
   proxyEnvironment,
   viewerURL,
 } from "./local-url.mjs";
 
-process.chdir(project);
 const args = process.argv.slice(2);
+const projectIndex = args.indexOf("--project");
+if (
+  projectIndex >= 0 &&
+  (!args[projectIndex + 1] || args[projectIndex + 1].startsWith("--"))
+) {
+  throw new Error("--project requires a project folder");
+}
+const project =
+  projectIndex >= 0 ? path.resolve(args[projectIndex + 1]) : installation;
+if (projectIndex >= 0) args.splice(projectIndex, 2);
+process.chdir(installation);
 const direct = args.includes("--direct");
 const browser = args.includes("--browser");
 const sessionPath = path.join(project, ".tilt/session.json");

@@ -1,0 +1,953 @@
+{
+  "version": 1,
+  "id": "composition-1-23d9a75c",
+  "name": "Loop Search",
+  "duration": 15,
+  "fps": 30,
+  "size": {
+    "width": 1920,
+    "height": 1080
+  },
+  "background": "#0a0a0a",
+  "entry": "scene.ts",
+  "camera": {
+    "projection": "orthographic",
+    "preset": "front",
+    "side": "right",
+    "rotation": -30,
+    "elevation": 40,
+    "roll": 0,
+    "zoom": 1,
+    "panX": 0,
+    "panY": 0,
+    "sourceId": "search"
+  },
+  "cameraName": "2D",
+  "cameras": [
+    {
+      "id": "camera-study",
+      "name": "Camera study",
+      "settings": {
+        "projection": "perspective",
+        "preset": "front",
+        "side": "right",
+        "rotation": -38,
+        "elevation": 38,
+        "roll": 0,
+        "zoom": 1.264333934426838,
+        "panX": 0.03316335788564792,
+        "panY": -0.09574060456421526,
+        "depthOfField": {
+          "enabled": true,
+          "focusPlane": 1.63,
+          "blur": 0.36
+        },
+        "sourceId": "search"
+      }
+    }
+  ],
+  "capture": {
+    "density": 2
+  },
+  "sources": [
+    {
+      "id": "search",
+      "kind": "web",
+      "entry": "index.html",
+      "width": 1280,
+      "height": 720,
+      "sampling": "controlled",
+      "layers": [
+        {
+          "id": "bar",
+          "label": "Search bar",
+          "selector": ".svsi-search-form",
+          "padding": 32,
+          "optional": true
+        },
+        {
+          "id": "search-icon",
+          "label": "Search icon",
+          "selector": ".svsi-search-icon",
+          "padding": 2,
+          "optional": true
+        },
+        {
+          "id": "input",
+          "label": "Input",
+          "selector": ".svsi-search-form input",
+          "padding": 2,
+          "optional": true
+        },
+        {
+          "id": "query-chip",
+          "label": "Query chip",
+          "selector": ".svsi-query-tag",
+          "padding": 2,
+          "optional": true
+        },
+        {
+          "id": "selected-color",
+          "label": "Selected color",
+          "selector": ".svsi-selected-color",
+          "padding": 2,
+          "optional": true
+        },
+        {
+          "id": "clear",
+          "label": "Clear",
+          "selector": ".svsi-clear-input",
+          "padding": 2,
+          "optional": true
+        },
+        {
+          "id": "image-button",
+          "label": "Image button",
+          "selector": ".svsi-image-trigger",
+          "padding": 2,
+          "optional": true
+        },
+        {
+          "id": "color-wheel",
+          "label": "Color wheel",
+          "selector": ".svsi-color-trigger",
+          "padding": 4,
+          "optional": true
+        },
+        {
+          "id": "panel",
+          "label": "Options panel",
+          "selector": ".svsi-panel",
+          "padding": 32,
+          "optional": true
+        },
+        {
+          "id": "cursor",
+          "label": "Cursor",
+          "selector": ".sequence-cursor",
+          "padding": 2,
+          "optional": true
+        }
+      ]
+    }
+  ],
+  "parameters": {
+    "playback": {
+      "label": "Playback",
+      "group": "Sequence",
+      "type": "select",
+      "value": "sequence",
+      "control": "dropdown",
+      "options": [
+        {
+          "label": "Sequence",
+          "value": "sequence"
+        },
+        {
+          "label": "Single state",
+          "value": "manual"
+        }
+      ]
+    },
+    "state": {
+      "label": "State",
+      "group": "Search",
+      "type": "select",
+      "value": "recent",
+      "control": "dropdown",
+      "options": [
+        {
+          "label": "Idle",
+          "value": "idle"
+        },
+        {
+          "label": "Recent",
+          "value": "recent"
+        },
+        {
+          "label": "Suggestions",
+          "value": "suggestions"
+        },
+        {
+          "label": "Color palette",
+          "value": "color"
+        },
+        {
+          "label": "Image search",
+          "value": "image"
+        },
+        {
+          "label": "Query applied",
+          "value": "submitted"
+        },
+        {
+          "label": "Color applied",
+          "value": "selected-color"
+        },
+        {
+          "label": "Empty history",
+          "value": "empty"
+        },
+        {
+          "label": "Loading",
+          "value": "loading"
+        },
+        {
+          "label": "Error",
+          "value": "error"
+        }
+      ]
+    },
+    "query": {
+      "label": "Query",
+      "group": "Search",
+      "type": "text",
+      "value": "architecture"
+    },
+    "selectedColor": {
+      "label": "Selected color",
+      "group": "Search",
+      "type": "color",
+      "value": "#720a08"
+    },
+    "history": {
+      "label": "Recent searches",
+      "group": "Search",
+      "type": "text",
+      "value": "interface\nlogos\nlight toggle"
+    },
+    "hoverRow": {
+      "label": "Hovered row",
+      "group": "Search",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "type": "number",
+      "value": 0,
+      "control": "number"
+    },
+    "barPosition": {
+      "label": "Position",
+      "group": "Search bar",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "barRotation": {
+      "label": "Rotation",
+      "group": "Search bar",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "barScale": {
+      "label": "Scale",
+      "group": "Search bar",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "search_iconPosition": {
+      "label": "Position",
+      "group": "Search icon",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "search_iconRotation": {
+      "label": "Rotation",
+      "group": "Search icon",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "search_iconScale": {
+      "label": "Scale",
+      "group": "Search icon",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 0.99,
+      "control": "slider"
+    },
+    "inputPosition": {
+      "label": "Position",
+      "group": "Input",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "inputRotation": {
+      "label": "Rotation",
+      "group": "Input",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "inputScale": {
+      "label": "Scale",
+      "group": "Input",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "query_chipPosition": {
+      "label": "Position",
+      "group": "Query chip",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "query_chipRotation": {
+      "label": "Rotation",
+      "group": "Query chip",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "query_chipScale": {
+      "label": "Scale",
+      "group": "Query chip",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "selected_colorPosition": {
+      "label": "Position",
+      "group": "Selected color",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "selected_colorRotation": {
+      "label": "Rotation",
+      "group": "Selected color",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "selected_colorScale": {
+      "label": "Scale",
+      "group": "Selected color",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "clearPosition": {
+      "label": "Position",
+      "group": "Clear",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "clearRotation": {
+      "label": "Rotation",
+      "group": "Clear",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "clearScale": {
+      "label": "Scale",
+      "group": "Clear",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "image_buttonPosition": {
+      "label": "Position",
+      "group": "Image button",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "image_buttonRotation": {
+      "label": "Rotation",
+      "group": "Image button",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "image_buttonScale": {
+      "label": "Scale",
+      "group": "Image button",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "color_wheelPosition": {
+      "label": "Position",
+      "group": "Color wheel",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "color_wheelRotation": {
+      "label": "Rotation",
+      "group": "Color wheel",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "color_wheelScale": {
+      "label": "Scale",
+      "group": "Color wheel",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "panelPosition": {
+      "label": "Position",
+      "group": "Options panel",
+      "min": -10,
+      "max": 10,
+      "step": 0.01,
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "panelRotation": {
+      "label": "Rotation",
+      "group": "Options panel",
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "unit": "°",
+      "type": "vector3",
+      "value": [
+        0,
+        0,
+        0
+      ]
+    },
+    "panelScale": {
+      "label": "Scale",
+      "group": "Options panel",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.01,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "cursorSize": {
+      "label": "Cursor size",
+      "group": "Cursor",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.05,
+      "type": "number",
+      "value": 1.35,
+      "control": "slider"
+    }
+  },
+  "tracks": [
+    {
+      "id": "arrival",
+      "label": "Appear & expand",
+      "color": "#00bca6",
+      "start": 0,
+      "end": 2.75,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "group"
+    },
+    {
+      "id": "bar-enter",
+      "label": "Bar appears",
+      "color": "#00bca6",
+      "start": 0.12,
+      "end": 1.18,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "arrival",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "bar"
+        }
+      ]
+    },
+    {
+      "id": "cursor-enter",
+      "label": "Cursor arrives",
+      "color": "#00bca6",
+      "start": 1.1,
+      "end": 1.9,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "arrival",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "cursor"
+        }
+      ]
+    },
+    {
+      "id": "open-recent",
+      "label": "Open recents",
+      "color": "#00bca6",
+      "start": 1.9,
+      "end": 2.65,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "arrival",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "panel"
+        }
+      ]
+    },
+    {
+      "id": "color-search",
+      "label": "Choose a color",
+      "color": "#ff6600",
+      "start": 2.75,
+      "end": 5.6,
+      "keys": [],
+      "parameterKeys": [
+        "selectedColor"
+      ],
+      "kind": "group"
+    },
+    {
+      "id": "cursor-color",
+      "label": "Move to wheel",
+      "color": "#ff6600",
+      "start": 2.8,
+      "end": 3.25,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "color-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "cursor"
+        }
+      ]
+    },
+    {
+      "id": "open-palette",
+      "label": "Open palette",
+      "color": "#ff6600",
+      "start": 3.25,
+      "end": 4.05,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "color-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "panel"
+        }
+      ]
+    },
+    {
+      "id": "cursor-swatch",
+      "label": "Move to swatch",
+      "color": "#ff6600",
+      "start": 4.12,
+      "end": 4.85,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "color-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "cursor"
+        }
+      ]
+    },
+    {
+      "id": "apply-color",
+      "label": "Apply color",
+      "color": "#ff6600",
+      "start": 4.85,
+      "end": 5.55,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "color-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "bar"
+        }
+      ]
+    },
+    {
+      "id": "text-search",
+      "label": "Type & apply",
+      "color": "#047efe",
+      "start": 5.6,
+      "end": 9.25,
+      "keys": [],
+      "parameterKeys": [
+        "query"
+      ],
+      "kind": "group"
+    },
+    {
+      "id": "cursor-query",
+      "label": "Move to input",
+      "color": "#047efe",
+      "start": 5.65,
+      "end": 6.05,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "text-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "cursor"
+        }
+      ]
+    },
+    {
+      "id": "focus-query",
+      "label": "Focus search",
+      "color": "#047efe",
+      "start": 6.05,
+      "end": 6.55,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "text-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "panel"
+        }
+      ]
+    },
+    {
+      "id": "type-query",
+      "label": "Type query",
+      "color": "#047efe",
+      "start": 6.45,
+      "end": 7.75,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "text-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "input"
+        }
+      ]
+    },
+    {
+      "id": "apply-query",
+      "label": "Create chip",
+      "color": "#047efe",
+      "start": 8.05,
+      "end": 8.75,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "text-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "query-chip"
+        }
+      ]
+    },
+    {
+      "id": "image-search",
+      "label": "Image search",
+      "color": "#8c51fe",
+      "start": 9.25,
+      "end": 12.2,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "group"
+    },
+    {
+      "id": "cursor-image",
+      "label": "Move to image",
+      "color": "#8c51fe",
+      "start": 9.35,
+      "end": 9.9,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "image-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "cursor"
+        }
+      ]
+    },
+    {
+      "id": "open-image",
+      "label": "Open image search",
+      "color": "#8c51fe",
+      "start": 9.9,
+      "end": 10.6,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "image-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "panel"
+        }
+      ]
+    },
+    {
+      "id": "cursor-close",
+      "label": "Move to close",
+      "color": "#8c51fe",
+      "start": 11,
+      "end": 11.45,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "image-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "cursor"
+        }
+      ]
+    },
+    {
+      "id": "close-image",
+      "label": "Close panel",
+      "color": "#8c51fe",
+      "start": 11.45,
+      "end": 12.1,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "image-search",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "panel"
+        }
+      ]
+    },
+    {
+      "id": "finish",
+      "label": "Clear & settle",
+      "color": "#00bca6",
+      "start": 12.2,
+      "end": 15,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "group"
+    },
+    {
+      "id": "cursor-clear",
+      "label": "Move to clear",
+      "color": "#00bca6",
+      "start": 12.2,
+      "end": 12.65,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "finish",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "cursor"
+        }
+      ]
+    },
+    {
+      "id": "clear-filters",
+      "label": "Clear search",
+      "color": "#00bca6",
+      "start": 12.65,
+      "end": 13.35,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "finish",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "bar"
+        }
+      ]
+    },
+    {
+      "id": "cursor-exit",
+      "label": "Cursor leaves",
+      "color": "#00bca6",
+      "start": 13.45,
+      "end": 14.4,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "finish",
+      "targets": [
+        {
+          "kind": "layer",
+          "sourceId": "search",
+          "layerId": "cursor"
+        }
+      ]
+    }
+  ]
+}
