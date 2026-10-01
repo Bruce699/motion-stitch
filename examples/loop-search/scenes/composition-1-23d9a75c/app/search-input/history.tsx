@@ -109,4 +109,3 @@ export function History({ capture, hoverRow, entries, enabled, onSelect, onRemov
     </> : null}
   </div>;
 }
-

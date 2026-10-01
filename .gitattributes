@@ -1,0 +1,3 @@
+
+# Generated bundle includes source fixture strings with intentional whitespace.
+examples/loop-search/**/source/app.js linguist-generated=true -whitespace

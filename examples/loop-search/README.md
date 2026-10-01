@@ -27,7 +27,7 @@ The packaged browser assets are included. Running the demo requires no source bu
 
 The five timeline groups expand into individual cursor and component actions. Track intervals drive the source animation. Query, selected color and cursor size are saved inspector controls. **Playback → Single state** exposes idle, recent, suggestions, palette, image, applied query/color, empty, loading and error poses. Loading/error are fixtures for animation.
 
-Bar, input, icons, chip, color, clear control and panel have individual transforms. The saved **Camera study** retains the perspective setup; the main camera is front orthographic. The composition is 1920×1080 at 30 fps. The source layout is 1280×720 with 2× capture density.
+Bar, input, icons, chip, color, clear control and panel have individual transforms. The saved **Camera study** retains the perspective setup; the main camera retains the saved orthographic angle. Select **2D** for the flat source view. The composition is 1920×1080 at 30 fps. The source layout is 1280×720 with 2× capture density.
 
 ## Edit the React source
 
