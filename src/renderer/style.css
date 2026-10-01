@@ -9,7 +9,7 @@
   font-synthesis: none;
   --inspector-width: 304px;
   --timeline-height: 180px;
-  --header-height: 44px;
+  --header-height: 52px;
 }
 * {
   box-sizing: border-box;
@@ -36,6 +36,10 @@ button {
   color: inherit;
   cursor: default;
 }
+a,
+summary {
+  cursor: default;
+}
 button:disabled {
   opacity: 0.35;
   cursor: default;
@@ -43,7 +47,8 @@ button:disabled {
 button,
 input,
 select,
-textarea {
+textarea,
+.ui-popover {
   -webkit-app-region: no-drag;
 }
 input,
@@ -80,7 +85,11 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   border-bottom: 1px solid var(--dial-border);
   background: var(--dial-glass-bg);
   padding: 0 16px 0 90px;
+}
+.desktop .titlebar,
+.desktop .home-toolbar {
   -webkit-app-region: drag;
+  user-select: none;
 }
 .app:not(.desktop) .titlebar {
   padding-left: 20px;
@@ -95,7 +104,6 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   gap: 4px;
-  -webkit-app-region: no-drag;
 }
 .ui-button {
   display: inline-flex;
@@ -696,7 +704,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   color: var(--dial-text-label);
   font-size: 12px;
 }
-.error-details summary { cursor: pointer; width: fit-content; }
+.error-details summary { cursor: default; width: fit-content; }
 .error-details pre {
   max-height: 180px;
   overflow: auto;
@@ -1097,7 +1105,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 /* Timeline selection stays contextual in the inspector. */
 .contextual-parameters { border-top: 1px solid var(--dial-border, #e9e9e9); margin-top: 8px; }
 .contextual-parameters legend { display: flex; align-items: center; width: 100%; justify-content: space-between; }
-.context-dismiss { border: 0; background: none; color: inherit; opacity: .55; display: grid; place-items: center; padding: 4px; cursor: pointer; }
+.context-dismiss { border: 0; background: none; color: inherit; opacity: .55; display: grid; place-items: center; padding: 4px; cursor: default; }
 .context-dismiss:hover { opacity: 1; }
 .tilt-timeline .dialkit-timeline-clip { touch-action: none; cursor: grab; min-width: 3px; }
 .tilt-timeline .dialkit-timeline-clip-handle { width: 12px; z-index: 2; }
@@ -1108,7 +1116,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .tilt-timeline .dialkit-timeline-playhead-flag { pointer-events: auto; touch-action: none; }
 /* Animation hierarchy uses the same compact timeline labels. */
 .timeline-track-label { display: flex; align-items: center; gap: 4px; }
-.timeline-track-label button { color: inherit; border: 0; background: transparent; cursor: pointer; padding: 0; }
+.timeline-track-label button { color: inherit; border: 0; background: transparent; cursor: default; padding: 0; }
 .timeline-track-label .timeline-group-toggle { flex: 0 0 18px; display: grid; place-items: center; height: 24px; }
 .timeline-group-toggle[aria-expanded="false"] i { transform: rotate(-90deg); }
 .timeline-track-select { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; font: inherit; }
@@ -1121,7 +1129,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .project-heading > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .composition-list-row { display: flex; align-items: center; border-radius: 6px; min-height: 34px; }
 .composition-list-row[data-active] { background: var(--dial-surface-active); }
-.composition-link { flex: 1; min-width: 0; text-align: left; color: inherit; border: 0; background: transparent; padding: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: inherit; font-size: 12px; cursor: pointer; }
+.composition-link { flex: 1; min-width: 0; text-align: left; color: inherit; border: 0; background: transparent; padding: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: inherit; font-size: 12px; cursor: default; }
 .insert-composition { opacity: 0; }
 .composition-list-row:hover .insert-composition, .composition-list-row:focus-within .insert-composition { opacity: 1; }
 .new-composition, .camera-rename { display: flex; gap: 4px; padding: 4px; }
@@ -1139,11 +1147,11 @@ input[type="number"]:hover::-webkit-inner-spin-button {
 .composition-breadcrumb { display: flex; gap: 4px; padding: 6px 12px 0; }
 .composition-breadcrumb .ui-button { font-size: 11px; gap: 4px; }
 .composition-breadcrumb [data-icon] { transform: rotate(-90deg); }
-.expose-control { display: block; margin: 3px 0 0 auto; border: none; background: transparent; color: var(--dial-text-secondary); font: inherit; font-size: 10px; cursor: pointer; opacity: 0; }
+.expose-control { display: block; margin: 3px 0 0 auto; border: none; background: transparent; color: var(--dial-text-secondary); font: inherit; font-size: 10px; cursor: default; opacity: 0; }
 .parameter-control:hover .expose-control, .parameter-control:focus-within .expose-control, .expose-control[aria-pressed="true"] { opacity: 1; }
 .expose-control[aria-pressed="true"] { color: var(--dial-text-primary); }
 .clip-transform { margin: 16px 0; }
-.clip-transform summary { cursor: pointer; font-size: 12px; color: var(--dial-text-secondary); margin-bottom: 12px; }
+.clip-transform summary { cursor: default; font-size: 12px; color: var(--dial-text-secondary); margin-bottom: 12px; }
 .source-window > span { font-size: 12px; color: var(--dial-text-secondary); }
 .clip-inspector > legend { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 

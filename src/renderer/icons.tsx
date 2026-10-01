@@ -1,5 +1,6 @@
 // Official Hugeicons CDN is loaded in index.html. Keep every editor glyph here.
 const glyphs = {
+  camera: "camera-01",
   play: "play",
   pause: "pause",
   back: "previous",

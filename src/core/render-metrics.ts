@@ -4,6 +4,7 @@ const nonnegative = z.number().finite().nonnegative();
 /** CPU wall times. renderSubmitMs measures submission, never GPU/display completion. */
 export const RenderMetricsSchema = z.object({
   time: nonnegative,
+  presentation: z.enum(["dom", "raster"]).optional(),
   revision: z.string().optional(),
   queueMs: nonnegative,
   sourceMs: nonnegative,

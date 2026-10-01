@@ -14,10 +14,10 @@
     "projection": "perspective",
     "preset": "diagonal15",
     "side": "right",
-    "rotation": -23,
-    "elevation": 42,
+    "rotation": -15,
+    "elevation": 90,
     "roll": 0,
-    "zoom": 3.443384482247572,
+    "zoom": 2.12,
     "panX": 0.40667510492630127,
     "panY": -0.13158723109288395,
     "depthOfField": {

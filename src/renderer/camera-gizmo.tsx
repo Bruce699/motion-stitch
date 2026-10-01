@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Inspection } from "../core/context";
 import { defaultInspection } from "../core/context";
 import { Icon } from "./icons";
@@ -7,23 +7,10 @@ import {
   rotationDegrees,
   type RotationAxis,
 } from "./inspection-rotation";
+import { orbitDrag, orbitPath, orbitPoint } from "./camera-gizmo-geometry";
+import "./camera-gizmo.css";
 
-// Project actual orientation rings; the gizmo and the saved shot share angles.
-function ringGeometry(inspection: Inspection, axis: RotationAxis) {
-  const az = inspection.orbitX, el = inspection.orbitY + Math.PI / 2, roll = inspection.orbitZ;
-  const project = ([x,y,z]: number[]) => {
-    const right = x*Math.cos(az) + y*Math.sin(az);
-    const up = -x*Math.sin(az)*Math.sin(el) + y*Math.cos(az)*Math.sin(el) + z*Math.cos(el);
-    return [64 + 43*(right*Math.cos(roll)+up*Math.sin(roll)), 62 - 43*(up*Math.cos(roll)-right*Math.sin(roll))];
-  };
-  const points = Array.from({length:65},(_,i)=>{
-    const t = i*Math.PI/32, c=Math.cos(t), s=Math.sin(t);
-    return project(axis === "X" ? [0,c,s] : axis === "Y" ? [c,0,s] : [c,s,0]);
-  });
-  return { path: points.map(([x,y],i)=>`${i ? "L" : "M"}${x},${y}`).join(" "),
-    label: project(axis === "X" ? [1.2,0,0] : axis === "Y" ? [0,1.2,0] : [0,0,1.2]) };
-}
-
+type Control = RotationAxis | "orbit";
 export function CameraGizmo({
   inspection,
   disabled,
@@ -37,142 +24,211 @@ export function CameraGizmo({
   onInteractionEnd: () => void;
   step?: number;
 }) {
-  const [active, setActive] = useState<RotationAxis | null>(null);
+  const [active, setActive] = useState<Control | null>(null);
   const gesture = useRef<{
     id: number;
-    axis: RotationAxis;
+    axis: Control;
     x: number;
     y: number;
     initial: Inspection;
   } | null>(null);
-  const cancel = () => {
-    if (gesture.current) onChange(gesture.current.initial);
+  const latest = useRef({ onChange, onInteractionEnd });
+  latest.current = { onChange, onInteractionEnd };
+  const finish = (cancel = false) => {
+    const drag = gesture.current;
+    if (!drag) return;
     gesture.current = null;
+    if (cancel) latest.current.onChange(drag.initial);
     setActive(null);
-    onInteractionEnd();
+    latest.current.onInteractionEnd();
   };
+  useEffect(() => {
+    const blur = () => finish();
+    window.addEventListener("blur", blur);
+    return () => {
+      window.removeEventListener("blur", blur);
+      if (gesture.current) {
+        gesture.current = null;
+        latest.current.onInteractionEnd();
+      }
+    };
+  }, []);
+  useEffect(() => {
+    if (disabled) finish();
+  }, [disabled]);
+  function handlers(axis: Control) {
+    return {
+      onPointerDown: (event: React.PointerEvent<HTMLElement>) => {
+        if (disabled || event.button !== 0 || gesture.current) return;
+        event.preventDefault();
+        event.currentTarget.focus();
+        event.currentTarget.setPointerCapture(event.pointerId);
+        gesture.current = {
+          id: event.pointerId,
+          axis,
+          x: event.clientX,
+          y: event.clientY,
+          initial: { ...inspection },
+        };
+        setActive(axis);
+      },
+      onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
+        const drag = gesture.current;
+        if (!drag || drag.id !== event.pointerId) return;
+        const dx = event.clientX - drag.x,
+          dy = event.clientY - drag.y;
+        onChange(
+          axis === "orbit"
+            ? orbitDrag(drag.initial, dx, dy, event.shiftKey)
+            : {
+                ...rotateInspection(
+                  drag.initial,
+                  axis,
+                  (axis === "X" ? -dy : dx) * 0.01,
+                  event.shiftKey,
+                ),
+                alignment: undefined,
+              },
+        );
+      },
+      onPointerUp: (event: React.PointerEvent<HTMLElement>) => {
+        if (gesture.current?.id !== event.pointerId) return;
+        finish();
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      },
+      onPointerCancel: () => finish(true),
+      onLostPointerCapture: () => finish(),
+      onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
+        if (disabled) return;
+        if (event.key === "Escape" && gesture.current) {
+          event.preventDefault();
+          event.stopPropagation();
+          finish(true);
+          return;
+        }
+        if (gesture.current) return;
+        const direction = ["ArrowRight", "ArrowUp"].includes(event.key)
+          ? 1
+          : ["ArrowLeft", "ArrowDown"].includes(event.key)
+            ? -1
+            : 0;
+        if (!direction && event.key !== "Home") return;
+        event.preventDefault();
+        event.stopPropagation();
+        const target =
+          axis === "orbit"
+            ? ["ArrowUp", "ArrowDown"].includes(event.key)
+              ? "X"
+              : "Y"
+            : axis;
+        const delta =
+          event.key === "Home"
+            ? -rotationDegrees(inspection, target, false)
+            : direction * (event.shiftKey ? 15 : step);
+        onChange({
+          ...rotateInspection(inspection, target, (delta * Math.PI) / 180),
+          alignment: undefined,
+        });
+        onInteractionEnd();
+      },
+    };
+  }
+  const elevation = inspection.orbitY + Math.PI / 2;
+  const axisValue = (axis: RotationAxis) =>
+    axis === "X"
+      ? Math.round((elevation * 180) / Math.PI)
+      : rotationDegrees(inspection, axis);
+  const camera = orbitPoint(inspection.orbitX, elevation);
+  const base = orbitPoint(inspection.orbitX, 0);
   return (
     <div
-      className="camera-gizmo"
+      className="camera-orbit-widget"
       role="group"
       aria-label="Camera rotation"
       data-disabled={disabled}
+      data-dragging={active !== null}
     >
-      <svg viewBox="0 0 128 128" aria-label="Drag an axis to rotate the view">
-        {(["X", "Y", "Z"] as const).map((axis) => {
-          const {path, label} = ringGeometry(inspection, axis);
-          return (
-          <g
+      <div
+        className="camera-orbit-pad"
+        role="slider"
+        tabIndex={disabled ? -1 : 0}
+        aria-label="Orbit camera"
+        aria-disabled={disabled}
+        aria-valuemin={-180}
+        aria-valuemax={180}
+        aria-valuenow={rotationDegrees(inspection, "Y")}
+        aria-valuetext={`Heading ${rotationDegrees(inspection, "Y")} degrees, elevation ${Math.round((elevation * 180) / Math.PI)} degrees`}
+        title="Drag to orbit camera · Arrow keys to rotate · Shift to snap 15°"
+        {...handlers("orbit")}
+      >
+        <svg viewBox="0 0 224 166" aria-hidden="true">
+          <path className="orbit-floor" d={orbitPath(null, 0)} />
+          <path
+            className="orbit-meridian"
+            d={orbitPath(inspection.orbitX, 0)}
+          />
+          <path className="orbit-latitude" d={orbitPath(null, elevation)} />
+          <path
+            className="orbit-drop"
+            d={`M${camera.x},${camera.y}L${base.x},${base.y}`}
+          />
+          <path
+            className="orbit-target"
+            d="M100,80 L113,73 L125,80 L112,87 Z M100,80 L100,88 L112,95 L125,88 L125,80 M112,87 L112,95"
+          />
+          <path className="orbit-sight" d={`M112,82L${camera.x},${camera.y}`} />
+          <circle className="orbit-pivot" cx="112" cy="82" r="3" />
+          <g transform={`translate(${camera.x} ${camera.y})`}>
+            <circle className="orbit-halo" r="19" />
+            <circle className="orbit-handle" r="12" />
+            <foreignObject x="-8" y="-8" width="16" height="16">
+              <span
+                className="orbit-camera-icon"
+                style={{ transform: `rotate(${inspection.orbitZ}rad)` }}
+              >
+                <Icon name="camera" size={16} />
+              </span>
+            </foreignObject>
+          </g>
+        </svg>
+      </div>
+      <div className="camera-orbit-controls">
+        {(["X", "Y", "Z"] as const).map((axis) => (
+          <div
             key={axis}
             role="slider"
             tabIndex={disabled ? -1 : 0}
             aria-label={`Rotate ${axis}`}
             aria-disabled={disabled}
-            aria-valuenow={rotationDegrees(inspection, axis)}
-            aria-valuetext={`${rotationDegrees(inspection, axis)} degrees`}
-            className="camera-gizmo-axis"
+            aria-valuemin={axis === "X" ? 0 : -180}
+            aria-valuemax={axis === "X" ? 90 : 180}
+            aria-valuenow={axisValue(axis)}
+            aria-valuetext={`${axisValue(axis)} degrees`}
+            className="orbit-axis"
             data-active={active === axis}
-            onPointerEnter={() => {
-              if (!gesture.current) setActive(axis);
-            }}
-            onPointerLeave={() => {
-              if (!gesture.current) setActive(null);
-            }}
-            onFocus={() => setActive(axis)}
-            onBlur={() => {
-              if (!gesture.current) setActive(null);
-            }}
-            onPointerDown={(event) => {
-              if (disabled || event.button !== 0 || gesture.current) return;
-              event.preventDefault();
-              event.currentTarget.focus();
-              event.currentTarget.setPointerCapture(event.pointerId);
-              gesture.current = {
-                id: event.pointerId,
-                axis,
-                x: event.clientX,
-                y: event.clientY,
-                initial: { ...inspection },
-              };
-              setActive(axis);
-            }}
-            onPointerMove={(event) => {
-              const drag = gesture.current;
-              if (!drag || drag.id !== event.pointerId) return;
-              const pixels =
-                axis === "X" ? drag.y - event.clientY : event.clientX - drag.x;
-              onChange(
-                rotateInspection(
-                  drag.initial,
-                  axis,
-                  pixels * 0.01,
-                  event.shiftKey,
-                ),
-              );
-            }}
-            onPointerUp={(event) => {
-              if (gesture.current?.id !== event.pointerId) return;
-              gesture.current = null;
-              event.currentTarget.releasePointerCapture(event.pointerId);
-              onInteractionEnd();
-            }}
-            onPointerCancel={cancel}
-            onLostPointerCapture={() => {
-              if (gesture.current) onInteractionEnd();
-              gesture.current = null;
-            }}
-            onKeyDown={(event) => {
-              if (disabled) return;
-              if (event.key === "Escape") {
-                event.preventDefault();
-                cancel();
-                return;
-              }
-              if (gesture.current) return;
-              const direction = ["ArrowRight", "ArrowUp"].includes(event.key)
-                ? 1
-                : ["ArrowLeft", "ArrowDown"].includes(event.key)
-                  ? -1
-                  : 0;
-              if (!direction && event.key !== "Home") return;
-              event.preventDefault();
-              event.stopPropagation();
-              const delta =
-                event.key === "Home"
-                  ? -rotationDegrees(inspection, axis, false)
-                  : direction * (event.shiftKey ? 15 : step);
-              onChange(
-                rotateInspection(inspection, axis, (delta * Math.PI) / 180),
-              );
-              onInteractionEnd();
-            }}
+            title={`${axis === "X" ? "Elevation" : axis === "Y" ? "Heading" : "Roll"} · Drag ${axis === "X" ? "vertically" : "horizontally"}`}
+            {...handlers(axis)}
           >
-            <title>{`${axis} rotation · Drag ${axis === "X" ? "vertically" : "horizontally"} · Shift to snap 15°`}</title>
-            <path className="gizmo-hit" d={path} />
-            <path className="gizmo-ring" d={path} />
-            <text x={label[0]} y={label[1]}>
-              {axis}
-            </text>
-          </g>
-        ); })}
-        <circle className="gizmo-center" cx="64" cy="62" r="3" />
-      </svg>
-      <button
-        className="ui-button icon-button camera-reset"
-        data-variant="ghost"
-        data-size="icon"
-        aria-label="Reset camera"
-        title="Reset camera"
-        disabled={disabled}
-        onClick={() => {
-          gesture.current = null;
-          setActive(null);
-          onChange({ ...defaultInspection(), alignment: "front" });
-          onInteractionEnd();
-        }}
-      >
-        <Icon name="undo" size={18} />
-      </button>
+            {axis}
+            <span>{axisValue(axis)}°</span>
+          </div>
+        ))}
+        <button
+          className="ui-button icon-button"
+          data-variant="ghost"
+          data-size="icon"
+          aria-label="Reset camera"
+          title="Reset camera"
+          disabled={disabled}
+          onClick={() => {
+            finish();
+            onChange({ ...defaultInspection(), alignment: "front" });
+            onInteractionEnd();
+          }}
+        >
+          <Icon name="undo" size={16} />
+        </button>
+      </div>
     </div>
   );
 }

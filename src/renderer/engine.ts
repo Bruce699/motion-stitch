@@ -1,3 +1,4 @@
+import { SourcePreview } from "./source-preview";
 import {
   clipDocument,
   sourceTime,
@@ -42,6 +43,27 @@ export type CompositionFrameSource = (
 ) => Promise<CapturedFrame>;
 type CompositionBudget = { limit: number; nodes: Set<SceneEngine> };
 export class SceneEngine {
+  private previews = new Map<string, SourcePreview>();
+  private domPresented = false;
+  private rasterOnly = false;
+  mountSourcePreviews(stage: HTMLElement, urls: Record<string,string> = {}) {
+    for (const spec of this.document.sources) {
+      if (!urls[spec.id]) continue;
+      const preview = new SourcePreview(spec, urls[spec.id]);
+      this.previews.set(spec.id, preview);
+      stage.append(preview.element);
+    }
+  }
+  private selectedPreview() {
+    return this.mode === "source" && !this.rasterOnly
+      ? this.previews.get(this.sourceId || this.document.sources[0]?.id)
+      : undefined;
+  }
+  async captureFrame(time: number, document: SceneDocument, revision?: string) {
+    this.rasterOnly = true;
+    try { await this.sample(time, document, () => true, revision); return this.canvas.toDataURL("image/png"); }
+    finally { this.rasterOnly = false; }
+  }
   private budget: CompositionBudget;
   cameraId?: string;
   private graph?: CompositionGraph;
@@ -178,7 +200,8 @@ export class SceneEngine {
   }
   setPreviewViewport(width: number, height: number, dpr: number) {
     this.previewViewport = { width, height, dpr };
-    if (!this.frameBlocked || this.shared) this.resize();
+    if (!this.frameBlocked || this.shared) return this.resize();
+    return false;
   }
   private outputMemory(
     width = this.shared?.target.width ?? this.canvas.width,
@@ -200,6 +223,7 @@ export class SceneEngine {
     );
   }
   private resize() {
+    let resized = false;
     const { width, height } = this.document.size;
     const v = this.previewViewport;
     const requested = v
@@ -220,6 +244,7 @@ export class SceneEngine {
           this.outputMemory(w, h) + this.outputMemory() + this.effectMemory(),
         );
         this.shared.target.setSize(w, h);
+        resized = true;
       }
     } else if (this.canvas.width !== w || this.canvas.height !== h) {
       this.resources.reserveRenderTargets(
@@ -227,9 +252,11 @@ export class SceneEngine {
         this.outputMemory(w, h) + this.outputMemory() + this.effectMemory(),
       );
       this.renderer.setSize(w, h, false);
+      resized = true;
     }
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
+    return resized;
   }
   async init(
     url: string,
@@ -311,6 +338,23 @@ export class SceneEngine {
     const task = this.serial.then(async () => {
       if (this.disposed) return;
       const started = performance.now();
+      const preview = this.selectedPreview();
+      if (preview) {
+        const route = await preview.sample(time, values(document));
+        if (this.disposed || !present()) return;
+        this.document = document;
+        this.domPresented = true;
+        this.frameBlocked = false;
+        this.preparedSource = undefined;
+        this.sourceRoutes = [{id:preview.spec.id, route}];
+        this.sourceStatus = [{sourceId:preview.spec.id,phase:"ready",adapter:{ready:true,sample:true},reused:false,requestedTime:time,preparedTime:time,captures:0,capturedBytes:0,timings:{adapterMs:performance.now()-started,totalMs:performance.now()-started}}];
+        this.layerFrames = [];
+        this.presentedLayers = [];
+        this.renderView();
+        this.metrics = {time,revision,presentation:"dom",queueMs:started-requestedAt,sourceMs:performance.now()-started,decodeMs:0,sceneMs:0,renderSubmitMs:0,totalMs:performance.now()-requestedAt,decodedImages:0,reusedImages:0,transferredBytes:0,...this.resources.memory};
+        return;
+      }
+      this.domPresented = false;
       if (!this.shared)
         this.budget.limit =
           (document.capture?.memoryBudgetMB ?? DEFAULT_SURFACE_BUDGET_MB) *
@@ -448,6 +492,7 @@ export class SceneEngine {
       this.frameBlocked = false;
       this.renderView();
       this.metrics = {
+        presentation: "raster",
         time,
         revision,
         queueMs: started - requestedAt,
@@ -598,6 +643,15 @@ export class SceneEngine {
   }
   renderView() {
     if (this.disposed || this.frameBlocked) return;
+    const preview = this.domPresented ? this.selectedPreview() : undefined;
+    for (const candidate of this.previews.values()) candidate.element.style.display = candidate === preview ? "block" : "none";
+    if (preview) {
+      preview.element.style.opacity="1";
+      const width=this.previewViewport?.width ?? this.canvas.clientWidth;
+      const height=this.previewViewport?.height ?? this.canvas.clientHeight;
+      preview.layout(width,height,this.inspection);
+      return;
+    }
     const target = this.renderer.getRenderTarget();
     const color = this.renderer.getClearColor(new THREE.Color());
     const alpha = this.renderer.getClearAlpha();
@@ -837,6 +891,8 @@ export class SceneEngine {
   dispose() {
     if (this.disposed) return;
     this.disposed = true;
+    for (const preview of this.previews.values()) preview.dispose();
+    this.previews.clear();
     this.budget.nodes.delete(this);
     this.preparedSource = undefined;
     for (const child of this.children.values()) {

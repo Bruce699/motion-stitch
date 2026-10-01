@@ -61,3 +61,11 @@ Source diagnostics identify lifecycle phase, adapter registration, requested/pre
 That declaration does not prove arbitrary executable code is deterministic. The author still must remove live backend/auth dependencies, bundle fonts and media, fix fixture data and control time/randomness. Tilt freezes its local source/runtime inputs, not the operating system, network or every behavior of a server program. Use a repeatable adapter and verify backward seeks plus the exported output.
 
 Run `npx tsx --test tests/source-host.test.ts` for host lifecycle/path/export contract tests and `node scripts/verify-source-hosting.mjs` for isolated Electron mount, sample, pixel reuse and timeout cleanup checks. Neither command connects to the shared editor runtime.
+
+## Direct 2D preview
+
+Controlled local HTML entries use an isolated iframe for 2D source inspection. Tilt calls the same `tiltSource.ready()` and absolute `tiltSource.sample()` adapter through a private MessagePort. The source receives no editor API or credentials. Only loopback frames are permitted by the editor CSP. Each viewer owns its preview and clock; it is disposed with its composition. Camera mode, native review, capture and export retain the Chromium layer pipeline. Managed servers and live URLs retain their existing captured preview.
+
+The optional `presentation: "dom"` argument to `sample` means the DOM itself is presented. Adapters may omit screenshot-only paint barriers in this mode; they must still finish asynchronous data work and reproduce the requested absolute time. The argument is absent for captures/exports, where all paint/readiness barriers still apply. The preview does not introduce another animation clock.
+
+A root-level entry can fetch `scene.json`, so document revisions also rebuild its direct preview. Nested source roots continue to receive parameter values without rebuilding. Inspector pan/zoom scales the original CSS viewport; it does not alter layout or authored camera values. `renderMetrics.presentation` distinguishes DOM sampling from raster sampling. Explicit captures always sample a fresh raster frame at the requested time.

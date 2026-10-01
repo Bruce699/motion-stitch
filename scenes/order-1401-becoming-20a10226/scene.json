@@ -10,18 +10,24 @@
   },
   "background": "#e9e7e3",
   "entry": "scene.ts",
-  "capture": {
-    "density": 4
-  },
   "camera": {
     "projection": "perspective",
     "preset": "front",
     "side": "right",
+    "rotation": -42,
+    "elevation": 60,
+    "roll": 0,
+    "zoom": 0.9731884724893819,
+    "panX": 0.08928907190132374,
+    "panY": 0.036344017665952966,
     "depthOfField": {
       "enabled": true,
       "focusPlane": 0,
       "blur": 0.34
     }
+  },
+  "capture": {
+    "density": 4
   },
   "sources": [
     {
@@ -35,172 +41,199 @@
         {
           "id": "note",
           "selector": "[data-tilt-id=\"note\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "fulfillment-0",
           "selector": "[data-tilt-id=\"fulfillment-0\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "customer",
           "selector": "[data-tilt-id=\"customer\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "payment",
           "selector": "[data-tilt-id=\"payment\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "payment-surface",
           "selector": "[data-tilt-id=\"payment-surface\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "risk",
           "selector": "[data-tilt-id=\"risk\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "timeline",
           "selector": "[data-tilt-id=\"timeline\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "order-title",
           "selector": "h1",
-          "padding": 12
+          "padding": 12,
+          "optional": false
         },
         {
           "id": "payment-rule",
           "selector": "[data-tilt-id=\"payment-surface\"] hr",
-          "padding": 4
+          "padding": 4,
+          "optional": false
         },
         {
           "id": "payment-row-1",
           "selector": "[data-tilt-id=\"payment-surface\"] > div > div:nth-child(1)",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "payment-row-2",
           "selector": "[data-tilt-id=\"payment-surface\"] > div > div:nth-child(2)",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "payment-row-3",
           "selector": "[data-tilt-id=\"payment-surface\"] > div > div:nth-child(3)",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "total",
           "selector": "[data-tilt-id=\"payment-surface\"] > div > div:last-child",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "shop-cash",
           "selector": "img[alt=\"Shop Cash\"]",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "mastercard",
           "selector": "img[alt=\"Mastercard\"]",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "fulfillment-rule",
           "selector": "[data-tilt-id=\"fulfillment-0\"] hr",
-          "padding": 4
+          "padding": 4,
+          "optional": false
         },
         {
           "id": "product-row",
           "selector": "[data-tilt-id=\"fulfillment-0\"] tbody > tr:first-child",
-          "padding": 10
+          "padding": 10,
+          "optional": false
         },
         {
           "id": "product-image",
           "selector": "[data-tilt-id=\"fulfillment-0\"] tbody > tr:first-child img",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "fulfillment-badge",
           "selector": "[data-tilt-id=\"fulfillment-0-surface\"] > div > div:first-child > :first-child",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "second-product-row",
           "selector": "[data-tilt-id=\"fulfillment-0\"] tbody > tr:nth-child(2)",
-          "padding": 10
+          "padding": 10,
+          "optional": false
         },
         {
           "id": "second-product-image",
           "selector": "[data-tilt-id=\"fulfillment-0\"] tbody > tr:nth-child(2) img",
-          "padding": 10
+          "padding": 10,
+          "optional": false
         }
       ]
     }
   ],
   "parameters": {
     "macro": {
-      "type": "number",
       "label": "Detail distance",
-      "value": 1,
+      "group": "Camera",
       "min": 0.7,
       "max": 1.5,
       "step": 0.01,
-      "group": "Camera"
+      "type": "number",
+      "value": 1,
+      "control": "slider"
     },
     "framing": {
-      "type": "number",
       "label": "Final framing",
-      "value": 1,
+      "group": "Camera",
       "min": 0.8,
       "max": 1.4,
       "step": 0.01,
-      "group": "Camera"
+      "type": "number",
+      "value": 1,
+      "control": "slider"
     },
     "lift": {
-      "type": "number",
       "label": "Layer separation",
-      "value": 0.8,
+      "group": "Construction",
       "min": 0,
       "max": 1.5,
       "step": 0.01,
-      "group": "Construction"
+      "type": "number",
+      "value": 0.8,
+      "control": "slider"
     },
     "delight": {
-      "type": "number",
       "label": "Small overshoot",
-      "value": 0.55,
+      "group": "Construction",
       "min": 0,
       "max": 1,
       "step": 0.01,
-      "group": "Construction"
+      "type": "number",
+      "value": 0.55,
+      "control": "slider"
     }
   },
   "tracks": [
     {
       "id": "camera",
       "label": "Continuous camera",
+      "color": "#047efe",
       "start": 0,
       "end": 15,
-      "color": "#047efe",
-      "kind": "group",
+      "keys": [],
       "parameterKeys": [
         "macro",
         "framing"
       ],
+      "kind": "group",
       "targets": []
     },
     {
       "id": "camera-details",
       "label": "Payment details",
+      "color": "#047efe",
       "start": 0,
       "end": 4.1,
-      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "camera",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "camera"
@@ -210,12 +243,13 @@
     {
       "id": "camera-product",
       "label": "Product pass",
+      "color": "#047efe",
       "start": 4.1,
       "end": 7.3,
-      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "camera",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "camera"
@@ -225,12 +259,13 @@
     {
       "id": "camera-title",
       "label": "Paper and title",
+      "color": "#047efe",
       "start": 7.3,
       "end": 10,
-      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "camera",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "camera"
@@ -240,12 +275,13 @@
     {
       "id": "camera-reveal",
       "label": "Full reveal",
+      "color": "#047efe",
       "start": 10,
       "end": 15,
-      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "camera",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "camera"
@@ -255,24 +291,26 @@
     {
       "id": "assembly",
       "label": "Layers settle",
+      "color": "#00bca6",
       "start": 0,
       "end": 13.4,
-      "color": "#00bca6",
-      "kind": "group",
+      "keys": [],
       "parameterKeys": [
         "lift"
       ],
+      "kind": "group",
       "targets": []
     },
     {
       "id": "settle-payment",
       "label": "payment",
+      "color": "#00bca6",
       "start": 0,
       "end": 10.8,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "assembly",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -284,12 +322,13 @@
     {
       "id": "settle-payment-surface",
       "label": "payment surface",
+      "color": "#00bca6",
       "start": 0,
       "end": 5,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "assembly",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -301,12 +340,13 @@
     {
       "id": "settle-fulfillment-0",
       "label": "Fulfillment",
+      "color": "#00bca6",
       "start": 3.5,
       "end": 9,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "assembly",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -318,12 +358,13 @@
     {
       "id": "settle-note",
       "label": "note",
+      "color": "#00bca6",
       "start": 6.8,
       "end": 10.8,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "assembly",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -335,12 +376,13 @@
     {
       "id": "settle-order-title",
       "label": "order title",
+      "color": "#00bca6",
       "start": 7.9,
       "end": 11.2,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "assembly",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -352,12 +394,13 @@
     {
       "id": "settle-customer",
       "label": "customer",
+      "color": "#00bca6",
       "start": 8,
       "end": 12,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "assembly",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -369,12 +412,13 @@
     {
       "id": "settle-risk",
       "label": "risk",
+      "color": "#00bca6",
       "start": 8.7,
       "end": 12.5,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "assembly",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -386,12 +430,13 @@
     {
       "id": "settle-timeline",
       "label": "timeline",
+      "color": "#00bca6",
       "start": 9.4,
       "end": 13,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "assembly",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -403,24 +448,26 @@
     {
       "id": "details",
       "label": "Interface builds",
+      "color": "#ff6600",
       "start": 0,
       "end": 9,
-      "color": "#ff6600",
-      "kind": "group",
+      "keys": [],
       "parameterKeys": [
         "delight"
       ],
+      "kind": "group",
       "targets": []
     },
     {
       "id": "build-payment-rule",
       "label": "Payment line",
+      "color": "#ff6600",
       "start": 0,
       "end": 1.5,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -432,12 +479,13 @@
     {
       "id": "build-payment-row-1",
       "label": "Subtotal",
+      "color": "#ff6600",
       "start": 0.35,
       "end": 1.35,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -449,12 +497,13 @@
     {
       "id": "build-payment-row-2",
       "label": "Discount",
+      "color": "#ff6600",
       "start": 0.8,
       "end": 1.8,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -466,12 +515,13 @@
     {
       "id": "build-payment-row-3",
       "label": "Shipping",
+      "color": "#ff6600",
       "start": 1.25,
       "end": 2.25,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -483,12 +533,13 @@
     {
       "id": "build-total",
       "label": "Total lands",
+      "color": "#ff6600",
       "start": 1.8,
       "end": 2.9,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -500,12 +551,13 @@
     {
       "id": "build-shop-cash",
       "label": "Shop Cash",
+      "color": "#ff6600",
       "start": 2.45,
       "end": 3.25,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -517,12 +569,13 @@
     {
       "id": "build-mastercard",
       "label": "Mastercard",
+      "color": "#ff6600",
       "start": 2.75,
       "end": 3.65,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -534,12 +587,13 @@
     {
       "id": "build-fulfillment-rule",
       "label": "Fulfillment line",
+      "color": "#ff6600",
       "start": 5.5,
       "end": 6.4,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -551,12 +605,13 @@
     {
       "id": "build-product-row",
       "label": "Product row",
+      "color": "#ff6600",
       "start": 5.9,
       "end": 6.7,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -568,12 +623,13 @@
     {
       "id": "build-product-image",
       "label": "Product image",
+      "color": "#ff6600",
       "start": 6.15,
       "end": 6.85,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -585,12 +641,13 @@
     {
       "id": "build-fulfillment-badge",
       "label": "Status lands",
+      "color": "#ff6600",
       "start": 6.7,
       "end": 7.45,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -602,27 +659,29 @@
     {
       "id": "frame-arrives",
       "label": "Screen resolves",
-      "kind": "animation",
+      "color": "#8c51fe",
       "start": 10,
       "end": 13,
-      "color": "#8c51fe",
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
       "targets": [
         {
           "kind": "object",
           "id": "screen"
         }
-      ],
-      "parameterKeys": []
+      ]
     },
     {
       "id": "build-second-product-row",
       "label": "Second product",
+      "color": "#ff6600",
       "start": 6.25,
       "end": 7.05,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",
@@ -634,12 +693,13 @@
     {
       "id": "build-second-product-image",
       "label": "Second image",
+      "color": "#ff6600",
       "start": 6.5,
       "end": 7.2,
-      "color": "#ff6600",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "details",
-      "parameterKeys": [],
       "targets": [
         {
           "kind": "layer",

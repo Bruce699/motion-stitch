@@ -6,6 +6,7 @@ import type { Command } from "../core/schema";
 import { safePath } from "./files";
 import { encodeFrame, FRAME_CONTENT_TYPE } from "../core/frame-wire";
 import type { CapturedFrame } from "../core/layers";
+import { navigationErrorPage } from "./navigation-error";
 class UnauthorizedRequestError extends Error {
   constructor() {
     super("Unauthorized");
@@ -183,9 +184,15 @@ export async function serve(options: {
         });
         return;
       }
-      if (req.method !== "GET" || crossSite)
-        throw new Error("Unsupported request");
       const entry = url.pathname === "/" || url.pathname === "/index.html";
+      // Switching projects can navigate between the named viewer and localhost.
+      // Only the public, top-level editor document may cross that boundary.
+      const entryNavigation =
+        entry &&
+        req.headers["sec-fetch-mode"] === "navigate" &&
+        req.headers["sec-fetch-dest"] === "document";
+      if (req.method !== "GET" || (crossSite && !entryNavigation))
+        throw new Error("Unsupported request");
       if (!entry && !cookie && !bearer) throw new UnauthorizedRequestError();
       if (entry)
         res.setHeader(
@@ -199,16 +206,32 @@ export async function serve(options: {
         relative = relative.slice(8);
       }
       const file = await safePath(root, relative);
+      const content = await fs.readFile(file);
       res.writeHead(200, {
         "Content-Type": types[path.extname(file)] || "application/octet-stream",
         "Cache-Control": "no-store",
         "X-Content-Type-Options": "nosniff",
         "Cross-Origin-Resource-Policy": "same-origin",
       });
-      res.end(await fs.readFile(file));
+      res.end(content);
     } catch (e) {
       if (!res.headersSent) {
         const unauthorized = e instanceof UnauthorizedRequestError;
+        const documentRequest =
+          req.method === "GET" &&
+          (req.headers["sec-fetch-dest"] === "document" ||
+            String(req.headers.accept).includes("text/html"));
+        if (documentRequest) {
+          const nonce = randomBytes(16).toString("base64");
+          res.writeHead(unauthorized ? 401 : 400, {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Security-Policy": `default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}'; base-uri 'none'; frame-ancestors 'none'`,
+          });
+          res.end(navigationErrorPage(String(e), nonce));
+          return;
+        }
         res.writeHead(unauthorized ? 401 : 400, {
           "Content-Type": "application/json",
           "Cache-Control": "no-store",

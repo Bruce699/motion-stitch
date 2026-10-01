@@ -15,6 +15,8 @@ export function ProjectHome({
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const [errorTitle, setErrorTitle] = useState("Couldn't load projects");
+  const retry = useRef<() => void>(() => location.reload());
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     heading.current?.focus();
@@ -36,6 +38,12 @@ export function ProjectHome({
     };
   }, []);
   async function open(type: "project_open" | "project_create", id?: string) {
+    retry.current = () => void open(type, id);
+    setErrorTitle(
+      type === "project_create"
+        ? "Couldn't create project"
+        : "Couldn't open project",
+    );
     setBusy(true);
     setError(undefined);
     try {
@@ -92,9 +100,24 @@ export function ProjectHome({
           </div>
         </header>
         {error && (
-          <p className="home-error" role="alert">
-            {error}
-          </p>
+          <section aria-label="Project error" data-transport-keys="ignore">
+            <p className="home-error" role="alert">
+              {errorTitle}
+            </p>
+            <button
+              className="ui-button"
+              disabled={busy}
+              onClick={() => retry.current()}
+            >
+              Retry
+            </button>
+            <details>
+              <summary>Technical details</summary>
+              <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+                {error}
+              </pre>
+            </details>
+          </section>
         )}
         {loading ? (
           <span className="spinner" aria-label="Loading projects" />

@@ -494,6 +494,7 @@ export function ParameterPanel({
           inert={disabled}
         >
           {group.name && <legend>{group.name}</legend>}
+          {group.name === "Camera" && cameraGizmo}
           {group.name === "Camera" && (
             <CameraControls
               camera={camera}
@@ -524,7 +525,6 @@ export function ParameterPanel({
               reportError={reportError}
             />
           ))}
-          {group.name === "Camera" && cameraGizmo}
         </fieldset>
       ))}
     </aside>

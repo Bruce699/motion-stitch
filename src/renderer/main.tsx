@@ -468,6 +468,7 @@ function App() {
     view.current.mode = next;
     if (sourceId) view.current.sourceId = sourceId;
     applyView();
+    request.current?.request(clock.current.time);
     interacted.current = true;
     void publish();
   }
@@ -581,6 +582,7 @@ function App() {
           revision: string;
           codeRevision: number;
           compositions?: CompositionGraph;
+          sourcePreviews?: Record<string,string>;
         }>({ type: "prepare", sceneId: s.id });
         if (disposed || n !== generation.current) return;
         candidate = new SceneEngine(
@@ -640,6 +642,7 @@ function App() {
         setSourceQuality(candidate.quality);
         engine.current = candidate;
         stage.current!.replaceChildren(candidate.canvas);
+        candidate.mountSourcePreviews(stage.current!, prep.sourcePreviews);
         old?.dispose();
         displayed.current = {
           time: t,
@@ -692,6 +695,7 @@ function App() {
     ),
     JSON.stringify(state?.scene.sources),
     state?.scene.entry,
+    state?.scene.sources.some(source => source.entry && !source.entry.replace(/^\.\//, "").includes("/")) ? state.revision : undefined,
     state?.scene.size.width,
     state?.scene.size.height,
     retry,
@@ -857,7 +861,7 @@ function App() {
           const result =
             c.type === "capture"
               ? {
-                  data: engine.current!.canvas.toDataURL("image/png"),
+                  data: await engine.current!.captureFrame(clock.current.time, viewing(current.current!.scene), current.current!.revision),
                   context: context(),
                 }
               : context();
@@ -905,34 +909,60 @@ function App() {
       area = frame?.parentElement;
     if (!frame || !area || !state) return;
     const s = state.scene;
+    let scheduled = 0;
+    let previousWidth = -1,
+      previousHeight = -1,
+      previousDpr = -1;
+    let previousEngine: typeof engine.current = null;
     const fit = () => {
+      scheduled = 0;
       const padding = getComputedStyle(area);
       const horizontal =
         parseFloat(padding.paddingLeft) + parseFloat(padding.paddingRight);
       const vertical =
         parseFloat(padding.paddingTop) + parseFloat(padding.paddingBottom);
-      frame.style.width =
-        Math.max(
-          1,
-          Math.min(
-            area.clientWidth - horizontal,
-            ((area.clientHeight - vertical) * s.size.width) / s.size.height,
-          ),
-        ) + "px";
+      const width = Math.max(
+        1,
+        Math.min(
+          area.clientWidth - horizontal,
+          ((area.clientHeight - vertical) * s.size.width) / s.size.height,
+        ),
+      );
+      const height = (width * s.size.height) / s.size.width;
+      const dpr = window.devicePixelRatio;
       const e = engine.current;
-      if (e && stage.current) {
-        e.setPreviewViewport(
-          stage.current.clientWidth,
-          stage.current.clientHeight,
-          window.devicePixelRatio,
-        );
-        e.renderView();
+      if (
+        width === previousWidth &&
+        height === previousHeight &&
+        dpr === previousDpr &&
+        e === previousEngine
+      )
+        return;
+      previousWidth = width;
+      previousHeight = height;
+      previousDpr = dpr;
+      previousEngine = e;
+      // Read layout before writing; avoid measuring the stage immediately
+      // after changing its parent's width, which would force another layout.
+      frame.style.width = width + "px";
+      if (e) {
+        // CSS can scale the already-presented image. Only redraw when its
+        // backing buffer changed; scene time and inspection have not changed.
+        if (e.setPreviewViewport(width, height, dpr)) e.renderView();
       }
     };
-    const observer = new ResizeObserver(fit);
+    const scheduleFit = () => {
+      if (!scheduled) scheduled = requestAnimationFrame(fit);
+    };
+    const observer = new ResizeObserver(scheduleFit);
     observer.observe(area);
+    window.addEventListener("resize", scheduleFit);
     fit();
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", scheduleFit);
+      cancelAnimationFrame(scheduled);
+    };
   }, [state?.scene.size.width, state?.scene.size.height]);
   useEffect(() => {
     if (home) return;
@@ -1144,7 +1174,9 @@ function App() {
                     onOpen={() => setShowJobs(false)}
                     onRetry={() => {
                       setError(null);
-                      void refresh(true).then(() => setRetry((x) => x + 1)).catch(() => {});
+                      void refresh(true)
+                        .then(() => setRetry((x) => x + 1))
+                        .catch(() => {});
                     }}
                     onDismiss={() => setError(null)}
                   />

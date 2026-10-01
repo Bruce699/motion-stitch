@@ -1,0 +1,212 @@
+{
+  "version": 1,
+  "id": "the-first-creativity-tool-b7bfa887",
+  "name": "The first creativity tool",
+  "duration": 8,
+  "fps": 60,
+  "size": {
+    "width": 1920,
+    "height": 1080
+  },
+  "background": "#f7f6f2",
+  "entry": "scene.ts",
+  "camera": {
+    "projection": "orthographic",
+    "preset": "front",
+    "side": "right",
+    "depthOfField": {
+      "enabled": true,
+      "focusPlane": 1.01,
+      "blur": 0.35
+    }
+  },
+  "clips": [],
+  "sources": [],
+  "parameters": {
+    "ink": {
+      "label": "Text",
+      "type": "color",
+      "value": "#191919"
+    },
+    "accent": {
+      "label": "First",
+      "type": "color",
+      "value": "#2465ed"
+    },
+    "travel": {
+      "label": "Travel",
+      "group": "Camera",
+      "min": 0,
+      "max": 1.5,
+      "step": 0.05,
+      "type": "number",
+      "value": 1,
+      "control": "slider"
+    },
+    "stroke": {
+      "label": "Stroke",
+      "min": 0.02,
+      "max": 0.12,
+      "step": 0.005,
+      "type": "number",
+      "value": 0.055,
+      "control": "slider"
+    },
+    "pop": {
+      "label": "Pop",
+      "min": 0,
+      "max": 0.25,
+      "step": 0.01,
+      "type": "number",
+      "value": 0.1,
+      "control": "slider"
+    }
+  },
+  "tracks": [
+    {
+      "id": "words",
+      "label": "Words arrive",
+      "color": "#047efe",
+      "start": 0,
+      "end": 3.05,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "group"
+    },
+    {
+      "id": "the",
+      "label": "The",
+      "color": "#047efe",
+      "start": 0.08,
+      "end": 1.05,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "words",
+      "targets": [
+        {
+          "kind": "object",
+          "id": "the"
+        }
+      ]
+    },
+    {
+      "id": "last",
+      "label": "last",
+      "color": "#047efe",
+      "start": 0.72,
+      "end": 1.69,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "words",
+      "targets": [
+        {
+          "kind": "object",
+          "id": "last"
+        }
+      ]
+    },
+    {
+      "id": "creativity",
+      "label": "creativity",
+      "color": "#047efe",
+      "start": 1.36,
+      "end": 2.33,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "words",
+      "targets": [
+        {
+          "kind": "object",
+          "id": "creativity"
+        }
+      ]
+    },
+    {
+      "id": "tool",
+      "label": "tool",
+      "color": "#047efe",
+      "start": 2,
+      "end": 2.9699999999999998,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "animation",
+      "parentId": "words",
+      "targets": [
+        {
+          "kind": "object",
+          "id": "tool"
+        }
+      ]
+    },
+    {
+      "id": "camera",
+      "label": "Camera reveal",
+      "color": "#976639",
+      "start": 0,
+      "end": 3.55,
+      "keys": [],
+      "parameterKeys": [
+        "travel"
+      ],
+      "kind": "animation",
+      "targets": [
+        {
+          "kind": "camera",
+          "id": "main"
+        }
+      ]
+    },
+    {
+      "id": "correction",
+      "label": "Last → first",
+      "color": "#8c51fe",
+      "start": 4.1,
+      "end": 6.4,
+      "keys": [],
+      "parameterKeys": [],
+      "kind": "group"
+    },
+    {
+      "id": "strike",
+      "label": "Strike last",
+      "color": "#8c51fe",
+      "start": 4.1,
+      "end": 4.55,
+      "keys": [],
+      "parameterKeys": [
+        "stroke"
+      ],
+      "kind": "animation",
+      "parentId": "correction"
+    },
+    {
+      "id": "replace",
+      "label": "Replace with first",
+      "color": "#8c51fe",
+      "start": 4.95,
+      "end": 5.7,
+      "keys": [],
+      "parameterKeys": [
+        "accent"
+      ],
+      "kind": "animation",
+      "parentId": "correction"
+    },
+    {
+      "id": "pop",
+      "label": "Final lift",
+      "color": "#8c51fe",
+      "start": 5.03,
+      "end": 6.4,
+      "keys": [],
+      "parameterKeys": [
+        "pop"
+      ],
+      "kind": "animation",
+      "parentId": "correction"
+    }
+  ]
+}

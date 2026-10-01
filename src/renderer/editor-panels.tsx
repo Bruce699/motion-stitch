@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   Group,
   Panel,
   Separator,
   useDefaultLayout,
   type PanelImperativeHandle,
+  type PanelSize,
 } from "react-resizable-panels";
 
 export function toggleEditorPanel(
@@ -21,18 +22,50 @@ export function toggleEditorPanel(
     else panel.expand();
   } else panel.collapse();
 }
-function rememberPanel(
-  control: PanelControl,
-  id: string,
-  pixels: number,
-  open: boolean,
-) {
-  control.onOpen(open);
-  if (open) {
+/** Keep synchronous storage off the live-resize path; flush before leaving. */
+function useSettledSave<T extends unknown[]>(save: (...args: T) => void) {
+  const latest = useRef(save);
+  latest.current = save;
+  const pending = useRef<T | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const flush = useCallback(() => {
+    clearTimeout(timer.current);
+    timer.current = undefined;
+    const args = pending.current;
+    pending.current = null;
+    if (args) latest.current(...args);
+  }, []);
+  const schedule = useCallback(
+    (...args: T) => {
+      pending.current = args;
+      clearTimeout(timer.current);
+      timer.current = setTimeout(flush, 150);
+    },
+    [flush],
+  );
+  useEffect(() => {
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
+    };
+  }, [flush]);
+  return { schedule, flush };
+}
+
+function usePanelMemory(control: PanelControl, id: string, collapsed = 0) {
+  const save = useSettledSave((pixels: number) => {
     try {
       localStorage.setItem(`tilt-panel-expanded-${id}`, String(pixels));
     } catch {}
-  }
+  });
+  return (size: PanelSize) => {
+    const open = size.inPixels > collapsed;
+    if (open !== control.open) control.onOpen(open);
+    if (open) save.schedule(size.inPixels);
+    // Preserve the last expanded size even if collapse precedes the debounce.
+    else save.flush();
+  };
 }
 
 type PanelControl = {
@@ -70,6 +103,12 @@ export function EditorPanels({
   const vertical = useDefaultLayout({
     id: "tilt-editor-rows-v2",
   });
+  const saveHorizontal = useSettledSave(horizontal.onLayoutChanged);
+  const saveViewer = useSettledSave(viewer.onLayoutChanged);
+  const saveVertical = useSettledSave(vertical.onLayoutChanged);
+  const rememberLeft = usePanelMemory(left, "compositions");
+  const rememberRight = usePanelMemory(right, "inspector");
+  const rememberBottom = usePanelMemory(bottom, "timeline", 49);
   return (
     <div className="editor-main">
       {header}
@@ -77,21 +116,21 @@ export function EditorPanels({
         orientation="horizontal"
         className="editor-panels"
         defaultLayout={horizontal.defaultLayout}
-        onLayoutChanged={horizontal.onLayoutChanged}
+        onLayoutChanged={saveHorizontal.schedule}
       >
         <Panel id="editor" minSize={540}>
           <Group
             orientation="vertical"
             className="editor-rows"
             defaultLayout={vertical.defaultLayout}
-            onLayoutChanged={vertical.onLayoutChanged}
+            onLayoutChanged={saveVertical.schedule}
           >
             <Panel id="canvas" minSize={180}>
               <Group
                 orientation="horizontal"
                 className="viewer-panels"
                 defaultLayout={viewer.defaultLayout}
-                onLayoutChanged={viewer.onLayoutChanged}
+                onLayoutChanged={saveViewer.schedule}
               >
                 <Panel
                   id="compositions"
@@ -100,14 +139,8 @@ export function EditorPanels({
                   minSize={150}
                   maxSize={280}
                   collapsible
-                  onResize={(size) =>
-                    rememberPanel(
-                      left,
-                      "compositions",
-                      size.inPixels,
-                      size.inPixels > 0,
-                    )
-                  }
+                  groupResizeBehavior="preserve-pixel-size"
+                  onResize={rememberLeft}
                 >
                   <div
                     className="panel-content"
@@ -138,14 +171,8 @@ export function EditorPanels({
               maxSize="65%"
               collapsible
               collapsedSize={48}
-              onResize={(size) =>
-                rememberPanel(
-                  bottom,
-                  "timeline",
-                  size.inPixels,
-                  size.inPixels > 49,
-                )
-              }
+              groupResizeBehavior="preserve-pixel-size"
+              onResize={rememberBottom}
             >
               {timeline}
             </Panel>
@@ -162,9 +189,8 @@ export function EditorPanels({
           minSize={240}
           maxSize="45%"
           collapsible
-          onResize={(size) =>
-            rememberPanel(right, "inspector", size.inPixels, size.inPixels > 0)
-          }
+          groupResizeBehavior="preserve-pixel-size"
+          onResize={rememberRight}
         >
           <div
             className="panel-content"

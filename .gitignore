@@ -4,3 +4,8 @@ dist/
 exports/
 .DS_Store
 *.log
+
+.vercel/
+.env
+.env.*
+!.env.example

@@ -161,6 +161,43 @@ async function main() {
   const full = await measure();
   assert.equal(full.header.width, 1440);
   assert.equal(full.right.y, full.header.y + full.header.height);
+  const originalContentSize = win.getContentSize();
+  const resizeChecks = [];
+  // Resize the actual native window, allowing the real panel constraints and
+  // ResizeObservers to run. Both directions must preserve authored layout.
+  for (const width of [1600, 1200, 1500, 1250, 1440]) {
+    win.setContentSize(width, originalContentSize[1] + (width - 1440) / 2);
+    await delay(250);
+    const layout = await measure();
+    assert.ok(
+      Math.abs(layout.left.width - full.left.width) < 1.5,
+      "compositions retain pixel width during window resize",
+    );
+    assert.ok(
+      Math.abs(layout.right.width - full.right.width) < 1.5,
+      "inspector retains pixel width during window resize",
+    );
+    assert.ok(
+      Math.abs(layout.timeline.height - full.timeline.height) < 1.5,
+      "timeline retains pixel height during window resize",
+    );
+    assert.equal(
+      await js("document.querySelector('canvas')===window.originalCanvas"),
+      true,
+    );
+    await checkViewerToggle();
+    resizeChecks.push({
+      width,
+      left: layout.left.width,
+      right: layout.right.width,
+      timeline: layout.timeline.height,
+    });
+  }
+  await screenshot("resize-restored");
+  assert.equal(
+    (await command({ type: "context", fresh: true })).active.requestedTime,
+    2,
+  );
   const fixedToggles = await toggleBounds();
   for (const side of ["left", "right"] as const) {
     const b = fixedToggles[side];
@@ -401,8 +438,10 @@ async function main() {
     full,
     restored,
     light,
+    resizeChecks,
     checks: [
       "panels share surface tokens in both themes",
+      "repeated native window resizes preserve panel pixels, canvas and playhead",
       "timeline extends under composition browser",
       "sidebars and timeline collapse and restore sizes",
       "full-width toolbar and stationary toggles under repeated physical clicks",

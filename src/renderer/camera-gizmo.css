@@ -1,0 +1,132 @@
+.camera-orbit-widget {
+  margin: 8px 0 4px;
+  user-select: none;
+}
+.camera-orbit-widget[data-disabled="true"] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.camera-orbit-pad {
+  border-radius: 12px;
+  background: var(--dial-surface);
+  cursor: grab;
+  touch-action: none;
+  outline: none;
+}
+.camera-orbit-widget[data-dragging="true"] .camera-orbit-pad {
+  cursor: grabbing;
+}
+.camera-orbit-pad svg {
+  display: block;
+  width: 100%;
+  height: 166px;
+  overflow: visible;
+}
+.camera-orbit-pad:focus-visible {
+  box-shadow: 0 0 0 2px var(--dial-focus-ring);
+}
+.orbit-floor,
+.orbit-meridian,
+.orbit-latitude,
+.orbit-drop {
+  fill: none;
+  stroke: var(--dial-text-tertiary);
+  stroke-width: 1;
+}
+.orbit-floor {
+  opacity: 0.35;
+}
+.orbit-meridian {
+  opacity: 0.25;
+}
+.orbit-latitude {
+  opacity: 0.45;
+  stroke-dasharray: 2 4;
+}
+.orbit-drop {
+  opacity: 0.25;
+  stroke-dasharray: 2 3;
+}
+.orbit-target {
+  fill: var(--dial-glass-bg);
+  stroke: var(--dial-text-tertiary);
+  stroke-linejoin: round;
+  stroke-width: 1;
+}
+.orbit-sight {
+  stroke: var(--dial-text-secondary);
+  stroke-width: 1.3;
+}
+.orbit-pivot {
+  fill: var(--dial-text-secondary);
+}
+.orbit-halo {
+  fill: var(--dial-text-tertiary);
+  opacity: 0;
+  transform: scale(0.75);
+  transition:
+    transform 180ms ease-out,
+    opacity 180ms ease-out;
+}
+.camera-orbit-pad:hover .orbit-halo,
+.camera-orbit-pad:focus-visible .orbit-halo {
+  opacity: 0.1;
+  transform: scale(1);
+}
+.camera-orbit-widget[data-dragging="true"] .orbit-halo {
+  opacity: 0.16;
+  transform: scale(1.15);
+}
+.orbit-handle {
+  fill: var(--dial-glass-bg);
+  stroke: var(--dial-text-secondary);
+  stroke-width: 1.2;
+  filter: drop-shadow(0 2px 2px #0002);
+}
+.orbit-camera-icon {
+  color: var(--dial-text-primary);
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.camera-orbit-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 6px;
+}
+.orbit-axis {
+  flex: 1;
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+  align-items: center;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: 7px;
+  background: var(--dial-surface);
+  color: var(--dial-text-tertiary);
+  font:
+    10px "Geist Mono",
+    monospace;
+  cursor: ew-resize;
+  touch-action: none;
+  outline: none;
+}
+.orbit-axis[aria-label="Rotate X"] {
+  cursor: ns-resize;
+}
+.orbit-axis span {
+  color: var(--dial-text-secondary);
+}
+.orbit-axis[data-active="true"],
+.orbit-axis:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--dial-focus-ring);
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbit-halo {
+    transition: none;
+  }
+}

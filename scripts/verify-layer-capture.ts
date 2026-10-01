@@ -254,6 +254,69 @@ async function main() {
       source.dispose();
     }
     const reactDirectory = path.join(process.cwd(), ".tilt", "checks", "react");
+    // Scrolling changes CDP's page coordinates, but source textures and layer
+    // bounds must remain viewport-relative at every raster density.
+    await fs.writeFile(
+      path.join(root, "scroll.html"),
+      `<!doctype html><style>
+      html{scrollbar-width:none}body{margin:0;width:1000px;height:3000px;background:white}
+      .card{position:absolute;left:120px;top:1820px;width:80px;height:60px;background:#ff0000}
+      .fixed{position:fixed;left:10px;top:10px;width:20px;height:20px;background:#0000ff}
+      </style><div class="card"></div><div class="fixed"></div><script>
+      window.tiltSource={sample({time}){scrollTo(time?100:0,time?1800:0);return {revision:time}}};
+      </script>`,
+    );
+    const scrollSpec = SceneSchema.parse({
+      ...seed,
+      sources: [
+        {
+          id: "scroll",
+          kind: "web",
+          entry: "scroll.html",
+          width: 320,
+          height: 240,
+          sampling: "controlled",
+          layers: [
+            { id: "card", selector: ".card", padding: 0 },
+            { id: "fixed", selector: ".fixed", padding: 0 },
+          ],
+        },
+      ],
+    }).sources[0];
+    for (const density of [1, 2]) {
+      source = new WebSource(scrollSpec, "", "", root, density);
+      await source.ready();
+      const top = await source.sample(0, {});
+      const scrolled = await source.sample(1, {});
+      const card = scrolled.layers![0].regions.find((r) => r.id === "card")!;
+      assert.deepEqual(card.bounds, { x: 20, y: 20, width: 80, height: 60 });
+      assert.deepEqual(
+        pixel(raw(scrolled.images.scroll, 320, 240), 50, 40, 320),
+        [0, 0, 255, 255],
+        "Scrolled whole surface must contain the red card",
+      );
+      assert.deepEqual(
+        pixel(raw(scrolled.images[card.texture], 80, 60), 30, 20, 80),
+        [0, 0, 255, 255],
+        "Scrolled layer crop must contain the same card",
+      );
+      assert.deepEqual(
+        pixel(raw(scrolled.images["scroll/base"], 320, 240), 50, 40, 320),
+        [255, 255, 255, 255],
+        "Scrolled base must omit the extracted card",
+      );
+      assert.deepEqual(
+        pixel(raw(scrolled.images["scroll/fixed"], 20, 20), 10, 10, 20),
+        [255, 0, 0, 255],
+        "Fixed elements retain their viewport position after scrolling",
+      );
+      assert.equal(
+        (await source.sample(0, {})).images.scroll,
+        top.images.scroll,
+        "Returning to scroll origin reproduces the initial surface",
+      );
+      await source.dispose();
+    }
     const reactSpec = SceneSchema.parse({
       ...seed,
       sources: [
@@ -297,6 +360,8 @@ async function main() {
         selectorErrors: true,
         cachedRoute: true,
         reactTSX: true,
+        scroll:
+          "Whole surface, base, cropped and fixed layers; horizontal/vertical scroll; reverse seek; 1× and 2×",
         density:
           "1×, 2×, 4× vanilla; 3× React; CSS bounds unchanged; exact PNG sizes",
       }),

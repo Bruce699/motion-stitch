@@ -226,3 +226,123 @@ test("a routed runtime fails on a busy assigned port instead of moving behind th
     first.close();
   }
 });
+
+test("cross-site project navigation loads the editor but cannot read assets or mutate the API", async () => {
+  const dir = await fs.mkdtemp(
+    path.join(os.tmpdir(), "tilt-project-navigation-"),
+  );
+  await fs.writeFile(
+    path.join(dir, "index.html"),
+    "<html>Project editor</html>",
+  );
+  await fs.writeFile(path.join(dir, "scene.js"), "export default {};");
+  const server = await serve({
+    ui: dir,
+    scene: () => dir,
+    modules: dir,
+    token: "test",
+    command: async () => ({}),
+  });
+  // Raw HTTP preserves Chromium's actual navigation headers (fetch forces cors).
+  const request = (
+    route: string,
+    headers: Record<string, string>,
+    method = "GET",
+  ) =>
+    new Promise<{
+      status: number;
+      headers: http.IncomingHttpHeaders;
+      body: string;
+    }>((resolve, reject) => {
+      const req = http.request(
+        server.origin + route,
+        { method, headers },
+        (res) => {
+          let body = "";
+          res.on("data", (chunk) => {
+            body += chunk;
+          });
+          res.on("end", () =>
+            resolve({ status: res.statusCode!, headers: res.headers, body }),
+          );
+        },
+      );
+      req.on("error", reject);
+      req.end(method === "POST" ? '{"type":"state"}' : undefined);
+    });
+  try {
+    const navigation = {
+      "Sec-Fetch-Site": "cross-site",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Dest": "document",
+      Accept: "text/html",
+    };
+    for (const route of ["/?desktop=1", "/index.html"]) {
+      const page = await request(route, navigation);
+      assert.equal(page.status, 200);
+      assert.match(page.body, /Project editor/);
+      const cookie = page.headers["set-cookie"]![0].split(";")[0];
+      assert.equal(
+        (await request("/modules/scene.js", { Cookie: cookie })).status,
+        200,
+      );
+      assert.equal(
+        (
+          await request("/modules/scene.js", {
+            Cookie: cookie,
+            "Sec-Fetch-Site": "cross-site",
+          })
+        ).status,
+        400,
+      );
+      assert.equal(
+        (
+          await request(
+            "/api",
+            {
+              Cookie: cookie,
+              Origin: server.origin,
+              "Sec-Fetch-Site": "cross-site",
+              "Content-Type": "application/json",
+            },
+            "POST",
+          )
+        ).status,
+        401,
+      );
+    }
+    assert.equal(
+      (await request("/", { ...navigation, "Sec-Fetch-Dest": "iframe" }))
+        .status,
+      400,
+    );
+    assert.equal(
+      (
+        await request("/", {
+          "Sec-Fetch-Site": "cross-site",
+          "Sec-Fetch-Mode": "cors",
+        })
+      ).status,
+      400,
+    );
+    const failure = await request("/missing", navigation);
+    assert.equal(failure.status, 400);
+    assert.match(String(failure.headers["content-type"]), /text\/html/);
+    assert.match(failure.body, /Couldn't open project/);
+    assert.match(failure.body, /id="retry"/);
+    assert.match(failure.body, /id="back"/);
+    assert.match(failure.body, /Technical details/);
+    assert.match(
+      String(failure.headers["content-security-policy"]),
+      /frame-ancestors 'none'/,
+    );
+    await fs.rm(path.join(dir, "index.html"));
+    const missingBundle = await request("/", navigation);
+    assert.equal(missingBundle.status, 400);
+    assert.match(missingBundle.body, /Couldn't open project/);
+    assert.match(missingBundle.body, /ENOENT/);
+  } finally {
+    server.close();
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});

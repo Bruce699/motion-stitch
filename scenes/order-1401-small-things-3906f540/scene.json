@@ -1,7 +1,7 @@
 {
   "version": 1,
   "id": "order-1401-small-things-3906f540",
-  "name": "Order 1401 \u2014 Small things",
+  "name": "Order 1401 — Small things",
   "duration": 12,
   "fps": 60,
   "size": {
@@ -10,18 +10,24 @@
   },
   "background": "#f8f8f8",
   "entry": "scene.ts",
-  "capture": {
-    "density": 4
-  },
   "camera": {
     "projection": "perspective",
     "preset": "front",
     "side": "right",
+    "rotation": 0,
+    "elevation": 90,
+    "roll": 0,
+    "zoom": 0.8677790228143935,
+    "panX": 0,
+    "panY": 0,
     "depthOfField": {
       "enabled": true,
       "focusPlane": 0,
       "blur": 0.48
     }
+  },
+  "capture": {
+    "density": 4
   },
   "sources": [
     {
@@ -35,136 +41,152 @@
         {
           "id": "payment",
           "selector": "[data-tilt-id=\"payment\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "payment-surface",
           "selector": "[data-tilt-id=\"payment-surface\"]",
-          "padding": 24
+          "padding": 24,
+          "optional": false
         },
         {
           "id": "total",
           "selector": "[data-tilt-id=\"payment-surface\"] > div > div:last-child",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "shop-cash",
           "selector": "img[alt=\"Shop Cash\"]",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "mastercard",
           "selector": "img[alt=\"Mastercard\"]",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "total-mark",
           "selector": "[data-tilt-id=\"payment-surface\"] > div > div:last-child > span:first-child",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         },
         {
           "id": "amount",
           "selector": "[data-tilt-id=\"payment-surface\"] > div > div:last-child > span:last-child",
-          "padding": 8
+          "padding": 8,
+          "optional": false
         }
       ]
     }
   ],
   "parameters": {
     "distance": {
-      "type": "number",
       "label": "Lens distance",
-      "value": 2.05,
+      "group": "Camera",
       "min": 1.3,
       "max": 3.5,
       "step": 0.01,
-      "group": "Camera"
+      "type": "number",
+      "value": 2.05,
+      "control": "slider"
     },
     "lift": {
-      "type": "number",
       "label": "Paper separation",
-      "value": 0.095,
+      "group": "Composition",
       "min": 0,
       "max": 0.3,
       "step": 0.005,
-      "group": "Composition"
+      "type": "number",
+      "value": 0.095,
+      "control": "slider"
     }
   },
   "tracks": [
     {
       "id": "camera",
       "label": "Macro journey",
-      "kind": "group",
+      "color": "#047efe",
       "start": 0,
       "end": 12,
-      "color": "#047efe",
+      "keys": [],
       "parameterKeys": [
         "distance"
       ],
+      "kind": "group",
       "durationLabel": "Journey time"
     },
     {
       "id": "insignia",
-      "label": "01 \u00b7 Payment marks",
+      "label": "01 · Payment marks",
+      "color": "#047efe",
       "start": 0,
       "end": 4,
-      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "camera",
       "targets": [
         {
           "kind": "camera"
         }
-      ],
-      "parameterKeys": []
+      ]
     },
     {
       "id": "traverse",
-      "label": "02 \u00b7 Ink and hairlines",
+      "label": "02 · Ink and hairlines",
+      "color": "#047efe",
       "start": 4,
       "end": 8,
-      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "camera",
       "targets": [
         {
           "kind": "camera"
         }
-      ],
-      "parameterKeys": []
+      ]
     },
     {
       "id": "orbit",
-      "label": "03 \u00b7 The total",
+      "label": "03 · The total",
+      "color": "#047efe",
       "start": 8,
       "end": 12,
-      "color": "#047efe",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "camera",
       "targets": [
         {
           "kind": "camera"
         }
-      ],
-      "parameterKeys": []
+      ]
     },
     {
       "id": "paper",
       "label": "Paper and ink",
-      "kind": "group",
+      "color": "#00bca6",
       "start": 0,
       "end": 12,
-      "color": "#00bca6",
+      "keys": [],
       "parameterKeys": [
         "lift"
-      ]
+      ],
+      "kind": "group"
     },
     {
       "id": "paper-rise",
       "label": "Float the surface",
+      "color": "#00bca6",
       "start": 0,
       "end": 4,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "paper",
       "targets": [
@@ -173,15 +195,16 @@
           "sourceId": "ui",
           "layerId": "payment-surface"
         }
-      ],
-      "parameterKeys": []
+      ]
     },
     {
       "id": "numerals",
       "label": "Lift the numerals",
+      "color": "#00bca6",
       "start": 4,
       "end": 7,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "paper",
       "targets": [
@@ -190,15 +213,16 @@
           "sourceId": "ui",
           "layerId": "total"
         }
-      ],
-      "parameterKeys": []
+      ]
     },
     {
       "id": "paper-settle",
       "label": "Ease the separation",
+      "color": "#00bca6",
       "start": 8,
       "end": 12,
-      "color": "#00bca6",
+      "keys": [],
+      "parameterKeys": [],
       "kind": "animation",
       "parentId": "paper",
       "targets": [
@@ -207,8 +231,7 @@
           "sourceId": "ui",
           "layerId": "payment-surface"
         }
-      ],
-      "parameterKeys": []
+      ]
     }
   ]
 }

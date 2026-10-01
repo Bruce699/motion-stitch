@@ -1,3 +1,4 @@
+import { sourcePreviewBridge } from "./source-preview-bridge";
 import { BrowserWindow } from "electron";
 import type { SourceSpec } from "../core/schema";
 import type { ParameterValues } from "../core/parameters";
@@ -42,6 +43,7 @@ export class WebSource {
   window: BrowserWindow;
   private lastKey: unknown;
   currentRoute = "";
+  previewURL?: string;
   private lastFrame?: CapturedFrame;
   private layerMarker = "data-tilt-capture-" + randomUUID();
   private server?: http.Server;
@@ -195,7 +197,13 @@ export class WebSource {
             "Content-Type",
             types[path.extname(file)] || "application/octet-stream",
           );
-          res.end(await fs.readFile(file));
+          const content = await fs.readFile(file);
+          if (path.extname(file) === ".html" && new URL(req.url || "/", "http://localhost").searchParams.has("__tilt_preview")) {
+            res.setHeader("Cache-Control", "no-store");
+            const bridge = `<script>(${sourcePreviewBridge.toString()})()</script>`;
+            const html = content.toString();
+            res.end(/<head[\s>]/i.test(html) ? html.replace(/<head([^>]*)>/i, `<head$1>${bridge}`) : html.replace(/^(<!doctype[^>]*>)?/i, `$&${bridge}`));
+          } else res.end(content);
         } catch {
           res.writeHead(404);
           res.end("Not found");
@@ -206,6 +214,7 @@ export class WebSource {
         this.server!.listen(0, "127.0.0.1", resolve);
       });
       url = `http://127.0.0.1:${(this.server.address() as { port: number }).port}/${path.basename(entry)}`;
+      this.previewURL = url + "?__tilt_preview=1";
     }
     if (this.spec.url) {
       const u = new URL(url);
@@ -400,21 +409,29 @@ export class WebSource {
     const result = await this.measure(
       "captureMs",
       "pixel capture",
-      () =>
-        this.window.webContents.debugger.sendCommand("Page.captureScreenshot", {
-          format: "png",
-          fromSurface: true,
-          captureBeyondViewport: false,
-          clip: {
-            ...(rect ?? {
-              x: 0,
-              y: 0,
-              width: this.spec.width,
-              height: this.spec.height,
-            }),
-            scale: 1,
+      async () => {
+        // Layer bounds are viewport-relative, while CDP clips use page CSS
+        // coordinates. Preserve the viewport-sized surface after adapter scroll.
+        const { cssVisualViewport } =
+          await this.window.webContents.debugger.sendCommand(
+            "Page.getLayoutMetrics",
+          );
+        return this.window.webContents.debugger.sendCommand(
+          "Page.captureScreenshot",
+          {
+            format: "png",
+            fromSurface: true,
+            captureBeyondViewport: false,
+            clip: {
+              x: cssVisualViewport.pageX + (rect?.x ?? 0),
+              y: cssVisualViewport.pageY + (rect?.y ?? 0),
+              width: rect?.width ?? this.spec.width,
+              height: rect?.height ?? this.spec.height,
+              scale: 1,
+            },
           },
-        }),
+        );
+      },
       this.spec.sampleTimeoutMs ?? 15000,
     );
     const png = Buffer.from(result.data, "base64");

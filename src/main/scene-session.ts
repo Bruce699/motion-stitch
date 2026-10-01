@@ -34,7 +34,7 @@ export async function compileScene(
 export type SessionSource = Pick<
   WebSource,
   "spec" | "currentRoute" | "ready" | "sample" | "inspect" | "route"
-> & { dispose(): void | Promise<void>; readonly diagnostics?: SourceStatus };
+> & { dispose(): void | Promise<void>; readonly diagnostics?: SourceStatus; readonly previewURL?: string };
 export type SessionStore = Pick<
   SceneStore,
   | "root"
@@ -242,6 +242,7 @@ export class SceneSession {
       scene: doc,
       revision,
       codeRevision,
+      sourcePreviews: Object.fromEntries(this.entries.flatMap(({source}) => source.previewURL && source.spec.sampling === "controlled" ? [[source.spec.id, source.previewURL]] : [])),
     };
   }
   prepare() {

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "id": "order-1401-in-depth-f9ed6fe4",
-  "name": "Order 1401 \u2014 In depth",
+  "name": "Order 1401 — In depth",
   "duration": 14,
   "fps": 60,
   "size": {
@@ -14,10 +14,16 @@
     "projection": "perspective",
     "preset": "front",
     "side": "right",
+    "rotation": -27,
+    "elevation": 55,
+    "roll": 0,
+    "zoom": 4.235848486064824,
+    "panX": 0.9461652065845247,
+    "panY": 0.0311290840166962,
     "depthOfField": {
       "enabled": true,
-      "focusPlane": 0,
-      "blur": 0.1
+      "focusPlane": 0.52,
+      "blur": 0.5
     }
   },
   "capture": {
@@ -73,75 +79,80 @@
   ],
   "parameters": {
     "separation": {
-      "type": "number",
       "label": "Separation",
-      "value": 1,
+      "group": "Layers",
       "min": 0,
       "max": 1.6,
       "step": 0.01,
-      "group": "Layers"
+      "type": "number",
+      "value": 1,
+      "control": "slider"
     },
     "spread": {
-      "type": "number",
       "label": "Spread",
-      "value": 1,
+      "group": "Layers",
       "min": 0,
       "max": 1.5,
       "step": 0.01,
-      "group": "Layers"
+      "type": "number",
+      "value": 1,
+      "control": "slider"
     },
     "detailLift": {
-      "type": "number",
       "label": "Detail lift",
-      "value": 0.45,
+      "group": "Payment",
       "min": 0,
       "max": 0.8,
       "step": 0.01,
-      "group": "Payment"
+      "type": "number",
+      "value": 0.45,
+      "control": "slider"
     },
     "travel": {
-      "type": "number",
       "label": "Travel",
-      "value": 1,
+      "group": "Camera",
       "min": 0,
       "max": 1.4,
       "step": 0.01,
-      "group": "Camera"
+      "type": "number",
+      "value": 1,
+      "control": "slider"
     },
     "baseDim": {
-      "type": "number",
       "label": "Background dim",
-      "value": 1,
+      "group": "Layers",
       "min": 0,
       "max": 1,
       "step": 0.01,
-      "group": "Layers"
+      "type": "number",
+      "value": 1,
+      "control": "slider"
     }
   },
   "tracks": [
     {
       "id": "unfold",
       "label": "Unfold the order",
-      "kind": "group",
+      "color": "#00bca6",
       "start": 1.4,
       "end": 6,
-      "color": "#00bca6",
       "keys": [],
       "parameterKeys": [
         "separation",
         "spread",
         "baseDim"
-      ]
+      ],
+      "kind": "group"
     },
     {
       "id": "unfold-payment",
       "label": "Payment",
-      "kind": "animation",
+      "color": "#00bca6",
       "start": 1.4,
       "end": 4.7,
-      "color": "#00bca6",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "unfold",
       "targets": [
         {
@@ -154,12 +165,12 @@
     {
       "id": "unfold-fulfillment-0",
       "label": "Fulfillment",
-      "kind": "animation",
+      "color": "#00bca6",
       "start": 1.65,
       "end": 4.96,
-      "color": "#00bca6",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "unfold",
       "targets": [
         {
@@ -172,12 +183,12 @@
     {
       "id": "unfold-customer",
       "label": "Customer",
-      "kind": "animation",
+      "color": "#00bca6",
       "start": 2.15,
       "end": 5.48,
-      "color": "#00bca6",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "unfold",
       "targets": [
         {
@@ -190,12 +201,12 @@
     {
       "id": "unfold-risk",
       "label": "Risk",
-      "kind": "animation",
+      "color": "#00bca6",
       "start": 2.4,
       "end": 5.74,
-      "color": "#00bca6",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "unfold",
       "targets": [
         {
@@ -208,12 +219,12 @@
     {
       "id": "unfold-timeline",
       "label": "Activity",
-      "kind": "animation",
-      "start": 2.65,
-      "end": 6.0,
       "color": "#00bca6",
+      "start": 2.65,
+      "end": 6,
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "unfold",
       "targets": [
         {
@@ -226,14 +237,14 @@
     {
       "id": "detail",
       "label": "Payment detail",
-      "kind": "animation",
+      "color": "#ff9800",
       "start": 4.8,
       "end": 8.6,
-      "color": "#ff9800",
       "keys": [],
       "parameterKeys": [
         "detailLift"
       ],
+      "kind": "animation",
       "targets": [
         {
           "kind": "layer",
@@ -245,22 +256,22 @@
     {
       "id": "return",
       "label": "Reassemble",
-      "kind": "group",
+      "color": "#8c51fe",
       "start": 9.1,
       "end": 12.8,
-      "color": "#8c51fe",
       "keys": [],
-      "parameterKeys": []
+      "parameterKeys": [],
+      "kind": "group"
     },
     {
       "id": "return-payment-surface",
       "label": "Payment detail",
-      "kind": "animation",
+      "color": "#8c51fe",
       "start": 9.1,
       "end": 11.4,
-      "color": "#8c51fe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "return",
       "targets": [
         {
@@ -273,12 +284,12 @@
     {
       "id": "return-timeline",
       "label": "Activity",
-      "kind": "animation",
+      "color": "#8c51fe",
       "start": 9.23,
       "end": 11.63,
-      "color": "#8c51fe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "return",
       "targets": [
         {
@@ -291,12 +302,12 @@
     {
       "id": "return-risk",
       "label": "Risk",
-      "kind": "animation",
+      "color": "#8c51fe",
       "start": 9.36,
       "end": 11.860000000000001,
-      "color": "#8c51fe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "return",
       "targets": [
         {
@@ -309,12 +320,12 @@
     {
       "id": "return-customer",
       "label": "Customer",
-      "kind": "animation",
+      "color": "#8c51fe",
       "start": 9.49,
       "end": 12.09,
-      "color": "#8c51fe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "return",
       "targets": [
         {
@@ -327,12 +338,12 @@
     {
       "id": "return-fulfillment-0",
       "label": "Fulfillment",
-      "kind": "animation",
+      "color": "#8c51fe",
       "start": 9.75,
       "end": 12.55,
-      "color": "#8c51fe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "return",
       "targets": [
         {
@@ -345,12 +356,12 @@
     {
       "id": "return-payment",
       "label": "Payment",
-      "kind": "animation",
+      "color": "#8c51fe",
       "start": 9.879999999999999,
       "end": 12.780000000000001,
-      "color": "#8c51fe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "return",
       "targets": [
         {
@@ -363,24 +374,24 @@
     {
       "id": "camera",
       "label": "Camera journey",
-      "kind": "group",
+      "color": "#047efe",
       "start": 0,
       "end": 14,
-      "color": "#047efe",
       "keys": [],
       "parameterKeys": [
         "travel"
-      ]
+      ],
+      "kind": "group"
     },
     {
       "id": "macro",
       "label": "Trace the payment",
-      "kind": "animation",
+      "color": "#047efe",
       "start": 0,
       "end": 3.4,
-      "color": "#047efe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "camera",
       "targets": [
         {
@@ -391,12 +402,12 @@
     {
       "id": "reveal",
       "label": "Reveal the layers",
-      "kind": "animation",
+      "color": "#047efe",
       "start": 2.6,
       "end": 7.8,
-      "color": "#047efe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "camera",
       "targets": [
         {
@@ -407,12 +418,12 @@
     {
       "id": "orbit",
       "label": "Pass through depth",
-      "kind": "animation",
+      "color": "#047efe",
       "start": 6.8,
       "end": 10.5,
-      "color": "#047efe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "camera",
       "targets": [
         {
@@ -423,12 +434,12 @@
     {
       "id": "hero",
       "label": "Frame the order",
-      "kind": "animation",
+      "color": "#047efe",
       "start": 10,
       "end": 13.5,
-      "color": "#047efe",
       "keys": [],
       "parameterKeys": [],
+      "kind": "animation",
       "parentId": "camera",
       "targets": [
         {
