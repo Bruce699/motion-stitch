@@ -1,0 +1,52 @@
+.editor-entry-frame {
+  position: fixed;
+  z-index: 100;
+  overflow: hidden;
+  pointer-events: none;
+  transform-origin: top left;
+  background: var(--dial-glass-bg);
+  will-change: transform;
+  contain: layout paint;
+}
+.viewer-mode-toggle.editor-transition-toggle {
+  position: fixed;
+  bottom: auto;
+  transform: none;
+  z-index: 101;
+  pointer-events: none;
+  will-change: transform;
+}
+.project-workspace[data-editor-exit="moving"] {
+  background: transparent;
+  pointer-events: none;
+}
+.editor-shell[data-entry],
+.editor-shell[data-exit] {
+  pointer-events: none;
+}
+.editor-shell[data-entry="preparing"]
+  :is(
+    #compositions,
+    #inspector,
+    #timeline,
+    .canvas-frame,
+    .resize-handle,
+    .viewer-mode-toggle
+  ) {
+  visibility: hidden;
+}
+.project-workspace[data-editor-return] {
+  background: transparent;
+  pointer-events: none;
+}
+.project-workspace[data-editor-return="preparing"]
+  :is(
+    .workspace-toolbar,
+    .library-toolbar,
+    .library-content,
+    .playground-preview,
+    .playground-divider,
+    #playground-canvas
+  ) {
+  visibility: hidden;
+}

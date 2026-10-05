@@ -51,6 +51,7 @@ export function ProjectHome({
       const result = await call<{ origin?: string }>({ type, id });
       if (result.origin) {
         const url = new URL(result.origin);
+        url.hash = "playground";
         if (new URLSearchParams(location.search).has("desktop"))
           url.searchParams.set("desktop", "1");
         if (url.origin === location.origin) onReturn();

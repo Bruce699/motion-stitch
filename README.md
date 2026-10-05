@@ -47,6 +47,8 @@ npm start -- --direct --browser
 
 Open the localhost URL printed in the terminal. This runs the same local Electron backend and uses your browser for the editor. It is not a hosted web service.
 
+For a phone on another device or network, see [temporary phone access](docs/phone-access.md).
+
 ### Optional local HTTPS address
 
 ```sh

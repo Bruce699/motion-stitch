@@ -1,4 +1,5 @@
 import { SourcePreview } from "./source-preview";
+import { fitPreviewSize, type PixelSize } from "../core/preview-size";
 import {
   clipDocument,
   sourceTime,
@@ -134,6 +135,7 @@ export class SceneEngine {
       target: THREE.WebGLRenderTarget;
       budget?: CompositionBudget;
     },
+    private previewOptions?: { maxSize: PixelSize; maxSurfaceSize?: PixelSize },
   ) {
     this.budget = shared?.budget ?? {
       limit:
@@ -181,14 +183,15 @@ export class SceneEngine {
       keys,
       this.renderer.capabilities.maxTextureSize,
       this.renderer.capabilities.getMaxAnisotropy(),
+      undefined,
+      previewOptions?.maxSurfaceSize,
     );
     this.resources.budgetBytes = this.remainingBudget();
     try {
-      this.resources.reserveRenderTargets(
-        this.outputMemory(document.size.width, document.size.height),
-      );
+      const size = fitPreviewSize(document.size, previewOptions?.maxSize);
+      this.resources.reserveRenderTargets(this.outputMemory(size.width, size.height));
       if (!shared)
-        this.renderer.setSize(document.size.width, document.size.height, false);
+        this.renderer.setSize(size.width, size.height, false);
     } catch (error) {
       this.dispose();
       throw error;
@@ -234,8 +237,11 @@ export class SceneEngine {
       MAX_CANVAS_EDGE / Math.max(width, height),
       Math.sqrt(MAX_CANVAS_PIXELS / (width * height)),
     );
-    const w = Math.round(width * scale),
-      h = Math.round(height * scale);
+    const size = fitPreviewSize(
+      { width: Math.round(width * scale), height: Math.round(height * scale) },
+      this.previewOptions?.maxSize,
+    );
+    const w = size.width, h = size.height;
     if (this.shared) {
       if (this.shared.target.width !== w || this.shared.target.height !== h) {
         this.resources.budgetBytes = this.remainingBudget();
@@ -576,9 +582,10 @@ export class SceneEngine {
       const doc = clipDocument(prepared.scene, clip, document);
       let child = this.children.get(clip.id);
       if (!child) {
+        const size = fitPreviewSize(doc.size, this.previewOptions?.maxSize);
         const target = new THREE.WebGLRenderTarget(
-          doc.size.width,
-          doc.size.height,
+          size.width,
+          size.height,
           {
             type: THREE.HalfFloatType,
             samples: Math.min(4, this.renderer.capabilities.maxSamples),
@@ -596,6 +603,7 @@ export class SceneEngine {
               overrides,
             ),
           { renderer: this.renderer, target, budget: this.budget },
+          this.previewOptions,
         );
         child = { engine, target };
         try {

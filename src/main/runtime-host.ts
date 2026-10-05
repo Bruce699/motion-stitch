@@ -7,6 +7,8 @@ import {
   type CompositionGraph,
 } from "../core/compositions";
 import { ProjectLibrary, projectRuntime } from "./projects";
+import { ProjectWorkspaceStore } from "./project-workspace";
+import { reconcilePlayground } from "../core/playground";
 import type { SceneDocument } from "../core/schema";
 import { retimeTracks } from "../core/tracks";
 import { withCameraPatch } from "../core/camera";
@@ -32,6 +34,11 @@ import { serve } from "./server";
 import { atomicWrite, hash, manifest, readJSON } from "./files";
 import { ViewerExitCoordinator, viewerMutationCommands } from "./viewer-exit";
 import { GuidanceLibrary, projectAgentInstructions } from "./guidance";
+import { compositionPreviewKey } from "../core/preview-revision";
+import {
+  PreviewProfileSchema,
+  type PreviewProfile,
+} from "../core/preview-profile";
 
 export async function startRuntime(
   root: string,
@@ -45,11 +52,14 @@ export async function startRuntime(
     projectAgentInstructions(path.join(runtime, "cli.cjs")),
   );
   const guidance = new GuidanceLibrary(runtime);
+  const workspaceStore = new ProjectWorkspaceStore(root);
   await projects.register(root);
   const projectOrigins = new Set<string>();
   const openingProjects = new Map<string, Promise<string>>();
   const stores = new Map<string, Promise<SceneStore>>();
   const sessions = new Map<string, SceneSession>();
+  const thumbnailSessions = new Map<string, SceneSession>();
+  const playbackSessions = new Map<string, SceneSession>();
   const viewerExits = new ViewerExitCoordinator();
   const views = new ViewRegistry(root);
   await views.init();
@@ -99,11 +109,18 @@ export async function startRuntime(
     }
     return p;
   };
-  const getSession = async (id: string) => {
-    let s = sessions.get(id);
+  const getSession = async (id: string, profile?: PreviewProfile) => {
+    const store = await getStore(id);
+    const cache =
+      profile === "thumbnail"
+        ? thumbnailSessions
+        : profile === "playback"
+          ? playbackSessions
+          : sessions;
+    let s = cache.get(id);
     if (!s) {
-      s = new SceneSession(await getStore(id), http.origin);
-      sessions.set(id, s);
+      s = new SceneSession(store, http.origin, undefined, profile);
+      cache.set(id, s);
     }
     return s;
   };
@@ -128,11 +145,11 @@ export async function startRuntime(
     validateCompositionGraph(rootId, result);
     return result;
   };
-  const prepareGraph = async (id: string) => {
+  const prepareGraph = async (id: string, profile?: PreviewProfile) => {
     const docs = await documents(id);
     const graph: CompositionGraph = {};
     for (const key of Object.keys(docs))
-      graph[key] = await (await getSession(key)).prepare();
+      graph[key] = await (await getSession(key, profile)).prepare();
     validateCompositionGraph(
       id,
       Object.fromEntries(
@@ -275,6 +292,47 @@ export async function startRuntime(
         c.sceneId as string | undefined,
       );
     if (c.type === "projects") return { projects: await projects.list() };
+    if (c.type === "workspace") {
+      const available = await catalog.list();
+      const sceneStores = await Promise.all(
+        available.map(({ id }) => getStore(id)),
+      );
+      const previewNodes = new Map(
+        sceneStores.map((store) => [
+          store.id,
+          {
+            revision: store.revision,
+            dependencies: (store.scene.clips ?? []).map(
+              (clip) => clip.compositionId,
+            ),
+          },
+        ]),
+      );
+      const summaries = sceneStores.map((store) => {
+        return {
+          id: store.id,
+          name: store.scene.name,
+          duration: store.scene.duration,
+          size: store.scene.size,
+          revision: store.revision,
+          previewRevision: hash(compositionPreviewKey(store.id, previewNodes)),
+        };
+      });
+      const saved = await workspaceStore.load();
+      return {
+        ...saved,
+        workspace: reconcilePlayground(saved.workspace, summaries),
+        scenes: summaries,
+      };
+    }
+    if (c.type === "workspace_save") {
+      const result = await workspaceStore.save(
+        c.workspace,
+        String(c.revision ?? ""),
+      );
+      http.broadcast("change", { workspace: true });
+      return result;
+    }
     if (c.type === "project_open" || c.type === "project_create") {
       let folder = typeof c.path === "string" ? c.path : undefined;
       if (c.id) folder = (await projects.get(String(c.id))).path;
@@ -443,7 +501,7 @@ export async function startRuntime(
       case "review_status":
         return reviews.status(String(c.id), Boolean(c.includeImages), c.artifactIndices as number[] | undefined);
       case "prepare":
-        return prepareGraph(s.id);
+        return prepareGraph(s.id, PreviewProfileSchema.parse(c.previewProfile));
       case "frame": {
         const t = Number(c.time);
         if (!Number.isFinite(t) || t < 0 || t > s.scene.duration)
@@ -452,7 +510,7 @@ export async function startRuntime(
         if (!Number.isFinite(zoom) || zoom < 0.1 || zoom > 12)
           throw new Error("Invalid capture zoom");
         const result = await (
-          await getSession(s.id)
+          await getSession(s.id, PreviewProfileSchema.parse(c.previewProfile))
         ).frame(t, c.revision as string | undefined, zoom, c.overrides as any);
         return c.includeContext
           ? frameForReceiver(result, c.knownImages)
@@ -908,6 +966,8 @@ export async function startRuntime(
     await views.close();
     for (const p of stores.values()) (await p).watcher?.close();
     for (const s of sessions.values()) await s.dispose();
+    for (const s of thumbnailSessions.values()) await s.dispose();
+    for (const s of playbackSessions.values()) await s.dispose();
     if (desktop && !desktop.isDestroyed()) desktop.destroy();
   }
   Menu.setApplicationMenu(

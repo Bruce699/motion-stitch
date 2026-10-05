@@ -1,0 +1,40 @@
+.canvas-hover-preview {
+  position: fixed;
+  z-index: 45;
+  display: flex;
+  box-sizing: border-box;
+  overflow: visible;
+  pointer-events: none;
+  user-select: none;
+  isolation: isolate;
+}
+
+.canvas-hover-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--dial-glass-bg);
+  box-shadow: var(--dial-shadow);
+}
+
+.canvas-hover-frame {
+  flex: none;
+  overflow: hidden;
+  background: var(--dial-surface);
+}
+
+.canvas-hover-frame > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.canvas-hover-live {
+  position: absolute;
+  background: transparent;
+}
+
+.canvas-hover-preview .composition-preview-spinner {
+  display: none;
+}

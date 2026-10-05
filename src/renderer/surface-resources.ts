@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { fitPreviewSize, type PixelSize } from "../core/preview-size";
 import type { CapturedFrame, EncodedSurface } from "../core/layers";
 import { pngSurface, surfaceFromDataURL } from "../core/frame-wire";
 import {
@@ -6,8 +7,24 @@ import {
   surfaceResidentBytes,
 } from "../core/render-metrics";
 
-type Decode = (surface: EncodedSurface) => Promise<HTMLImageElement>;
-async function decodePNG(surface: EncodedSurface) {
+type SurfaceImage = HTMLImageElement | HTMLCanvasElement;
+type Decode = (surface: EncodedSurface, size?: PixelSize) => Promise<SurfaceImage>;
+async function decodePNG(surface: EncodedSurface, size?: PixelSize) {
+  if (size && (size.width !== surface.width || size.height !== surface.height)) {
+    const bitmap = await createImageBitmap(
+      new Blob([surface.bytes as Uint8Array<ArrayBuffer>], { type: surface.mimeType }),
+      { resizeWidth: size.width, resizeHeight: size.height, resizeQuality: "high" },
+    );
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = size.width;
+      canvas.height = size.height;
+      canvas.getContext("2d")!.drawImage(bitmap, 0, 0);
+      return canvas;
+    } finally {
+      bitmap.close();
+    }
+  }
   // The byte view can share a larger frame packet. Blob owns just this image's bytes.
   const url = URL.createObjectURL(
     new Blob([surface.bytes as Uint8Array<ArrayBuffer>], {
@@ -41,6 +58,7 @@ export class SurfaceResources {
     private maxTextureSize: number,
     anisotropy: number,
     private decode: Decode = decodePNG,
+    private previewLimit?: PixelSize,
   ) {
     for (const key of keys) {
       const texture = new THREE.Texture();
@@ -141,13 +159,15 @@ export class SurfaceResources {
       const surface = frame.surfaces?.[id]
         ? pngSurface(frame.surfaces[id].bytes)
         : surfaceFromDataURL(frame.images[id]);
-      if (Math.max(surface.width, surface.height) > this.maxTextureSize)
+      const size = fitPreviewSize(surface, this.previewLimit);
+      if (Math.max(size.width, size.height) > this.maxTextureSize)
         throw new Error(
           `Source ${id} exceeds this GPU's texture size. Reduce UI density.`,
         );
-      // Include the replacement while the old image remains alive; never silently reduce fidelity.
+      // Full-quality surfaces stay exact; compact inspection previews opt into a bound.
+      // Include the replacement while the old image remains alive.
       const bytes =
-        surfaceResidentBytes(surface.width, surface.height) +
+        surfaceResidentBytes(size.width, size.height) +
         (!version && frame.images[id] ? frame.images[id].length * 2 : 0);
       const peak =
         this.resident +
@@ -159,12 +179,12 @@ export class SurfaceResources {
         throw new Error(
           `Source ${id} would exceed the scene surface budget (${Math.ceil(peak / 1024 / 1024)} MB needed, ${Math.floor(this.budgetBytes / 1024 / 1024)} MB allowed). Set capture.memoryBudgetMB or reduce UI density/layers.`,
         );
-      const image = await this.decode(surface);
+      const image = await this.decode(surface, size);
       if (this.disposed)
         throw new Error("Surface resources were disposed during preparation");
-      if (image.width !== surface.width || image.height !== surface.height)
+      if (image.width !== size.width || image.height !== size.height)
         throw new Error(`Source ${id} decoded with unexpected dimensions`);
-      const previous = texture.image as HTMLImageElement | undefined;
+      const previous = texture.image as SurfaceImage | undefined;
       if (
         previous &&
         (previous.width !== image.width || previous.height !== image.height)

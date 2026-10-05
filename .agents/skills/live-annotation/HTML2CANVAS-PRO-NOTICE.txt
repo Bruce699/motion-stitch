@@ -1,0 +1,5 @@
+The local screenshot renderer in public/html2canvas.min.js is html2canvas-pro 2.5.0.
+Source: https://github.com/yorickshan/html2canvas-pro
+Obtained from npm html2canvas-pro@2.5.0, tarball SHA-1 fe9e828bb426c7cf7723bb9ef14b4626888076ed.
+MIT license: HTML2CANVAS-LICENSE.txt.
+The UMD entry exports its renderer as html2canvas.default.

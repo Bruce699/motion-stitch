@@ -9,7 +9,9 @@ import {
   compileScene,
   type SessionSource,
   type SessionStore,
+  type SessionDependencies,
 } from "../src/main/scene-session";
+import type { PreviewProfile } from "../src/core/preview-profile";
 import { sourceFingerprint } from "../src/main/source-fingerprint";
 import { sampleSources } from "../src/main/frame-preparation";
 import type { SourceStatus } from "../src/core/source-status";
@@ -98,7 +100,7 @@ async function fixture(t: { after(fn: () => Promise<void>): void }) {
   let onSample: () => Promise<void> = async () => {};
   let onCreate: () => Promise<void> = async () => {};
   let onDispose: () => Promise<void> = async () => {};
-  const session = new SceneSession(store, "http://fixture", {
+  const dependencies: SessionDependencies = {
     compile: async (...args) => {
       if (failCompile) throw new Error("Compile failed");
       return compileScene(...args);
@@ -140,9 +142,12 @@ async function fixture(t: { after(fn: () => Promise<void>): void }) {
       await onCreate();
       return source;
     },
-  });
+  };
+  const session = new SceneSession(store, "http://fixture", dependencies);
+  const extraSessions: SceneSession[] = [];
   t.after(async () => {
     await session.dispose();
+    await Promise.all(extraSessions.map((extra) => extra.dispose()));
     await fs.rm(root, { recursive: true, force: true });
   });
   return {
@@ -152,6 +157,16 @@ async function fixture(t: { after(fn: () => Promise<void>): void }) {
     created,
     io,
     commit,
+    createSession(profile?: PreviewProfile) {
+      const extra = new SceneSession(
+        store,
+        "http://fixture",
+        dependencies,
+        profile,
+      );
+      extraSessions.push(extra);
+      return extra;
+    },
     setFailCompile(value: boolean) {
       failCompile = value;
     },
@@ -169,6 +184,92 @@ async function fixture(t: { after(fn: () => Promise<void>): void }) {
     },
   };
 }
+
+for (const profile of ["thumbnail", "playback"] as const) {
+  test(`${profile} raster sessions cannot change authored documents or regular source quality`, async (t) => {
+    const f = await fixture(t);
+    await f.commit({}, (doc) => {
+      doc.capture = { density: 4 };
+    });
+    const authored = structuredClone(f.store.scene);
+    const regular = await f.session.frame(1, f.store.revision, 4);
+    const thumbnail = f.createSession(profile);
+    const prepared = await thumbnail.prepare();
+    const compact = await thumbnail.frame(1, f.store.revision, 12);
+    assert.deepEqual(prepared.scene, authored);
+    assert.deepEqual(f.store.scene, authored);
+    assert.deepEqual(
+      f.created.slice(2).map((source) => source.spec),
+      authored.sources,
+      "compact capture preserves source CSS dimensions and layer declarations",
+    );
+    assert.deepEqual(
+      f.created.map((source) => source.density),
+      [4, 4, 1, 1],
+    );
+    assert.ok(compact.quality!.every((quality) => quality.density === 1));
+    assert.ok(
+      compact.quality!.every(
+        (quality) => quality.width === 128 && quality.height === 128,
+      ),
+    );
+    const repeated = await f.session.frame(2, f.store.revision);
+    assert.deepEqual(repeated.images, regular.images);
+    assert.ok(repeated.quality!.every((quality) => quality.density === 4));
+    assert.equal(f.created.length, 4);
+    await thumbnail.dispose();
+    assert.deepEqual(
+      f.created.map((source) => source.disposed),
+      [0, 0, 1, 1],
+    );
+    assert.deepEqual(
+      (await f.session.frame(0, f.store.revision)).images,
+      regular.images,
+    );
+  });
+
+  test(`${profile} sessions retain compact capture after authored density edits`, async (t) => {
+    const f = await fixture(t);
+    const thumbnail = f.createSession(profile);
+    await thumbnail.frame(0);
+    await f.commit({}, (doc) => {
+      doc.capture = { density: 7 };
+    });
+    const prepared = await thumbnail.prepare();
+    const frame = await thumbnail.frame(2, f.store.revision, 12);
+    assert.equal(prepared.scene.capture?.density, 7);
+    assert.ok(frame.quality!.every((quality) => quality.density === 1));
+    assert.equal(
+      f.created.length,
+      2,
+      "density changes do not rebuild compact sources",
+    );
+    await f.session.frame(2, f.store.revision);
+    assert.deepEqual(
+      f.created.map((source) => source.density),
+      [1, 1, 7, 7],
+    );
+  });
+}
+
+test("playback sources stay isolated from posters and full-quality editor sessions", async (t) => {
+  const f = await fixture(t);
+  const poster = f.createSession("thumbnail");
+  const playback = f.createSession("playback");
+  const editorFrame = await f.session.frame(0);
+  const posterFrame = await poster.frame(0);
+  const playbackFrame = await playback.frame(0);
+  assert.equal(f.created.length, 6);
+  assert.notDeepEqual(playbackFrame.imageVersions, posterFrame.imageVersions);
+  assert.notDeepEqual(playbackFrame.imageVersions, editorFrame.imageVersions);
+  await playback.dispose();
+  assert.deepEqual(
+    f.created.map((source) => source.disposed),
+    [0, 0, 0, 0, 1, 1],
+  );
+  assert.deepEqual((await poster.frame(1)).images, posterFrame.images);
+  assert.deepEqual((await f.session.frame(1)).images, editorFrame.images);
+});
 
 test("choreography and imported composition edits preserve browsers and pixels", async (t) => {
   const f = await fixture(t);

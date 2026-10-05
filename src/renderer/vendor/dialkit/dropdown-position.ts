@@ -2,6 +2,7 @@ export type DropdownPosition = {
   top: number;
   left: number;
   width: number;
+  maxWidth: number;
   above: boolean;
   maxHeight: number;
 };
@@ -42,10 +43,8 @@ export function getDropdownPosition(
     above ? spaceAbove : spaceBelow,
   );
   const height = Math.min(dropdownHeight, maxHeight);
-  const width = Math.min(
-    options.width ?? triggerRect.width,
-    Math.max(0, viewportWidth - margin * 2),
-  );
+  const maxWidth = Math.max(0, viewportWidth - margin * 2);
+  const width = Math.min(options.width ?? triggerRect.width, maxWidth);
   let left = Math.max(
     viewportLeft + margin,
     Math.min(triggerRect.left, viewportLeft + viewportWidth - width - margin),
@@ -86,6 +85,7 @@ export function getDropdownPosition(
       ? left
       : left - rootRect.left + portalRoot.scrollLeft - portalRoot.clientLeft,
     width,
+    maxWidth,
     above,
     maxHeight,
   };
@@ -122,10 +122,12 @@ export function observeDropdownPosition(
       rect.height,
       root?.x,
       root?.y,
-      popup?.()?.scrollHeight,
+      floating?.scrollHeight,
+      floating?.offsetWidth,
       window.innerWidth,
       window.innerHeight,
       viewport?.height,
+      viewport?.width,
       viewport?.offsetTop,
       viewport?.offsetLeft,
     ].join(",");

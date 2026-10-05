@@ -8,6 +8,7 @@ import { withParameterValue, type ParameterValues } from "../core/parameters";
 import { sourceFingerprint } from "./source-fingerprint";
 import { sampleSources } from "./frame-preparation";
 import type { SourceStatus } from "../core/source-status";
+import type { PreviewProfile } from "../core/preview-profile";
 
 export async function compileScene(
   root: string,
@@ -34,7 +35,11 @@ export async function compileScene(
 export type SessionSource = Pick<
   WebSource,
   "spec" | "currentRoute" | "ready" | "sample" | "inspect" | "route"
-> & { dispose(): void | Promise<void>; readonly diagnostics?: SourceStatus; readonly previewURL?: string };
+> & {
+  dispose(): void | Promise<void>;
+  readonly diagnostics?: SourceStatus;
+  readonly previewURL?: string;
+};
 export type SessionStore = Pick<
   SceneStore,
   | "root"
@@ -84,6 +89,7 @@ export class SceneSession {
     public store: SessionStore,
     public origin: string,
     private dependencies: SessionDependencies = defaultDependencies,
+    private previewProfile?: PreviewProfile,
   ) {}
   get diagnostics() {
     return {
@@ -160,7 +166,13 @@ export class SceneSession {
         previous?.key === key ? previous.zoom : 1,
       );
       nextDensity.set(spec.id, { key, zoom: requested });
-      return captureQuality(doc.size, spec, doc.capture, requested);
+      // Library posters and workspace playback favor quick preparation over
+      // export-density pixels. Each profile owns separate browser sources, so
+      // this cannot downshift the editor or change authored capture settings.
+      return this.previewProfile === "thumbnail" ||
+        this.previewProfile === "playback"
+        ? captureQuality(doc.size, spec, { ...doc.capture, density: 1 })
+        : captureQuality(doc.size, spec, doc.capture, requested);
     });
     // Arbitrary composition imports remain safe: any code revision recompiles,
     // while browser lifetimes depend only on their own actual source roots.
@@ -242,7 +254,13 @@ export class SceneSession {
       scene: doc,
       revision,
       codeRevision,
-      sourcePreviews: Object.fromEntries(this.entries.flatMap(({source}) => source.previewURL && source.spec.sampling === "controlled" ? [[source.spec.id, source.previewURL]] : [])),
+      sourcePreviews: Object.fromEntries(
+        this.entries.flatMap(({ source }) =>
+          source.previewURL && source.spec.sampling === "controlled"
+            ? [[source.spec.id, source.previewURL]]
+            : [],
+        ),
+      ),
     };
   }
   prepare() {

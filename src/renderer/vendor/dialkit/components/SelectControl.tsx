@@ -54,9 +54,22 @@ export function SelectControl({
       ? dropdownRef.current.scrollHeight + 2
       : 10 + normalized.length * 36;
     setPos(
-      getDropdownPosition(el, portalTarget, { dropdownHeight, fixed: true }),
+      getDropdownPosition(el, portalTarget, {
+        dropdownHeight,
+        width: dropdownRef.current?.offsetWidth,
+        fixed: true,
+      }),
     );
   }, [normalized.length, portalTarget]);
+
+  // Measure the intrinsic menu before its first paint, without Motion's scale.
+  const mountDropdown = useCallback(
+    (node: HTMLDivElement | null) => {
+      dropdownRef.current = node;
+      if (node) updatePos();
+    },
+    [updatePos],
+  );
 
   // Resolve portal target (closest .dialkit-root)
   useEffect(() => {
@@ -136,7 +149,7 @@ export function SelectControl({
           <AnimatePresence>
             {isOpen && pos && (
               <motion.div
-                ref={dropdownRef}
+                ref={mountDropdown}
                 className="dialkit-select-dropdown"
                 initial={{ opacity: 0, y: pos.above ? 8 : -8, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -146,7 +159,8 @@ export function SelectControl({
                   position: "fixed",
                   left: pos.left,
                   top: pos.top,
-                  width: pos.width,
+                  width: "max-content",
+                  maxWidth: pos.maxWidth,
                   maxHeight: pos.maxHeight,
                   transformOrigin: pos.above ? "bottom" : "top",
                 }}

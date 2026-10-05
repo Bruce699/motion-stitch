@@ -17,6 +17,7 @@ import { flushControlEdits, queueControlEdit } from "./control-edits";
 import { createRenderActivity } from "./activity";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { flushSync } from "react-dom";
 import type {
   ProjectState,
   SceneDocument,
@@ -47,10 +48,30 @@ import { cameraNavigation, cameraNavigationPatch } from "./camera-navigation";
 import { CameraGizmo } from "./camera-gizmo";
 import { usePanelRef } from "react-resizable-panels";
 import { ProjectHome } from "./project-home";
+import { ProjectWorkspace } from "./project-workspace";
+import { workspacePage } from "./workspace-navigation";
 import { EditorPanels, toggleEditorPanel } from "./editor-panels";
 import { ParameterPanel } from "./parameters";
 import { SceneHeader } from "./scene-header";
 import { ErrorIndicator } from "./error-indicator";
+import {
+  beginEditorEntry,
+  beginEditorExit,
+  type EditorEntryOrigin,
+} from "./editor-entry-transition";
+
+type WorkspaceEditorEntry = {
+  sceneId: string;
+  cancelled: boolean;
+  requestSent: boolean;
+  requestReceived: boolean;
+  animation?: Promise<void>;
+  motion: ReturnType<typeof beginEditorEntry>;
+};
+type WorkspaceEditorExit = {
+  cancelled: boolean;
+  motion?: ReturnType<typeof beginEditorExit>;
+};
 
 const timecode = (t: number, fps: number) =>
   `${Math.floor(t / 60)
@@ -95,7 +116,29 @@ function Button({
 }
 
 function App() {
-  const [home, setHome] = useState(location.hash === "#home");
+  const [page, setPage] = useState(() => workspacePage(location.hash));
+  const appRoot = useRef<HTMLDivElement>(null);
+  const [entryPage, setEntryPage] = useState<"playground" | "library">();
+  const [exitPage, setExitPage] = useState<"playground" | "library">();
+  const editorExit = useRef<WorkspaceEditorExit | null>(null);
+  const returnOrigin = useRef<{
+    page: "playground" | "library";
+    sceneId: string;
+    source: HTMLElement;
+  } | null>(null);
+  const returnSceneId = useRef<string | undefined>(undefined);
+  const pageRef = useRef(page);
+  pageRef.current = page;
+  const exitHandler = useRef<
+    (next: "playground" | "library", updateHash: boolean) => Promise<void>
+  >(async () => {});
+  const editorEntry = useRef<WorkspaceEditorEntry | null>(null);
+  const cancelledWorkspaceOpen = useRef<string | null>(null);
+  const home = page === "home";
+  const workspace = page === "playground" || page === "library";
+  const editorVisible = page === "editor";
+  const workspaceTab = useRef<"playground" | "library">("playground");
+  if (workspace) workspaceTab.current = page;
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
   const [timelineOpen, setTimelineOpen] = useState(true);
@@ -103,18 +146,50 @@ function App() {
     rightPanel = usePanelRef(),
     timelinePanel = usePanelRef();
   useEffect(() => {
-    const navigate = () => setHome(location.hash === "#home");
+    const navigate = () => {
+      const next = workspacePage(location.hash);
+      if (
+        pageRef.current === "editor" &&
+        (next === "playground" || next === "library") &&
+        !editorEntry.current && !editorExit.current
+      ) {
+        void exitHandler.current(next, false);
+        return;
+      }
+      if (editorExit.current) {
+        editorExit.current.cancelled = true;
+        editorExit.current.motion?.cancel();
+        editorExit.current = null;
+        setExitPage(undefined);
+      }
+      if (next !== "editor" && editorEntry.current) {
+        editorEntry.current.cancelled = true;
+        if (
+          editorEntry.current.requestSent &&
+          !editorEntry.current.requestReceived
+        )
+          cancelledWorkspaceOpen.current = editorEntry.current.sceneId;
+        editorEntry.current.motion.cancel();
+        editorEntry.current = null;
+        setEntryPage(undefined);
+      }
+      setPage(next);
+    };
     window.addEventListener("hashchange", navigate);
-    return () => window.removeEventListener("hashchange", navigate);
+    return () => {
+      window.removeEventListener("hashchange", navigate);
+      editorEntry.current?.motion.cancel();
+      editorExit.current?.motion?.cancel();
+    };
   }, []);
   useEffect(() => {
-    if (home) {
+    if (!editorVisible) {
       clock.current.pause();
       setPlaying(false);
       activity.current?.playbackChanged();
       void flushControlEdits().catch((e) => setError(String(e)));
     }
-  }, [home]);
+  }, [editorVisible]);
   const [sourceQuality, setSourceQuality] = useState<SourceQuality[]>([]);
   const densityTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
@@ -228,6 +303,160 @@ function App() {
     else setCompositionPath([]);
     await invoke({ type: "open", id });
   }
+  async function openFromWorkspace(id: string, origin?: EditorEntryOrigin) {
+    if (editorEntry.current) return;
+    const editor = appRoot.current?.querySelector<HTMLElement>(".editor-shell");
+    const outgoing = appRoot.current?.querySelector<HTMLElement>(
+      ".project-workspace",
+    );
+    if (!origin || !editor || !outgoing) {
+      await openComposition(id);
+      return;
+    }
+    const entry: WorkspaceEditorEntry = {
+      sceneId: id,
+      cancelled: false,
+      requestSent: false,
+      requestReceived: false,
+      motion: beginEditorEntry(origin, editor, outgoing),
+    };
+    returnOrigin.current = { page: origin.page, sceneId: id, source: origin.source };
+    editorEntry.current = entry;
+    // The runtime's open request changes the route; retain the outgoing view
+    // until its frame and panels have finished their coordinated handoff.
+    flushSync(() => setEntryPage(origin.page));
+    if (leftPanel.current?.isCollapsed())
+      toggleEditorPanel(leftPanel.current, "compositions");
+    if (rightPanel.current?.isCollapsed())
+      toggleEditorPanel(rightPanel.current, "inspector");
+    if (timelinePanel.current?.isCollapsed())
+      toggleEditorPanel(timelinePanel.current, "timeline");
+    try {
+      await flushControlEdits();
+      if (entry.cancelled) return;
+      setCompositionPath([]);
+      entry.requestSent = true;
+      await call({ type: "open", id });
+      if (entry.cancelled) return;
+      presentation.current++;
+      request.current?.invalidate();
+      clock.current.pause();
+      setPlaying(false);
+      const at = clock.current.seek(origin.time);
+      if (!(await draw(at)))
+        throw new Error("The preview changed while opening the editor.");
+      // Scene dimensions and the panel layout must settle before measuring
+      // the actual destination; hidden editor layout remains mounted.
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      if (!entry.cancelled) await (entry.animation ?? entry.motion.play());
+    } catch (error) {
+      if (!entry.cancelled) setError(String(error));
+    } finally {
+      if (editorEntry.current === entry) {
+        editorEntry.current = null;
+        flushSync(() => setEntryPage(undefined));
+      }
+      entry.motion.cancel();
+      if (entry.cancelled && cancelledWorkspaceOpen.current === id)
+        cancelledWorkspaceOpen.current = null;
+      if (!entry.cancelled && location.hash === "#editor")
+        editor
+          .querySelector<HTMLElement>(".canvas-frame")
+          ?.focus({ preventScroll: true });
+    }
+  }
+  async function exitToWorkspace(
+    next: "playground" | "library",
+    updateHash = true,
+  ) {
+    if (editorEntry.current || editorExit.current) return;
+    const editor = appRoot.current?.querySelector<HTMLElement>(".editor-shell");
+    if (!editor) {
+      location.hash = next;
+      return;
+    }
+    const ticket: WorkspaceEditorExit = { cancelled: false };
+    editorExit.current = ticket;
+    clock.current.pause();
+    setPlaying(false);
+    try {
+      await flushControlEdits();
+      if (ticket.cancelled) return;
+      const origin = returnOrigin.current;
+      const id = current.current?.scene.id;
+      returnSceneId.current =
+        next === "playground" && (!origin || origin.sceneId !== id)
+          ? id
+          : undefined;
+      flushSync(() => setExitPage(next));
+      const workspace =
+        appRoot.current?.querySelector<HTMLElement>(".project-workspace");
+      if (!workspace) return;
+      const destination = () => {
+        if (
+          origin?.page === next &&
+          origin.sceneId === id &&
+          origin.source.isConnected
+        )
+          return origin.source;
+        if (next === "library")
+          return Array.from(
+            workspace.querySelectorAll<HTMLElement>(".library-card"),
+          ).find((card) => card.dataset.sceneId === id);
+        return (
+          Array.from(
+            workspace.querySelectorAll<HTMLElement>(".preview-picture"),
+          ).find((preview) => preview.dataset.previewRoot === id) ??
+          workspace.querySelector<HTMLElement>(".preview-picture") ??
+          undefined
+        );
+      };
+      // The retained workspace normally resolves immediately. A direct editor
+      // URL may need its catalog before it has a matching return frame.
+      const deadline = performance.now() + 3000;
+      do {
+        await new Promise<void>((resolve) =>
+          requestAnimationFrame(() => resolve()),
+        );
+      } while (
+        !ticket.cancelled &&
+        !destination() &&
+        performance.now() < deadline
+      );
+      if (ticket.cancelled) return;
+      const target = destination();
+      if (next === "library")
+        target?.scrollIntoView({ block: "nearest", inline: "nearest" });
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => resolve()),
+      );
+      if (ticket.cancelled) return;
+      ticket.motion = beginEditorExit(editor, workspace, target, next);
+      await ticket.motion.play();
+      if (ticket.cancelled) return;
+      flushSync(() => {
+        setPage(next);
+        setExitPage(undefined);
+      });
+      workspaceTab.current = next;
+      if (updateHash) location.hash = next;
+      (
+        target?.closest<HTMLElement>("button") ??
+        target?.parentElement?.querySelector<HTMLElement>(".preview-edit")
+      )?.focus({ preventScroll: true });
+    } catch (error) {
+      if (!ticket.cancelled) setError(String(error));
+    } finally {
+      if (editorExit.current === ticket) {
+        editorExit.current = null;
+        setExitPage(undefined);
+      }
+      ticket.motion?.cancel();
+    }
+  }
+  exitHandler.current = exitToWorkspace;
   const displayed = useRef({
     time: 0,
     revision: null as string | null,
@@ -565,6 +794,16 @@ function App() {
     };
   }, []);
   useEffect(() => {
+    if (!editorVisible) {
+      request.current?.invalidate();
+      request.current = null;
+      engine.current?.dispose();
+      engine.current = null;
+      stage.current?.replaceChildren();
+      clock.current.ready = false;
+      setReady(false);
+      return;
+    }
     if (!state || state.error) return;
     const n = ++generation.current;
     const s = state.scene;
@@ -687,6 +926,7 @@ function App() {
       disposed = true;
     };
   }, [
+    editorVisible,
     state?.scene.id,
     state?.codeRevision,
     state?.dependencyRevision,
@@ -780,8 +1020,29 @@ function App() {
   useEffect(
     () =>
       onRequest(async (c) => {
+        const openingEntry = c.type === "open" ? editorEntry.current : null;
         try {
           if (c.type === "open") {
+            // An external open can arrive while the hash is already #editor,
+            // so it must cancel a pending return without relying on hashchange.
+            if (editorExit.current) {
+              editorExit.current.cancelled = true;
+              editorExit.current.motion?.cancel();
+              editorExit.current = null;
+              setExitPage(undefined);
+            }
+            if (cancelledWorkspaceOpen.current === c.sceneId) {
+              cancelledWorkspaceOpen.current = null;
+              throw new Error("Opening composition was cancelled.");
+            }
+            if (
+              editorEntry.current?.cancelled &&
+              editorEntry.current.sceneId === c.sceneId
+            )
+              throw new Error("Opening composition was cancelled.");
+            if (openingEntry && openingEntry.sceneId === c.sceneId)
+              openingEntry.requestReceived = true;
+            location.hash = "editor";
             await flushControlEdits();
             lensDraft.clear();
             clock.current.pause();
@@ -798,13 +1059,33 @@ function App() {
               type: "state",
               sceneId: c.sceneId,
             });
+            if (openingEntry?.cancelled)
+              throw new Error("Opening composition was cancelled.");
             current.current = next;
-            setState(next);
+            flushSync(() => {
+              setState(next);
+              setPage("editor");
+            });
+            if (
+              openingEntry &&
+              openingEntry.sceneId === c.sceneId &&
+              !openingEntry.cancelled
+            ) {
+              // Start the spatial move as soon as the destination layout is
+              // known; its copied pixels can cover slower source preparation.
+              await new Promise<void>((resolve) =>
+                requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+              );
+              if (!openingEntry.cancelled)
+                openingEntry.animation = openingEntry.motion.play();
+            }
           }
           if (c.type === "select_track") selectTrack(c.trackId ?? undefined);
           if (c.type === "wait_for_frame" || c.type === "open") {
             const deadline = performance.now() + (c.timeoutMs ?? 15000);
             while (true) {
+              if (openingEntry?.cancelled)
+                throw new Error("Opening composition was cancelled.");
               const currentState = current.current;
               if (currentState?.error) throw new Error(currentState.error);
               if (c.revision && currentState?.revision !== c.revision) {
@@ -965,7 +1246,7 @@ function App() {
     };
   }, [state?.scene.size.width, state?.scene.size.height]);
   useEffect(() => {
-    if (home) return;
+    if (!editorVisible) return;
     const key = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.isComposing) return;
       const target = e.target as HTMLElement;
@@ -1019,7 +1300,7 @@ function App() {
       unbindTransport();
       window.removeEventListener("keydown", key);
     };
-  }, [home]);
+  }, [editorVisible]);
   async function render() {
     setExporting(true);
     try {
@@ -1045,6 +1326,7 @@ function App() {
     ) || [];
   return (
     <div
+      ref={appRoot}
       className={
         new URLSearchParams(location.search).has("desktop")
           ? "app desktop"
@@ -1053,9 +1335,9 @@ function App() {
     >
       <div
         className="editor-shell"
-        inert={home}
-        aria-hidden={home}
-        style={{ visibility: home ? "hidden" : undefined }}
+        inert={!editorVisible || Boolean(entryPage) || Boolean(exitPage)}
+        aria-hidden={!editorVisible || Boolean(entryPage) || Boolean(exitPage)}
+        style={{ visibility: !editorVisible ? "hidden" : undefined }}
       >
         <EditorPanels
           left={{ ref: leftPanel, open: leftOpen, onOpen: setLeftOpen }}
@@ -1109,11 +1391,9 @@ function App() {
               <header className="titlebar">
                 <div className="header-view-controls">
                   <Button
-                    icon="home"
-                    label="Home"
-                    onClick={() => {
-                      location.hash = "home";
-                    }}
+                    icon="arrowLeft"
+                    label="Back to project"
+                    onClick={() => void exitToWorkspace(workspaceTab.current)}
                   />
                   <Button
                     icon="sidebarLeft"
@@ -1222,6 +1502,7 @@ function App() {
                 <div className="canvas-area">
                   <div
                     className="canvas-frame"
+                    tabIndex={-1}
                     style={{
                       aspectRatio: s
                         ? `${s.size.width}/${s.size.height}`
@@ -1460,11 +1741,24 @@ function App() {
           }
         />
       </div>
+      {!home && (
+        <ProjectWorkspace
+          project={state?.project}
+          tab={exitPage ?? entryPage ?? workspaceTab.current}
+          leaving={!workspace || Boolean(entryPage) || Boolean(exitPage)}
+          hidden={!workspace && !entryPage && !exitPage}
+          returning={Boolean(exitPage)}
+          returnSceneId={returnSceneId.current}
+          onTab={(next) => { location.hash = next; }}
+          onHome={() => { location.hash = "home"; }}
+          onOpen={openFromWorkspace}
+        />
+      )}
       {home && (
         <ProjectHome
           current={state?.project}
           onReturn={() => {
-            location.hash = "";
+            location.hash = "playground";
             requestAnimationFrame(() =>
               document
                 .querySelector<HTMLButtonElement>('button[aria-label="Home"]')

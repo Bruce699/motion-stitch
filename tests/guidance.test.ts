@@ -17,7 +17,10 @@ test("installed guidance is byte-identical to source, follows linked guides and 
   await exec(process.execPath, ["scripts/build-guidance.mjs", path.join(runtime, "guidance.json")]);
   const library = new GuidanceLibrary(runtime);
   const catalogue = await library.catalogue();
-  assert.equal(catalogue.skills.length, 7);
+  assert.deepEqual(catalogue.skills.map(skill => skill.name).sort(), [
+    "custom-rendering", "import-web-ui", "live-annotation", "motion-design",
+    "parameter-controls", "scene-authoring", "ui-layers", "workspace-context",
+  ]);
   const skill = catalogue.skills.find(s => s.name === "motion-design")!;
   assert.ok(skill.description.includes("choreography"));
   assert.equal(skill.files.filter(f => f.includes("/guides/")).length, 6);
