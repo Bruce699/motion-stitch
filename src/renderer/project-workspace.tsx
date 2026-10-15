@@ -54,6 +54,7 @@ import { SelectControl } from "./vendor/dialkit/components/SelectControl";
 import { SegmentedControl } from "./vendor/dialkit/components/SegmentedControl";
 import { compositionTags } from "./workspace-navigation";
 import { Icon } from "./icons";
+import { toggleTheme, useTheme } from "./theme";
 import { usePlaygroundZoom } from "./playground-zoom";
 import { playgroundPreviewNeighbors } from "../core/playground-preview";
 import {
@@ -61,6 +62,7 @@ import {
   type HoverPreviewLayout,
 } from "../core/hover-preview-layout";
 import { CanvasHoverPreview } from "./canvas-hover-preview";
+import { PreviewGrid } from "./preview-grid";
 import {
   captureEditorEntry,
   type EditorEntryOrigin,
@@ -124,6 +126,7 @@ export function ProjectWorkspace({
   returning?: boolean;
   returnSceneId?: string;
 }) {
+  const theme = useTheme();
   const leavingRef = useRef(leaving);
   leavingRef.current = leaving;
   const opening = useRef(false);
@@ -1021,7 +1024,18 @@ export function ProjectWorkspace({
             onChange={onTab}
           />
         </div>
-        <div className="workspace-toolbar-end" />
+        <div className="workspace-toolbar-end">
+          <button
+            type="button"
+            className="ui-button icon-button"
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            data-transport-keys="ignore"
+            onClick={toggleTheme}
+          >
+            <Icon name={theme === "dark" ? "sun" : "moon"} size={18} />
+          </button>
+        </div>
       </header>
       {error && (
         <div className="workspace-error" role="alert">
@@ -1169,8 +1183,6 @@ export function ProjectWorkspace({
                 selected={selected}
                 autoplay={autoplay}
                 playKey={playKey}
-                columnGap={ui.previewColumnGap}
-                rowGap={ui.previewRowGap}
                 suspended={leaving}
                 onOpen={(id, source) => void open(id, source)}
                 onPresentedFrame={setPresentedFrame}
@@ -1577,8 +1589,6 @@ function PreviewDeck({
   selected,
   autoplay,
   playKey,
-  columnGap,
-  rowGap,
   onOpen,
   onPresentedFrame,
   catalogKey,
@@ -1589,8 +1599,6 @@ function PreviewDeck({
   selected: string[];
   autoplay: boolean;
   playKey: number;
-  columnGap: number;
-  rowGap: number;
   onOpen: (id: string, source: HTMLElement) => void;
   onPresentedFrame: (frame: PresentedFrame) => void;
   catalogKey: string;
@@ -1600,8 +1608,6 @@ function PreviewDeck({
   suspendedRef.current = suspended;
   const handles = useRef(new Map<string, CompositionPreviewHandle>());
   const warmQueue = useRef<Promise<void>>(Promise.resolve());
-  const grid = useRef<HTMLDivElement>(null);
-  const [gridWidth, setGridWidth] = useState<number>();
   const aspect = Math.max(
     1,
     ...selected.map((id) => {
@@ -1609,37 +1615,6 @@ function PreviewDeck({
       return scene ? scene.size.width / scene.size.height : 16 / 9;
     }),
   );
-  useEffect(() => {
-    const element = grid.current;
-    if (!element) return;
-    const fit = () => {
-      const rows = selected.length > 2 ? 2 : 1;
-      const columns = selected.length > 1 ? 2 : 1;
-      const styles = getComputedStyle(element);
-      const paddingY =
-        parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
-      const paddingX =
-        parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
-      const effectiveRowGap = parseFloat(styles.rowGap);
-      const effectiveColumnGap = parseFloat(styles.columnGap);
-      const height = Math.max(
-        0,
-        (element.getBoundingClientRect().height -
-          paddingY -
-          (rows - 1) * effectiveRowGap) /
-          rows,
-      );
-      setGridWidth(
-        height * aspect * columns +
-          (columns - 1) * effectiveColumnGap +
-          paddingX,
-      );
-    };
-    const observer = new ResizeObserver(fit);
-    observer.observe(element);
-    fit();
-    return () => observer.disconnect();
-  }, [selected.length, aspect, columnGap, rowGap]);
   const [speed, setSpeed] = useState("1");
   const speedRef = useRef(1);
   const [playing, setPlaying] = useState(autoplay);
@@ -1809,55 +1784,52 @@ function PreviewDeck({
       }}
       tabIndex={0}
     >
-      <div
-        ref={grid}
-        className={`preview-grid count-${selected.length}`}
-        style={{ maxWidth: selected.length ? gridWidth : undefined }}
-      >
-        {selected.map((id) => {
-          const sample = samplePlaygroundChain(workspace, scenes, id, time);
-          const scene = scenes.find(
-            (scene) => scene.id === (sample?.sceneId ?? id),
-          );
-          return (
-            <div className="preview-cell" key={id}>
-              <div className="preview-picture" data-preview-root={id}>
-                <CompositionPreview
-                  ref={(handle) => {
-                    if (handle) handles.current.set(id, handle);
-                    else handles.current.delete(id);
-                  }}
-                  sceneId={id}
-                  active
-                  suspended={suspended}
-                  revision={catalogKey}
-                />
-                <button
-                  className="preview-edit ui-button"
-                  onClick={(event) => {
-                    const source =
-                      event.currentTarget.closest<HTMLElement>(
-                        ".preview-picture",
-                      );
-                    if (source) onOpen(scene?.id ?? id, source);
-                  }}
-                  title="Open composition in editor"
-                >
-                  Open editor
-                  <Icon name="next" size={12} />
-                </button>
-              </div>
-            </div>
-          );
-        })}
-        {!selected.length && (
+      <PreviewGrid
+        ids={selected}
+        aspect={aspect}
+        empty={
           <div className="preview-empty">
             <Icon name="play" size={24} />
             <span>Select a clip to preview</span>
             <span>Shift-click to compare up to four</span>
           </div>
-        )}
-      </div>
+        }
+      >
+        {(id) => {
+          const sample = samplePlaygroundChain(workspace, scenes, id, time);
+          const scene = scenes.find(
+            (scene) => scene.id === (sample?.sceneId ?? id),
+          );
+          return (
+            <>
+              <CompositionPreview
+                ref={(handle) => {
+                  if (handle) handles.current.set(id, handle);
+                  else handles.current.delete(id);
+                }}
+                sceneId={id}
+                active
+                suspended={suspended}
+                revision={catalogKey}
+              />
+              <button
+                className="preview-edit ui-button"
+                onClick={(event) => {
+                  const source =
+                    event.currentTarget.closest<HTMLElement>(
+                      ".preview-picture",
+                    );
+                  if (source) onOpen(scene?.id ?? id, source);
+                }}
+                title="Open composition in editor"
+              >
+                Open editor
+                <Icon name="next" size={12} />
+              </button>
+            </>
+          );
+        }}
+      </PreviewGrid>
       <div className="preview-transport">
         <button
           className="ui-button icon-button preview-play"
@@ -2007,7 +1979,10 @@ function LibraryCard({
         }
       }}
     >
-      <div className="library-thumbnail">
+      <div
+        className="library-thumbnail"
+        style={{ aspectRatio: `${scene.size.width} / ${scene.size.height}` }}
+      >
         <CompositionPreview
           ref={preview}
           sceneId={scene.id}

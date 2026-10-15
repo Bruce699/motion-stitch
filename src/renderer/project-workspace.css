@@ -115,6 +115,7 @@
 }
 .preview-grid {
   --preview-rows: 1;
+  --preview-columns: 2;
   --preview-available-height: max(
     0px,
     calc(100cqh - var(--preview-transport-height, 56px))
@@ -137,24 +138,44 @@
         (var(--preview-rows) - 1) * var(--preview-effective-row-gap)
     )
   );
-  padding: min(
-      var(--preview-padding-top, 12px),
-      max(
-        calc(var(--preview-inset-budget) / 2),
-        calc(var(--preview-inset-budget) - var(--preview-padding-bottom, 12px))
-      )
+  --preview-effective-padding-top: min(
+    var(--preview-padding-top, 12px),
+    max(
+      calc(var(--preview-inset-budget) / 2),
+      calc(var(--preview-inset-budget) - var(--preview-padding-bottom, 12px))
     )
-    var(--preview-padding-x, 12px)
-    min(
-      var(--preview-padding-bottom, 12px),
-      max(
-        calc(var(--preview-inset-budget) / 2),
-        calc(var(--preview-inset-budget) - var(--preview-padding-top, 12px))
-      )
-    );
-  overflow: hidden;
+  );
+  --preview-effective-padding-bottom: min(
+    var(--preview-padding-bottom, 12px),
+    max(
+      calc(var(--preview-inset-budget) / 2),
+      calc(var(--preview-inset-budget) - var(--preview-padding-top, 12px))
+    )
+  );
+  --preview-frame-height: max(
+    0px,
+    calc(
+      (
+          var(--preview-available-height) -
+            var(--preview-effective-padding-top) -
+            var(--preview-effective-padding-bottom) -
+            (var(--preview-rows) - 1) * var(--preview-effective-row-gap)
+        ) /
+        var(--preview-rows)
+    )
+  );
+  /* Resolve the final fit in the selection's layout pass, before Motion
+     measures it. No delayed width update or per-frame layout resizing. */
+  max-width: calc(
+    var(--preview-frame-height) * var(--preview-aspect, 1.777777778) *
+      var(--preview-columns) + (var(--preview-columns) - 1) *
+      var(--preview-column-gap, 20px) + 2 * var(--preview-padding-x, 12px)
+  );
+  padding: var(--preview-effective-padding-top) var(--preview-padding-x, 12px)
+    var(--preview-effective-padding-bottom);
+  overflow: visible;
   align-self: center;
-  align-items: stretch;
+  align-items: center;
   justify-items: center;
   align-content: stretch;
 }
@@ -162,11 +183,18 @@
   min-width: 0;
   min-height: 0;
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: var(--preview-aspect, 1.777777778);
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
+}
+.preview-grid.count-0 {
+  max-width: none;
+}
+.preview-grid.count-1 {
+  --preview-columns: 1;
 }
 .preview-grid.count-1 .preview-cell {
   grid-column: 1/-1;
@@ -191,7 +219,19 @@
   align-items: center;
   overflow: hidden;
   border: 0;
-  border-radius: 4px;
+  border-radius: 2px;
+}
+.preview-picture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--preview-frame-stroke, #e8e8e8);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+}
+:root[data-theme="dark"] .preview-picture::after {
+  border: 0;
 }
 .preview-picture > .composition-preview {
   width: 100%;
@@ -327,19 +367,17 @@
   background: var(--preview-seek-thumb);
   cursor: ew-resize;
 }
-@media (prefers-color-scheme: dark) {
-  .preview-seek {
-    --preview-seek-thumb: color-mix(
-      in srgb,
-      var(--dial-text-primary) 65%,
-      var(--dial-glass-bg)
-    );
-    --preview-seek-track: color-mix(
-      in srgb,
-      var(--dial-text-primary) 25%,
-      var(--dial-glass-bg)
-    );
-  }
+:root[data-theme="dark"] .preview-seek {
+  --preview-seek-thumb: color-mix(
+    in srgb,
+    var(--dial-text-primary) 65%,
+    var(--dial-glass-bg)
+  );
+  --preview-seek-track: color-mix(
+    in srgb,
+    var(--dial-text-primary) 25%,
+    var(--dial-glass-bg)
+  );
 }
 .preview-seek input:focus-visible {
   outline: 2px solid var(--dial-focus-ring);
@@ -801,7 +839,6 @@
 }
 .library-thumbnail {
   position: relative;
-  aspect-ratio: 16/10;
   overflow: hidden;
   border-radius: 8px;
   background: var(--dial-glass-bg);

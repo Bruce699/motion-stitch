@@ -21,6 +21,15 @@ Auto computes `ceil(2 × max(outputWidth / layoutWidth, outputHeight / layoutHei
 
 Library posters use an isolated `thumbnail` preview profile with density 1 and a compact compositor. These are derived inspection images; they keep the same source CSS viewport and layer bounds. Their source sessions are separate from normal preview and export sessions, and their quality never changes `scene.capture` or `scene.size`. Active Playground and Library hover previews use a separate `playback` profile with density 1, compositor output up to 1280 × 800 and texture edges up to 1024px. This prioritizes smooth inspection and lowers preload transfer cost; the detailed editor and exports keep authored capture quality. Prepared neighboring clips retain their renderer and textures across cuts, bounded to three per preview.
 
+Native scenes that draw their own CanvasTextures receive the same budget through
+`frame.raster`: `width`/`height` give the profile's raster frame size, and optional
+`maxSurfaceSize` caps each texture. Use these only for canvas backing pixels;
+keep geometry, layout and camera math in `document.size` coordinates. The detailed
+editor and exports receive the authored size with no preview surface cap. Scenes
+may fall back to `document.size` when `raster` is absent. This metadata lets small
+previews avoid full-export texture uploads and blur work without changing saved
+quality, animation, or export pixels.
+
 The viewer's pan/zoom/orbit are not authored animation. Auto export uses the canvas-based density without inspection zoom. Settings show Preview and Export capture sizes separately whenever they differ. For an authored extreme close-up, choose a sufficient fixed density and inspect its tightest frame at the target output resolution. Auto does not analyze arbitrary animated mesh UVs, shader distortion or every point of a perspective camera move. It cannot promise unlimited magnification.
 
 A source capture is limited to 8192 pixels per edge, 32 megapixels and 8×. Density is reduced to the highest whole multiplier that fits, and the UI/context report **limit reached**. GPU texture limits are checked separately; unsupported sizes fail explicitly instead of silently shrinking. Higher density increases paint, PNG transfer and GPU memory costs approximately with the square of the multiplier. Many large extracted regions or sources can still exhaust memory; these are per-source bounds, not a global VRAM reservation system.

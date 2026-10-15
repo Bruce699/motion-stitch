@@ -243,7 +243,7 @@ export function compositionDetails(
 ) {
   const title = details?.[scene.id]?.title ?? scene.name;
   const normalizedTitle = title.trim();
-  const separator = /\s+-\s+|[–—]/.exec(normalizedTitle);
+  const separator = /\s+[-/]\s+|[–—]/.exec(normalizedTitle);
   const sceneName = separator
     ? normalizedTitle.slice(0, separator.index).trim()
     : normalizedTitle;

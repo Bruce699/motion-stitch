@@ -1,6 +1,6 @@
 /* Selected resolved tokens from the supplied Codex style kit, build 26.908.70816.
    codex.css SHA-256: af4b37e7bda54b27ffc89d61ed524a5371296676850784765870013204d2dd61.
-   Device preference is the only theme authority. See docs/design-system.md. */
+   Device preference is the default; the workspace switch can override it. See docs/design-system.md. */
 :root {
   color-scheme: light;
   --codex-color-surface: #ffffff;
@@ -34,44 +34,42 @@
   --tilt-timeline-clip-overlay: rgba(0, 0, 0, 0.28);
   --tilt-timeline-child-tint: #ffffff;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --codex-color-surface: #141414;
-    --codex-color-surface-secondary: #141414;
-    --codex-color-surface-tertiary: rgb(40, 40, 40);
-    --codex-color-surface-elevated-secondary: rgb(45, 45, 45);
-    --codex-color-text: #dfdfdf;
-    --codex-color-text-secondary: color-mix(in srgb, #dfdfdf 65%, transparent);
-    --codex-color-text-tertiary: rgba(255, 255, 255, 0.498);
-    --codex-color-border: rgba(255, 255, 255, 0.084);
-    --codex-color-border-strong: rgba(255, 255, 255, 0.156);
-    --codex-color-ring: rgba(131, 195, 255, 0.76);
-    --codex-color-background-secondary-soft: rgba(255, 255, 255, 0.052);
-    --codex-color-background-secondary-soft-hover: rgba(255, 255, 255, 0.078);
-    --codex-color-background-secondary-soft-alpha-active: color-mix(
-      in oklab,
-      #dfdfdf 20%,
-      transparent
-    );
-    --codex-color-background-secondary-soft-alt: color-mix(
-      in oklab,
-      #dfdfdf 2%,
-      transparent
-    );
-    --codex-color-background-primary-solid: #dfdfdf;
-    --codex-color-background-primary-solid-hover: #ededed;
-    --codex-color-text-primary-solid: rgb(45, 45, 45);
-    --codex-color-text-danger: #ff6764;
-    --codex-shadow-md: 0px 2px 4px -1px #00000014;
-    --codex-shadow-xl: 0px 8px 16px -4px #0000001f;
-    --tilt-timeline-clip-overlay: transparent;
-    --tilt-timeline-child-tint: #000000;
-  }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --codex-color-surface: #141414;
+  --codex-color-surface-secondary: #141414;
+  --codex-color-surface-tertiary: rgb(40, 40, 40);
+  --codex-color-surface-elevated-secondary: rgb(45, 45, 45);
+  --codex-color-text: #dfdfdf;
+  --codex-color-text-secondary: color-mix(in srgb, #dfdfdf 65%, transparent);
+  --codex-color-text-tertiary: rgba(255, 255, 255, 0.498);
+  --codex-color-border: rgba(255, 255, 255, 0.084);
+  --codex-color-border-strong: rgba(255, 255, 255, 0.156);
+  --codex-color-ring: rgba(131, 195, 255, 0.76);
+  --codex-color-background-secondary-soft: rgba(255, 255, 255, 0.052);
+  --codex-color-background-secondary-soft-hover: rgba(255, 255, 255, 0.078);
+  --codex-color-background-secondary-soft-alpha-active: color-mix(
+    in oklab,
+    #dfdfdf 20%,
+    transparent
+  );
+  --codex-color-background-secondary-soft-alt: color-mix(
+    in oklab,
+    #dfdfdf 2%,
+    transparent
+  );
+  --codex-color-background-primary-solid: #dfdfdf;
+  --codex-color-background-primary-solid-hover: #ededed;
+  --codex-color-text-primary-solid: rgb(45, 45, 45);
+  --codex-color-text-danger: #ff6764;
+  --codex-shadow-md: 0px 2px 4px -1px #00000014;
+  --codex-shadow-xl: 0px 8px 16px -4px #0000001f;
+  --tilt-timeline-clip-overlay: transparent;
+  --tilt-timeline-child-tint: #000000;
 }
 
 /* The existing controls and body-level portals share this semantic mapping.
-   Explicit legacy data-theme attributes cannot override the device palette. */
+   Both device and explicit themes resolve through the root palette. */
 .dialkit-root,
 .dialkit-root[data-theme] {
   --dial-surface: var(--codex-color-background-secondary-soft);

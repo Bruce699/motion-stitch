@@ -46,6 +46,11 @@ import { defaultInspection, type TimelineContext } from "../core/context";
 import { bindNavigation } from "./navigation";
 import { cameraNavigation, cameraNavigationPatch } from "./camera-navigation";
 import { CameraGizmo } from "./camera-gizmo";
+import {
+  canvasViewChoices,
+  selectedCanvasView,
+  type CanvasViewChoice,
+} from "./canvas-views";
 import { usePanelRef } from "react-resizable-panels";
 import { ProjectHome } from "./project-home";
 import { ProjectWorkspace } from "./project-workspace";
@@ -701,6 +706,13 @@ function App() {
     interacted.current = true;
     void publish();
   }
+  function changeCanvasView(choice: CanvasViewChoice) {
+    if (choice.cameraId)
+      void chooseCamera(choice.cameraId)
+        .then(() => changeMode("camera"))
+        .catch((error) => setError(String(error)));
+    else changeMode(choice.mode);
+  }
   function fit() {
     view.current.inspection = defaultInspection();
     applyView();
@@ -1274,8 +1286,12 @@ function App() {
           "input,textarea,select,[role='dialog'],[role='combobox']",
         )
       ) {
+        const choice = canvasViewChoices(current.current?.scene).find(
+          (entry) => entry.shortcut === e.key,
+        );
+        if (!choice) return;
         e.preventDefault();
-        changeMode(e.key === "1" ? "source" : "camera");
+        changeCanvasView(choice);
         return;
       }
       if (
@@ -1319,6 +1335,7 @@ function App() {
   }
   const s = state?.scene;
   const viewedCamera = s && viewing(s).camera;
+  const canvasViews = canvasViewChoices(s);
   const selectedClip = s?.clips?.find((clip) => clip.id === selectedTrackId);
   const activeJobs =
     state?.jobs.filter((j) =>
@@ -1526,19 +1543,30 @@ function App() {
                     )}
                   </div>
                 </div>
-                <div className="viewer-mode-toggle" title="2D (1) · Camera (2)">
+                <div
+                  className="viewer-mode-toggle"
+                  title={canvasViews
+                    .map((choice) =>
+                      choice.shortcut
+                        ? `${choice.label} (${choice.shortcut})`
+                        : choice.label,
+                    )
+                    .join(" · ")}
+                >
                   <SegmentedControl
                     label="Canvas view"
-                    value={mode}
-                    options={
-                      s?.sources.length === 0
-                        ? [{ value: "camera", label: "Camera" }]
-                        : [
-                            { value: "source", label: "2D" },
-                            { value: "camera", label: "Camera" },
-                          ]
-                    }
-                    onChange={(next) => changeMode(next)}
+                    value={selectedCanvasView(
+                      canvasViews,
+                      mode,
+                      selectedCameraId(s),
+                    )}
+                    options={canvasViews}
+                    onChange={(next) => {
+                      const choice = canvasViews.find(
+                        (entry) => entry.value === next,
+                      );
+                      if (choice) changeCanvasView(choice);
+                    }}
                   />
                 </div>
               </main>

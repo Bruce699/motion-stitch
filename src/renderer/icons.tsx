@@ -24,6 +24,8 @@ const glyphs = {
   search: "search-01",
   grid: "grid-view",
   square: "square",
+  sun: "sun-01",
+  moon: "moon-02",
 } as const;
 export type IconName = keyof typeof glyphs;
 

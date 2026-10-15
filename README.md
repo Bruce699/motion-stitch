@@ -1,4 +1,8 @@
-# Tilt
+# Motion Stitch
+
+Motion Stitch is this repository's version of [Tilt](https://github.com/jaytel0/tilt), with a freeform Playground for arranging and connecting compositions, a preview Library, and a detailed motion editor. The app and its commands still use the Tilt name.
+
+**Start here: [How to use Motion Stitch](docs/USAGE.md)** — installation, projects, previewing clips, snapping, editing, and video export.
 
 Tilt is an agent-first motion workspace built around **projects and compositions**. A project scopes the source files, assets and compositions to a local folder, usually a Git repository. A composition produces an image over time from real interfaces, executable animation code and other compositions. A final edit is another composition: place references on its timeline, trim or split them, choose a camera and override exposed controls independently. Editing the original updates its uses.
 
@@ -12,9 +16,9 @@ Tilt currently runs locally. The Electron runtime manages project files, browser
 # macOS prerequisites (using Homebrew)
 brew install node@24 ffmpeg
 
-# Clone the private repo with an account that has access
-git clone https://github.com/jaytel0/tilt.git
-cd tilt
+# Clone the public repository
+git clone https://github.com/Bruce699/motion-stitch.git
+cd motion-stitch
 npm ci
 
 # Build and launch the desktop Electron app on a local port
@@ -58,7 +62,7 @@ npm start
 
 This configures the local `https://tilt.video` address using Portless. Setup requires administrator approval for its local HTTPS proxy, certificate and hosts mapping; it does not publish a website or change public DNS. Stop an existing direct-port runtime before switching to this mode. Use `npm run remove:url` to remove the shared local service. The direct-port commands above need none of this setup.
 
-Drag in either Perspective or Orthographic camera view to orbit. Shift-drag, right-drag or middle-drag pans; scroll or trackpad pinch zooms. In Isometric or 2D, dragging pans. **Fit** or **F** resets inspection. Inspection does not alter the authored camera or exported video. Space plays/pauses; arrows step frames. The timeline combines playback and one time readout with its ruler. Drag to scrub; pinch or Option/Alt-wheel to zoom around the pointer; scroll sideways to pan. Double-click the ruler to fit the scene. With the ruler focused, +/− zoom and 0 fits. Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. New scenes default to 60 fps; the available rates are 30 and 60 fps. The right panel contains parameter controls and the shared camera controls. Render writes an MP4 to `exports/`.
+In Camera view, drag to orbit; Shift-drag, right-drag or middle-drag pans, and scroll or trackpad pinch zooms. These gestures save the selected camera pose and affect its rendered output; use Undo to reverse them. In 2D, dragging pans and zooming only changes inspection. **Fit** or **F** fits the viewer. See the [usage guide](docs/USAGE.md#viewer-and-camera) for camera and output selection. Space plays/pauses; arrows step frames. The timeline combines playback and one time readout with its ruler. Drag to scrub; pinch or Option/Alt-wheel to zoom around the pointer; scroll sideways to pan. Double-click the ruler to fit the scene. With the ruler focused, +/− zoom and 0 fits. Controls save to the scene file; a slider drag becomes one undo step. Undo/Redo (Cmd/Ctrl-Z and Shift-Z) include settings, code and local assets, and survive restarting. Double-click the title to rename the scene (Enter/F2 also works). The adjacent settings button opens duration, frame rate and background. New scenes default to 60 fps; the available rates are 30 and 60 fps. The right panel contains parameter controls and the shared camera controls. Render writes an MP4 to `exports/`.
 
 ## Composition files
 
@@ -85,13 +89,13 @@ This works at the rendered DOM boundary, so it does not depend on React or anoth
 
 ## Camera
 
-Choose **Perspective** or **Orthographic** in the Camera parameter group. Orthographic offers exact Front, 15°, 30° and 45° stops, left/right orientation, and saved Rotation and Elevation controls. The degree labels describe projected edge angles; 30° is true isometric. Alignment follows the actual UI plane through its parent transforms, so lifting layers in Z preserves parallel edges. The selection saves in `scene.json.camera`, participates in Undo/Redo, and applies to exports. Pan and zoom remain viewer inspection. Layered sources register their frame automatically; custom scenes can use the same [camera contract](docs/camera.md).
+Choose **Perspective** or **Orthographic** in the Camera parameter group. Orthographic offers exact Front, 15°, 30° and 45° stops, left/right orientation, and saved Rotation and Elevation controls. The degree labels describe projected edge angles; 30° is true isometric. Alignment follows the actual UI plane through its parent transforms, so lifting layers in Z preserves parallel edges. The selection saves in `scene.json.camera`, participates in Undo/Redo, and applies to exports. Camera-view navigation saves the selected camera pose; 2D pan and zoom remain viewer inspection. Layered sources register their frame automatically; custom scenes can use the same [camera contract](docs/camera.md).
 
 ## Parameter controls
 
 The sidebar is generated from `scene.json.parameters`. The shared vocabulary supports Dial Kit sliders/numbers, colors, toggles, dropdowns, segmented choices, XY pads, text and XYZ vectors, with optional groups and units. An agent can expose an input for a bespoke shader or transform by adding a declaration and reading it in `sample` through `controls.number/color/boolean/select/vector3/pad/text(key)`. No editor component or effect-specific plugin is required. Values use the same validation, persistence, history and export path as other scene edits.
 
-The editor automatically follows the device's light or dark theme using the supplied Codex palette, with no theme toggle or stored override.
+The editor initially follows the device's light or dark theme using the supplied Codex palette. The sun/moon button at the top right of Playground and Library switches the appearance and remembers your choice locally. This changes the workspace only; source scenes and exports retain their authored colors.
 
 The controls and timeline styling are a selective, MIT-licensed [local Dial Kit fork](src/renderer/vendor/dialkit/UPSTREAM.md), rather than a dependency on its stores or playback engine.
 

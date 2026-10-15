@@ -136,6 +136,53 @@ export function checkSurfaceDepthOfField() {
   fgMap.needsUpdate = true;
   capture("surface-updated");
   const updated = effect.cacheBuilds === built + 1;
+  // Animate source pixels at fixed resolution. The warm path must reuse GPU
+  // allocations while matching a cold pyramid and reconstructing backward time.
+  const gl = renderer.getContext();
+  const createTexture = gl.createTexture,
+    deleteTexture = gl.deleteTexture;
+  let animatedTextureAllocations = 0,
+    animatedTextureDisposals = 0;
+  gl.createTexture = function () {
+    animatedTextureAllocations++;
+    return createTexture.call(this);
+  };
+  gl.deleteTexture = function (texture) {
+    animatedTextureDisposals++;
+    deleteTexture.call(this, texture);
+  };
+  const drawAnimation = (frame: number) => {
+    fg.clearRect(0, 0, foreground.width, foreground.height);
+    fg.fillStyle = frame % 2 ? "#16834a" : "#e03030";
+    fg.fillText("Focus", 4 + frame * 3, 114);
+    fg.fillRect(frame * 4, 162, 160, 30);
+    fgMap.needsUpdate = true;
+  };
+  for (let i = 0; i < 12; i++) {
+    drawAnimation(i);
+    capture(`surface-animated-${i}`, 7);
+  }
+  drawAnimation(0);
+  capture("surface-animated-backward", 7);
+  gl.createTexture = createTexture;
+  gl.deleteTexture = deleteTexture;
+  const animatedBackward =
+    shots["surface-animated-0"] === shots["surface-animated-backward"];
+  const fresh = new SurfaceDepthOfField(renderer);
+  fresh.supports(world);
+  fresh.render(world, camera, 7, 1);
+  const animatedFreshMatch =
+    shots["surface-animated-backward"] === renderer.domElement.toDataURL();
+  fresh.dispose();
+  if (
+    animatedTextureAllocations ||
+    animatedTextureDisposals ||
+    !animatedBackward ||
+    !animatedFreshMatch
+  )
+    throw new Error(
+      `Animated surface cache failed: ${JSON.stringify({ animatedTextureAllocations, animatedTextureDisposals, animatedBackward, animatedFreshMatch })}`,
+    );
   // Different centers on tilted parallel planes must not invert the base/child order.
   group.rotation.y = 0.65;
   group.rotation.x = 0.5;
@@ -166,6 +213,10 @@ export function checkSurfaceDepthOfField() {
       reused,
       backward,
       updated,
+      animatedTextureAllocations,
+      animatedTextureDisposals,
+      animatedBackward,
+      animatedFreshMatch,
       remaining,
     },
   };

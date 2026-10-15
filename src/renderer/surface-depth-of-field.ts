@@ -3,9 +3,9 @@ import { FullScreenQuad } from "three/addons/postprocessing/Pass.js";
 
 const LEVELS = 8;
 const RGBA16F_BYTES = 8;
-/** The render targets use RGBA16f without depth or mipmaps. The scratch target
- * is resized between levels; each old pyramid survives until its replacement
- * finishes, so callers must also reserve the existing resident bytes.
+/** The render targets use RGBA16f without depth or mipmaps. Each level retains
+ * a same-size scratch target, shared across pyramids. This is the standalone
+ * allocation; estimateMemory deduplicates shared scratch and reserves resize peaks.
  */
 export function surfacePyramidMemory(width: number, height: number) {
   if (
@@ -18,17 +18,30 @@ export function surfacePyramidMemory(width: number, height: number) {
   const padding = Math.max(16, Math.ceil(Math.max(width, height) * 0.125));
   const paddedWidth = width + 2 * padding,
     paddedHeight = height + 2 * padding;
-  let residentBytes = 0,
-    buildPeakBytes = 0;
+  let outputBytes = 0;
+  const scratchSizes = new Map<string, number>();
   const sizes = Array.from({ length: LEVELS }, (_, i) => {
     const width = Math.max(1, Math.ceil(paddedWidth / 2 ** (i + 1)));
     const height = Math.max(1, Math.ceil(paddedHeight / 2 ** (i + 1)));
     const bytes = width * height * RGBA16F_BYTES;
-    residentBytes += bytes;
-    buildPeakBytes = Math.max(buildPeakBytes, residentBytes + bytes);
+    outputBytes += bytes;
+    scratchSizes.set(`${width}x${height}`, bytes);
     return { width, height };
   });
-  return { residentBytes, buildPeakBytes, paddedWidth, paddedHeight, sizes };
+  const scratchBytes = [...scratchSizes.values()].reduce(
+    (sum, bytes) => sum + bytes,
+    0,
+  );
+  const residentBytes = outputBytes + scratchBytes;
+  return {
+    outputBytes,
+    scratchBytes,
+    residentBytes,
+    buildPeakBytes: residentBytes,
+    paddedWidth,
+    paddedHeight,
+    sizes,
+  };
 }
 type Surface = THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
 type Pyramid = {
@@ -46,6 +59,10 @@ const vertex = `varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy
  */
 export class SurfaceDepthOfField {
   private readonly pyramids = new Map<THREE.Texture, Pyramid>();
+  private readonly scratch = new Map<
+    string,
+    { target: THREE.WebGLRenderTarget; references: number }
+  >();
   private readonly materials = new Map<
     Surface,
     {
@@ -95,7 +112,51 @@ void main(){gl_FragColor=at(vUv)*.2270270270+(at(vUv+direction*1.3846153846)+at(
     for (const pyramid of this.pyramids.values())
       for (const target of pyramid.targets)
         bytes += target.width * target.height * RGBA16F_BYTES;
+    for (const { target } of this.scratch.values())
+      bytes += target.width * target.height * RGBA16F_BYTES;
     return bytes;
+  }
+
+  private sameSize(
+    pyramid: Pyramid,
+    sizes: { width: number; height: number }[],
+  ) {
+    return pyramid.targets.every(
+      (target, i) =>
+        target.width === sizes[i].width && target.height === sizes[i].height,
+    );
+  }
+
+  private scratchKey(width: number, height: number) {
+    return `${width}x${height}`;
+  }
+
+  private retainScratch(width: number, height: number) {
+    const key = this.scratchKey(width, height);
+    let entry = this.scratch.get(key);
+    if (!entry) {
+      entry = {
+        target: new THREE.WebGLRenderTarget(width, height, {
+          type: THREE.HalfFloatType,
+          depthBuffer: false,
+        }),
+        references: 0,
+      };
+      this.scratch.set(key, entry);
+    }
+    entry.references++;
+  }
+
+  private releaseTargets(targets: THREE.WebGLRenderTarget[]) {
+    for (const target of targets) {
+      target.dispose();
+      const key = this.scratchKey(target.width, target.height);
+      const scratch = this.scratch.get(key)!;
+      if (--scratch.references === 0) {
+        scratch.target.dispose();
+        this.scratch.delete(key);
+      }
+    }
   }
 
   /** Call supports(world) first, just as render does. No GPU allocation occurs.
@@ -104,7 +165,17 @@ void main(){gl_FragColor=at(vUv)*.2270270270+(at(vUv+direction*1.3846153846)+at(
    */
   estimateMemory() {
     const residentBytes = this.residentBytes;
-    const changes: { delta: number; buildPeak: number }[] = [];
+    const changes: { delta: number; outputBytes: number }[] = [];
+    const scratchReferences = new Map(
+      [...this.scratch].map(([key, entry]) => [
+        key,
+        {
+          references: entry.references,
+          bytes: entry.target.width * entry.target.height * RGBA16F_BYTES,
+        },
+      ]),
+    );
+    let addedScratchBytes = 0;
     const seen = new Set<THREE.Texture>();
     for (const mesh of this.surfaces) {
       const texture = mesh.material.map!;
@@ -120,6 +191,7 @@ void main(){gl_FragColor=at(vUv)*.2270270270+(at(vUv+direction*1.3846153846)+at(
       const image = texture.image as
         { width: number; height: number } | undefined;
       const next = surfacePyramidMemory(image?.width ?? 0, image?.height ?? 0);
+      if (previous && this.sameSize(previous, next.sizes)) continue;
       const old =
         previous?.targets.reduce(
           (bytes, target) =>
@@ -127,22 +199,49 @@ void main(){gl_FragColor=at(vUv)*.2270270270+(at(vUv+direction*1.3846153846)+at(
           0,
         ) ?? 0;
       changes.push({
-        delta: next.residentBytes - old,
-        buildPeak: next.buildPeakBytes,
+        delta: next.outputBytes - old,
+        outputBytes: next.outputBytes,
       });
+      for (const target of previous?.targets ?? [])
+        scratchReferences.get(this.scratchKey(target.width, target.height))!
+          .references--;
+      for (const size of next.sizes) {
+        const key = this.scratchKey(size.width, size.height);
+        let entry = scratchReferences.get(key);
+        if (!entry) {
+          entry = {
+            references: 0,
+            bytes: size.width * size.height * RGBA16F_BYTES,
+          };
+          scratchReferences.set(key, entry);
+          addedScratchBytes += entry.bytes;
+        }
+        entry.references++;
+      }
     }
     const growth = changes.reduce(
       (sum, change) => sum + Math.max(0, change.delta),
       0,
     );
+    const releasedScratchBytes = [...scratchReferences.values()].reduce(
+      (sum, entry) => sum + (entry.references === 0 ? entry.bytes : 0),
+      0,
+    );
     const nextResidentBytes =
-      residentBytes + changes.reduce((sum, change) => sum + change.delta, 0);
+      residentBytes +
+      changes.reduce((sum, change) => sum + change.delta, 0) +
+      addedScratchBytes -
+      releasedScratchBytes;
     const peakBytes = Math.max(
       residentBytes,
       nextResidentBytes,
       ...changes.map(
         (change) =>
-          residentBytes + growth - Math.max(0, change.delta) + change.buildPeak,
+          residentBytes +
+          growth -
+          Math.max(0, change.delta) +
+          change.outputBytes +
+          addedScratchBytes,
       ),
     );
     return { residentBytes, nextResidentBytes, peakBytes };
@@ -189,7 +288,9 @@ void main(){gl_FragColor=at(vUv)*.2270270270+(at(vUv+direction*1.3846153846)+at(
       }
       this.surfaces.push(mesh);
     });
-    return supported && this.surfaces.length > 0;
+    // An empty/hidden surface scene needs only its clear/background render.
+    // Keep its warm cache instead of allocating the general full-frame effect.
+    return supported;
   }
 
   private pyramid(texture: THREE.Texture): Pyramid {
@@ -210,11 +311,10 @@ void main(){gl_FragColor=at(vUv)*.2270270270+(at(vUv+direction*1.3846153846)+at(
       width / image.width,
       height / image.height,
     );
-    const targets: THREE.WebGLRenderTarget[] = [];
-    const scratch = new THREE.WebGLRenderTarget(1, 1, {
-      type: THREE.HalfFloatType,
-      depthBuffer: false,
-    });
+    // Pixel changes refill existing allocations. Resizes keep the old pyramid
+    // intact until its replacement succeeds, including shared scratch ownership.
+    const reuse = previous && this.sameSize(previous, layout.sizes);
+    const targets: THREE.WebGLRenderTarget[] = reuse ? previous.targets : [];
     const renderer = this.renderer,
       oldTarget = renderer.getRenderTarget(),
       autoClear = renderer.autoClear;
@@ -223,12 +323,16 @@ void main(){gl_FragColor=at(vUv)*.2270270270+(at(vUv+direction*1.3846153846)+at(
       let source = texture;
       for (let i = 0; i < LEVELS; i++) {
         const { width: w, height: h } = layout.sizes[i];
-        const target = new THREE.WebGLRenderTarget(w, h, {
-          type: THREE.HalfFloatType,
-          depthBuffer: false,
-        });
-        targets.push(target);
-        scratch.setSize(w, h);
+        if (!reuse) {
+          const target = new THREE.WebGLRenderTarget(w, h, {
+            type: THREE.HalfFloatType,
+            depthBuffer: false,
+          });
+          this.retainScratch(w, h);
+          targets.push(target);
+        }
+        const target = targets[i];
+        const scratch = this.scratch.get(this.scratchKey(w, h))!.target;
         this.filter.uniforms.initial.value = i === 0;
         this.filter.uniforms.expansion.value.copy(expansion);
         this.filter.uniforms.source.value = source;
@@ -243,14 +347,13 @@ void main(){gl_FragColor=at(vUv)*.2270270270+(at(vUv+direction*1.3846153846)+at(
         source = target.texture;
       }
     } catch (error) {
-      targets.forEach((t) => t.dispose());
+      if (!reuse) this.releaseTargets(targets);
       throw error;
     } finally {
       renderer.setRenderTarget(oldTarget);
       renderer.autoClear = autoClear;
-      scratch.dispose();
     }
-    previous?.targets.forEach((target) => target.dispose());
+    if (previous && !reuse) this.releaseTargets(previous.targets);
     const result = {
       targets,
       expansion,
@@ -408,7 +511,7 @@ diffuseColor*=vec4(tiltColor.a>0.00001?tiltColor.rgb/tiltColor.a:vec3(0.),tiltCo
   }
   dispose() {
     for (const pyramid of this.pyramids.values())
-      pyramid.targets.forEach((t) => t.dispose());
+      this.releaseTargets(pyramid.targets);
     this.pyramids.clear();
     for (const entry of this.materials.values()) entry.material.dispose();
     this.materials.clear();

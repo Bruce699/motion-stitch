@@ -293,6 +293,10 @@ export class SceneEngine {
       world: this.world,
       camera: this.camera,
       registerCameraFrame: (id, object) => {
+        if (id === null) {
+          this.referenceFrame = object;
+          return;
+        }
         if (!this.document.sources.some((source) => source.id === id))
           throw new Error(`Unknown camera source ${id}`);
         this.cameraFrames.set(id, object);
@@ -458,6 +462,12 @@ export class SceneEngine {
         parameters: values(document),
         controls: parameterReader(document.parameters),
         document,
+        raster: {
+          ...fitPreviewSize(document.size, this.previewOptions?.maxSize),
+          ...(this.previewOptions?.maxSurfaceSize
+            ? { maxSurfaceSize: this.previewOptions.maxSurfaceSize }
+            : {}),
+        },
       });
       if (this.disposed || !present()) return;
       this.resources.budgetBytes = this.remainingBudget();

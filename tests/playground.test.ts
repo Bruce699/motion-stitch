@@ -63,11 +63,11 @@ test("reset lines distinct scenes up horizontally with their displayed widths an
     document.tiles.map(({ x, y, nextId }) => [x, y, nextId]),
     [
       [40, 40, null],
-      [312, 40, null],
-      [734, 40, null],
+      [344, 40, null],
+      [798, 40, null],
     ],
   );
-  assert.deepEqual(bounds, { x: 40, y: 40, width: 934, height: 48 });
+  assert.deepEqual(bounds, { x: 40, y: 40, width: 998, height: 48 });
   assert.equal(document.canvasHeight, 480);
   for (const key of ["ui", "compositions", "tags", "marks"] as const)
     assert.deepEqual(document[key], original[key]);
@@ -75,7 +75,7 @@ test("reset lines distinct scenes up horizontally with their displayed widths an
   assert.deepEqual(PlaygroundSchema.parse(document), document);
 });
 
-test("reset stacks named versions in catalog order and leaves room for the widest version", () => {
+test("reset stacks named versions in saved order and leaves room for the widest version", () => {
   const catalog = [
     { id: "hero-v3", name: "Hero final", duration: 5 },
     { id: "other", name: "Checkout", duration: 10 },
@@ -96,16 +96,77 @@ test("reset stacks named versions in catalog order and leaves room for the wides
     document.tiles.map(({ sceneId, x, y }) => [sceneId, x, y]),
     [
       ["hero-v3", 40, 40],
-      ["other", 472, 40],
+      ["other", 504, 40],
       ["hero-v1", 40, 100],
       ["hero-v2", 40, 160],
     ],
   );
-  assert.deepEqual(bounds, { x: 40, y: 40, width: 652, height: 164 });
+  assert.deepEqual(bounds, { x: 40, y: 40, width: 684, height: 164 });
   assert.deepEqual(resetPlaygroundLayout(document, catalog), {
     document,
     bounds,
   });
+});
+
+test("catalog refresh and reset preserve saved family and version order", () => {
+  const catalog = [
+    { id: "icons-tilt", name: "icon draw out — group tilt", duration: 11 },
+    { id: "reveal-fall", name: "ui reveal — fall", duration: 7 },
+    { id: "question", name: "question — typing", duration: 13 },
+    { id: "question-two", name: "question / two", duration: 8 },
+    { id: "icons", name: "icon draw out", duration: 8 },
+    { id: "icons-group", name: "icon draw out — group", duration: 11 },
+    { id: "reveal", name: "ui reveal", duration: 6 },
+  ];
+  const savedOrder = [
+    "question",
+    "question-two",
+    "icons",
+    "icons-group",
+    "icons-tilt",
+    "reveal",
+    "reveal-fall",
+  ];
+  const original = PlaygroundSchema.parse({
+    ...createPlayground(catalog),
+    ui: { clipWidthMode: "uniform", clipUniformWidth: 200, clipHeight: 32 },
+    tiles: savedOrder.map((sceneId, index) => ({
+      sceneId,
+      x: 500 - index * 40,
+      y: 100 + index * 100,
+      nextId: sceneId === "question" ? "reveal" : null,
+    })),
+  });
+  const before = structuredClone(original);
+  const expectedTiles = [
+    ["question", 40, 40, null],
+    ["question-two", 40, 88, null],
+    ["icons", 304, 40, null],
+    ["icons-group", 304, 88, null],
+    ["icons-tilt", 304, 136, null],
+    ["reveal", 568, 40, null],
+    ["reveal-fall", 568, 88, null],
+  ];
+
+  for (const refreshedCatalog of [catalog, [...catalog].reverse()]) {
+    const reconciled = reconcilePlayground(original, refreshedCatalog);
+    const reset = resetPlaygroundLayout(reconciled, refreshedCatalog);
+    assert.deepEqual(
+      reset.document.tiles.map(({ sceneId, x, y, nextId }) => [sceneId, x, y, nextId]),
+      expectedTiles,
+      "question stays first, icons second, and reveal third regardless of catalog order",
+    );
+    assert.deepEqual(reset.bounds, { x: 40, y: 40, width: 728, height: 128 });
+    assert.deepEqual(
+      resetPlaygroundLayout(
+        reconcilePlayground(reset.document, catalog),
+        catalog,
+      ),
+      reset,
+      "repeated refreshes and resets keep the same arrangement",
+    );
+  }
+  assert.deepEqual(original, before, "refresh and reset leave saved input intact");
 });
 
 test("reset disconnects every sequence before arranging standalone scene columns", () => {
@@ -130,13 +191,13 @@ test("reset disconnects every sequence before arranging standalone scene columns
     document.tiles.map(({ sceneId, x, y }) => [sceneId, x, y]),
     [
       ["b", 40, 40],
-      ["a", 292, 40],
-      ["c", 292, 88],
+      ["a", 324, 40],
+      ["c", 324, 88],
       ["d", 40, 88],
-      ["e", 604, 40],
+      ["e", 668, 40],
     ],
   );
-  assert.deepEqual(bounds, { x: 40, y: 40, width: 760, height: 80 });
+  assert.deepEqual(bounds, { x: 40, y: 40, width: 824, height: 80 });
   assert.ok(document.tiles.every((tile) => tile.nextId === null));
   assert.equal(
     original.tiles.find((tile) => tile.sceneId === "a")!.nextId,
@@ -173,12 +234,12 @@ test("reset groups Order named versions despite links crossing scene families", 
     document.tiles.map(({ sceneId, x, y, nextId }) => [sceneId, x, y, nextId]),
     [
       ["becoming", 40, 40, null],
-      ["demo", 352, 40, null],
+      ["demo", 384, 40, null],
       ["depth", 40, 88, null],
       ["small", 40, 136, null],
     ],
   );
-  assert.deepEqual(bounds, { x: 40, y: 40, width: 508, height: 128 });
+  assert.deepEqual(bounds, { x: 40, y: 40, width: 540, height: 128 });
   assert.deepEqual(document.compositions, original.compositions);
   assert.deepEqual(document.marks, original.marks);
 });
@@ -196,10 +257,10 @@ test("reset handles an empty canvas and retains tiles missing from a stale catal
     document.tiles.map(({ sceneId, x, y }) => [sceneId, x, y]),
     [
       ["a", 40, 40],
-      ["b", 252, 40],
+      ["b", 284, 40],
     ],
   );
-  assert.deepEqual(bounds, { x: 40, y: 40, width: 392, height: 32 });
+  assert.deepEqual(bounds, { x: 40, y: 40, width: 424, height: 32 });
   assert.ok(document.tiles.every((tile) => tile.nextId === null));
 });
 

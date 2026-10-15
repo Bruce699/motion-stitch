@@ -12,9 +12,17 @@ import {
 
 function renderer(width = 128, height = 64) {
   const size = new THREE.Vector2(width, height);
+  const targets = new Set<THREE.WebGLRenderTarget>();
+  const disposed = new Set<THREE.WebGLRenderTarget>();
+  let failAfter = Infinity;
   let target: THREE.WebGLRenderTarget | null = null;
   return {
     size,
+    targets,
+    disposed,
+    failAfter: (renders: number) => {
+      failAfter = renders;
+    },
     renderer: {
       capabilities: { maxSamples: 4 },
       autoClear: true,
@@ -22,8 +30,14 @@ function renderer(width = 128, height = 64) {
       getRenderTarget: () => target,
       setRenderTarget: (next: THREE.WebGLRenderTarget | null) => {
         target = next;
+        if (next && !targets.has(next)) {
+          targets.add(next);
+          next.addEventListener("dispose", () => disposed.add(next));
+        }
       },
-      render: () => {},
+      render: () => {
+        if (--failAfter === 0) throw new Error("GPU failure");
+      },
     } as unknown as THREE.WebGLRenderer,
   };
 }
@@ -51,10 +65,11 @@ test("surface pyramid estimates follow actual padded sizes and include scratch",
     { width: 1, height: 1 },
   ]);
   assert.equal(
-    memory.residentBytes,
+    memory.outputBytes,
     (3840 + 960 + 240 + 60 + 15 + 6 + 2 + 1) * 8,
   );
-  assert.equal(memory.buildPeakBytes, 3840 * 8 * 2);
+  assert.equal(memory.residentBytes, memory.outputBytes * 2);
+  assert.equal(memory.buildPeakBytes, memory.residentBytes);
   assert.throws(() => surfacePyramidMemory(0, 64), /dimensions/);
 });
 
@@ -103,18 +118,106 @@ test("surface estimates deduplicate textures, preserve cached allocations, and i
     next = surfacePyramidMemory(256, 128);
   assert.equal(
     replacement.peakBytes,
-    expected.residentBytes + next.buildPeakBytes,
+    expected.residentBytes + next.outputBytes + 160 * 96 * 8,
   );
   assert.equal(replacement.nextResidentBytes, next.residentBytes);
   effect.render(world, camera, 1, 0.5);
   assert.equal(effect.residentBytes, next.residentBytes);
   world.clear();
-  effect.supports(world);
+  assert.equal(
+    effect.supports(world),
+    true,
+    "Empty scenes do not need the general full-frame effect",
+  );
+  const builds = effect.cacheBuilds;
+  effect.render(world, camera, 1, 0.5);
+  assert.equal(effect.cacheBuilds, builds);
   assert.equal(
     effect.estimateMemory().residentBytes,
     next.residentBytes,
     "retained cache stays accounted even when invisible",
   );
+  effect.dispose();
+  assert.equal(effect.residentBytes, 0);
+});
+
+test("animated surface pixels reuse outputs and shared scratch without target churn", () => {
+  const fake = renderer();
+  const effect = new SurfaceDepthOfField(fake.renderer);
+  const world = new THREE.Scene(),
+    camera = new THREE.PerspectiveCamera();
+  const first = plane(128, 64),
+    second = plane(128, 64);
+  world.add(first, second);
+  effect.supports(world);
+  const memory = surfacePyramidMemory(128, 64);
+  assert.equal(effect.estimateMemory().peakBytes, memory.outputBytes * 3);
+  effect.render(world, camera, 1, 0.5);
+  assert.equal(
+    fake.targets.size,
+    24,
+    "Two output pyramids share eight scratch targets",
+  );
+  assert.equal(effect.residentBytes, memory.outputBytes * 3);
+  for (let i = 0; i < 20; i++) {
+    first.material.map!.needsUpdate = true;
+    // New same-size image objects use the same allocations too.
+    second.material.map!.image = { width: 128, height: 64 };
+    second.material.map!.needsUpdate = true;
+    assert.deepEqual(effect.estimateMemory(), {
+      residentBytes: memory.outputBytes * 3,
+      nextResidentBytes: memory.outputBytes * 3,
+      peakBytes: memory.outputBytes * 3,
+    });
+    effect.render(world, camera, 1, 0.5);
+  }
+  assert.equal(
+    effect.cacheBuilds,
+    42,
+    "Each pixel update must still rebuild the Gaussian levels",
+  );
+  assert.equal(fake.targets.size, 24);
+  assert.equal(fake.disposed.size, 0);
+  first.material.map!.image = { width: 256, height: 128 };
+  first.material.map!.needsUpdate = true;
+  const resize = effect.estimateMemory();
+  effect.render(world, camera, 1, 0.5);
+  assert.equal(effect.residentBytes, resize.nextResidentBytes);
+  assert.equal(
+    fake.disposed.size,
+    8,
+    "Resizing one surface must preserve shared scratch owned by the other",
+  );
+  effect.dispose();
+  assert.equal(fake.disposed.size, fake.targets.size);
+  assert.equal(effect.residentBytes, 0);
+});
+
+test("failed surface refreshes restore renderer state, retain the cache, and retry", () => {
+  const fake = renderer();
+  const effect = new SurfaceDepthOfField(fake.renderer);
+  const world = new THREE.Scene(),
+    camera = new THREE.PerspectiveCamera();
+  const mesh = plane(128, 64),
+    material = mesh.material;
+  world.add(mesh);
+  effect.supports(world);
+  effect.render(world, camera, 1, 0.5);
+  const resident = effect.residentBytes;
+  for (const resize of [false, true]) {
+    if (resize) material.map!.image = { width: 256, height: 128 };
+    material.map!.needsUpdate = true;
+    fake.renderer.autoClear = false;
+    fake.failAfter(3);
+    assert.throws(() => effect.render(world, camera, 1, 0.5), /GPU failure/);
+    assert.equal(fake.renderer.getRenderTarget(), null);
+    assert.equal(fake.renderer.autoClear, false);
+    assert.equal(mesh.material, material);
+    assert.equal(effect.residentBytes, resident);
+    assert.equal(effect.cacheBuilds, resize ? 2 : 1);
+    effect.render(world, camera, 1, 0.5);
+  }
+  assert.equal(effect.cacheBuilds, 3);
   effect.dispose();
   assert.equal(effect.residentBytes, 0);
 });

@@ -148,7 +148,7 @@ export function resetPlaygroundLayout(
 ): { document: PlaygroundDocument; bounds: PlaygroundBounds | null } {
   if (!document.tiles.length) return { document, bounds: null };
   const margin = 40;
-  const columnGap = 32;
+  const columnGap = 64;
   const rowGap = 16;
   const height = document.ui?.clipHeight ?? defaultUI.clipHeight;
   const tiles = document.tiles.map((tile) => ({ ...tile, nextId: null }));
@@ -162,12 +162,10 @@ export function resetPlaygroundLayout(
   const width = (id: string) =>
     playgroundTileWidth(catalog.get(id)?.duration ?? 0, document, id);
 
-  // Catalog order is stable even after dragging. Retain any not-yet-refreshed
-  // tiles as well; arranging the canvas must not delete content or metadata.
-  const orderedIds = [
-    ...scenes.map((scene) => scene.id).filter((id) => byId.has(id)),
-    ...tiles.map((tile) => tile.sceneId).filter((id) => !catalog.has(id)),
-  ];
+  // Saved tile order defines the family and version order. Dragging only
+  // changes positions; catalog refreshes must not undo a chosen lineup.
+  // Keep not-yet-refreshed tiles too, without losing their metadata.
+  const orderedIds = tiles.map((tile) => tile.sceneId);
   const visited = new Set<string>();
   const families = new Map<string, string[]>();
   for (const id of orderedIds) {

@@ -15,6 +15,7 @@ const state = {
 };
 (window as any).cameraSamplingState = state;
 const code = `export default ({THREE,world,camera,surfaces,registerCameraFrame}) => {
+  const fallback = new THREE.Object3D(); fallback.position.set(100,100,100); registerCameraFrame(null,fallback);
   const group = new THREE.Group(); world.add(group); registerCameraFrame('ui',group);
   const material = new THREE.MeshBasicMaterial({map:surfaces.ui,transparent:true,toneMapped:false});
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material);group.add(mesh);
@@ -31,6 +32,160 @@ const code = `export default ({THREE,world,camera,surfaces,registerCameraFrame})
     } finally {state.concurrent--;}
   }};
 }`;
+
+async function checkNativeCameraFrame() {
+  const doc = SceneSchema.parse({
+    version: 1,
+    id: "native-camera-frame",
+    name: "Native camera frame",
+    duration: 3,
+    fps: 60,
+    size: { width: 480, height: 300 },
+    background: "#ffffff",
+    sources: [],
+    parameters: {},
+    camera: {
+      projection: "perspective",
+      preset: "front",
+      rotation: 0,
+      elevation: 90,
+    },
+  });
+  const nativeCode = `export default ({THREE,world,camera,registerCameraFrame}) => {
+    const focus = new THREE.Object3D(); registerCameraFrame(null,focus);
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2,1),new THREE.MeshBasicMaterial({color:'#123456'}));
+    world.add(mesh);
+    return {sample({time}) {
+      focus.position.set(2+time,.4,0);
+      mesh.position.copy(focus.position);
+      camera.position.set(2+time,.4,6+time);
+      camera.lookAt(focus.position);
+    }};
+  }`;
+  const engine = new SceneEngine(doc, async () => ({ images: {} }));
+  const url = URL.createObjectURL(
+    new Blob([nativeCode], { type: "text/javascript" }),
+  );
+  const near = (actual: number, expected: number, label: string) =>
+    assert(
+      Math.abs(actual - expected) < 1e-8,
+      `${label}: ${actual} != ${expected}`,
+    );
+  try {
+    await engine.init(url);
+    for (const projection of ["perspective", "orthographic"] as const) {
+      const document = {
+        ...doc,
+        camera: withCameraPatch(doc.camera, { projection }),
+      };
+      let firstPixels = "";
+      for (const time of [0, 2, 0]) {
+        await engine.sample(time, document);
+        const context = engine.reviewContext();
+        near(
+          context.camera.position[0],
+          2 + time,
+          "Shared camera follows registered native target X",
+        );
+        near(
+          context.camera.position[1],
+          0.4,
+          "Shared camera follows registered native target Y",
+        );
+        near(
+          context.camera.position[2],
+          6 + time,
+          "Shared camera retains authored focus distance",
+        );
+        near(context.camera.direction[0], 0, "Front direction X");
+        near(context.camera.direction[1], 0, "Front direction Y");
+        near(context.camera.direction[2], -1, "Front direction Z");
+        near(
+          context.camera.focusDistance,
+          6 + time,
+          "Depth-of-field reference follows native target",
+        );
+        const pixels = engine.canvas.toDataURL();
+        if (!firstPixels) firstPixels = pixels;
+        else if (time === 0)
+          assert(
+            pixels === firstPixels,
+            "Native camera backward sampling is pixel-identical",
+          );
+      }
+    }
+    const invalid = URL.createObjectURL(
+      new Blob(
+        [
+          `export default ({THREE,registerCameraFrame}) => { registerCameraFrame('missing',new THREE.Object3D()); return {sample(){}}; }`,
+        ],
+        { type: "text/javascript" },
+      ),
+    );
+    try {
+      let message = "";
+      try {
+        await engine.init(invalid);
+      } catch (error) {
+        message = String(error);
+      }
+      assert(
+        message.includes("Unknown camera source missing"),
+        "String camera frame IDs must still name declared sources",
+      );
+    } finally {
+      URL.revokeObjectURL(invalid);
+    }
+    assert(
+      engine.renderer.getContext().getError() === 0,
+      "Native frame camera rendering stays WebGL-error free",
+    );
+    return {
+      movingNativeTarget: true,
+      bothProjections: true,
+      explicitFrontAngles: true,
+      backwardPixels: true,
+      sourceValidation: true,
+    };
+  } finally {
+    URL.revokeObjectURL(url);
+    engine.dispose();
+  }
+}
+
+async function checkNativeRasterBudget() {
+  const document = SceneSchema.parse({
+    version: 1, id: "raster-budget", name: "Raster budget", duration: 2,
+    fps: 60, size: { width: 1920, height: 1080 }, background: "#ffffff",
+    sources: [], parameters: {}, tracks: [],
+  });
+  const url = URL.createObjectURL(new Blob([
+    `export default () => ({sample({raster}) { window.nativeRasterBudget = raster; }});`,
+  ], { type: "text/javascript" }));
+  const profiles = [
+    { options: undefined, expected: { width: 1920, height: 1080 } },
+    { options: { maxSize: { width: 1280, height: 800 }, maxSurfaceSize: { width: 1024, height: 1024 } },
+      expected: { width: 1280, height: 720, maxSurfaceSize: { width: 1024, height: 1024 } } },
+    { options: { maxSize: { width: 480, height: 300 }, maxSurfaceSize: { width: 768, height: 768 } },
+      expected: { width: 480, height: 270, maxSurfaceSize: { width: 768, height: 768 } } },
+  ];
+  try {
+    for (const { options, expected } of profiles) {
+      const engine = new SceneEngine(document, async () => ({ images: {} }), undefined, options);
+      try {
+        await engine.init(url);
+        for (const time of [0, 1, 0]) {
+          await engine.sample(time, document);
+          assert(JSON.stringify((window as any).nativeRasterBudget) === JSON.stringify(expected),
+            "Native raster budget follows the preview profile on every sample");
+          assert(document.size.width === 1920 && document.size.height === 1080,
+            "Native raster quality must never alter authored layout or export dimensions");
+        }
+      } finally { engine.dispose(); }
+    }
+    return { exportFullSize: true, playbackBounded: true, thumbnailBounded: true, layoutPreserved: true };
+  } finally { URL.revokeObjectURL(url); }
+}
 
 async function run() {
   let doc = SceneSchema.parse({
@@ -109,6 +264,12 @@ async function run() {
   try {
     await camera();
     assert(sourceRequests === 1, "First camera sample must acquire a source");
+    const firstCamera = engine.reviewContext().camera;
+    assert(
+      Math.abs(firstCamera.position[0]) < 1e-8 &&
+        Math.abs(firstCamera.position[1]) < 1e-8,
+      "The first registered source must take precedence over a composition frame",
+    );
     const startPixels = capture();
     patch({ depthOfField: { enabled: true, focusPlane: 0.2, blur: 0.5 } });
     await camera();
@@ -296,7 +457,7 @@ async function run() {
       !internals.preparedSource,
       "Disposal must release prepared source metadata",
     );
-    return report;
+    return { ...report, nativeCameraFrame: await checkNativeCameraFrame(), nativeRasterBudget: await checkNativeRasterBudget() };
   } finally {
     engine.dispose();
   }

@@ -7,21 +7,12 @@ import {
   type PanelImperativeHandle,
   type PanelSize,
 } from "react-resizable-panels";
-
-export function toggleEditorPanel(
-  panel: PanelImperativeHandle | null,
-  id: string,
-) {
-  if (!panel) return;
-  if (panel.isCollapsed()) {
-    let size = 0;
-    try {
-      size = Number(localStorage.getItem(`tilt-panel-expanded-${id}`));
-    } catch {}
-    if (Number.isFinite(size) && size > 0) panel.resize(size);
-    else panel.expand();
-  } else panel.collapse();
-}
+import {
+  editorPanelSizes,
+  isExpandedPanelSize,
+  type EditorPanelId,
+} from "./editor-panel-state";
+export { toggleEditorPanel } from "./editor-panel-state";
 /** Keep synchronous storage off the live-resize path; flush before leaving. */
 function useSettledSave<T extends unknown[]>(save: (...args: T) => void) {
   const latest = useRef(save);
@@ -53,16 +44,16 @@ function useSettledSave<T extends unknown[]>(save: (...args: T) => void) {
   return { schedule, flush };
 }
 
-function usePanelMemory(control: PanelControl, id: string, collapsed = 0) {
+function usePanelMemory(control: PanelControl, id: EditorPanelId) {
   const save = useSettledSave((pixels: number) => {
     try {
       localStorage.setItem(`tilt-panel-expanded-${id}`, String(pixels));
     } catch {}
   });
   return (size: PanelSize) => {
-    const open = size.inPixels > collapsed;
+    const open = size.inPixels > editorPanelSizes[id].collapsedSize + 1;
     if (open !== control.open) control.onOpen(open);
-    if (open) save.schedule(size.inPixels);
+    if (isExpandedPanelSize(id, size.inPixels)) save.schedule(size.inPixels);
     // Preserve the last expanded size even if collapse precedes the debounce.
     else save.flush();
   };
@@ -108,7 +99,7 @@ export function EditorPanels({
   const saveVertical = useSettledSave(vertical.onLayoutChanged);
   const rememberLeft = usePanelMemory(left, "compositions");
   const rememberRight = usePanelMemory(right, "inspector");
-  const rememberBottom = usePanelMemory(bottom, "timeline", 49);
+  const rememberBottom = usePanelMemory(bottom, "timeline");
   return (
     <div className="editor-main">
       {header}
@@ -135,8 +126,7 @@ export function EditorPanels({
                 <Panel
                   id="compositions"
                   panelRef={left.ref}
-                  defaultSize={190}
-                  minSize={150}
+                  {...editorPanelSizes.compositions}
                   maxSize={280}
                   collapsible
                   groupResizeBehavior="preserve-pixel-size"
@@ -166,11 +156,9 @@ export function EditorPanels({
             <Panel
               id="timeline"
               panelRef={bottom.ref}
-              defaultSize={180}
-              minSize={100}
+              {...editorPanelSizes.timeline}
               maxSize="65%"
               collapsible
-              collapsedSize={48}
               groupResizeBehavior="preserve-pixel-size"
               onResize={rememberBottom}
             >
@@ -185,8 +173,7 @@ export function EditorPanels({
         <Panel
           id="inspector"
           panelRef={right.ref}
-          defaultSize={304}
-          minSize={240}
+          {...editorPanelSizes.inspector}
           maxSize="45%"
           collapsible
           groupResizeBehavior="preserve-pixel-size"

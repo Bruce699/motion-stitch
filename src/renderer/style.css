@@ -671,9 +671,7 @@ input[type="number"]:hover::-webkit-inner-spin-button {
   color: var(--warning-color);
   background: color-mix(in srgb, var(--warning-color) 18%, transparent);
 }
-@media (prefers-color-scheme: dark) {
-  .error-indicator { --warning-color: #f3bb5b; }
-}
+:root[data-theme="dark"] .error-indicator { --warning-color: #f3bb5b; }
 .error-popover {
   z-index: 40;
   width: 320px;

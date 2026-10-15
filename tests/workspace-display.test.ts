@@ -52,6 +52,9 @@ test("composition names split only the first separator and retain the full displ
     ["Order 1401 — Small things", "Order 1401", "Small things"],
     ["Order 1401—Becoming", "Order 1401", "Becoming"],
     ["Order 1401–Becoming", "Order 1401", "Becoming"],
+    ["question / two", "question", "two"],
+    ["question / two / alternate", "question", "two / alternate"],
+    ["question / two — revised", "question", "two — revised"],
     [
       "Order 1401 - Becoming — Short - Revised",
       "Order 1401",
@@ -63,6 +66,10 @@ test("composition names split only the first separator and retain the full displ
     ["Scene-Revision", "Scene-Revision", ""],
     ["Scene -Revision", "Scene -Revision", ""],
     ["Scene- Revision", "Scene- Revision", ""],
+    ["Scene/Revision", "Scene/Revision", ""],
+    ["Scene /Revision", "Scene /Revision", ""],
+    ["Scene/ Revision", "Scene/ Revision", ""],
+    ["Scene / ", "Scene /", ""],
     ["Scene - ", "Scene -", ""],
     ["Scene —", "Scene —", ""],
     ["— Revision", "— Revision", ""],
@@ -75,6 +82,15 @@ test("composition names split only the first separator and retain the full displ
       title,
     );
   }
+});
+
+test("spaced slash versions share scene filters with dashed names", () => {
+  const typing = compositionDetails({ id: "typing", name: "question - typing" });
+  const two = compositionDetails({ id: "two", name: "question / two" });
+  assert.equal(matchesComposition(typing, "question", "all", ""), true);
+  assert.equal(matchesComposition(two, "question", "all", ""), true);
+  assert.equal(matchesComposition(two, "question", "two", ""), true);
+  assert.equal(matchesComposition(typing, "question", "two", ""), false);
 });
 
 test("saved title overrides determine names while legacy numeric metadata remains untouched", () => {
