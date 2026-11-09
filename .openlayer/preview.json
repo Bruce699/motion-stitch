@@ -1,0 +1,5 @@
+{
+  "setup": "npm ci --no-audit --no-fund && npm run build",
+  "desktop": "npx electron . --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader",
+  "reload": "native"
+}
